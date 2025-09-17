@@ -2,10 +2,9 @@
 #include <torch/extension.h>
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include <ATen/cuda/CUDAContext.h>
+#include <cmath>  // fabsf
 
-#define CUDA_CHECK(err) TORCH_CHECK((err) == cudaSuccess, "CUDA error: ", cudaGetErrorString(err))
-
+// -------------------- KERNELS --------------------
 __global__ void bika_conv2d_forward_kernel(
     const float* __restrict__ input,   // [B, C, H, W]
     const float* __restrict__ weight,  // [O, C, K, K]
@@ -20,12 +19,13 @@ __global__ void bika_conv2d_forward_kernel(
     for (int h_out = threadIdx.y; h_out < Ho; h_out += blockDim.y) {
         for (int w_out = threadIdx.x; w_out < Wo; w_out += blockDim.x) {
             float acc = 0.0f;
+
             for (int c = 0; c < C; ++c) {
                 const float* w_oc = weight + ((o * C + c) * K) * K;
                 const float* b_oc = bias   + ((o * C + c) * K) * K;
 
                 for (int kh = 0; kh < K; ++kh) {
-                    int h_in = h_out + kh;
+                    int h_in = h_out + kh;  // valid conv (stride=1, no padding)
                     const float* x_row = input + (((b * C + c) * H + h_in) * W);
                     const float* w_row = w_oc + kh * K;
                     const float* b_row = b_oc + kh * K;
@@ -37,7 +37,8 @@ __global__ void bika_conv2d_forward_kernel(
                     }
                 }
             }
-            output[(((b * O + o) * Ho) + h_out) * Wo + w_out] = acc;
+
+            output[(((b * O + o) * Ho) + h_out) * Wo + w_out] = acc; // no sign after sum
         }
     }
 }
@@ -77,15 +78,21 @@ __global__ void bika_conv2d_backward_kernel(
                     for (int kw = 0; kw < K; ++kw) {
                         int w_in = w_out + kw;
 
-                        const float x = x_row[w_in];
-                        const float w = w_row[kw];
+                        const float x  = x_row[w_in];
+                        const float w  = w_row[kw];
                         const float bb = b_row[kw];
-                        const float z = (x + bb) * w;
+                        const float z  = (x + bb) * w;
 
-                        const float sgrad = (fabsf(z) <= 1.0f) ? 1.0f : 0.0f; // hard-tanh STE
+                        // Hard-tanh STE: pass grad only when |z|<=1
+                        const float sgrad = (fabsf(z) <= 1.0f) ? 1.0f : 0.0f;
 
+                        // d sign(z)/dx = s'(z) * w
                         atomicAdd(&gx_row[w_in], go * sgrad * w);
+
+                        // d sign(z)/dw = s'(z) * (x + b)
                         atomicAdd(&gw_row[kw],   go * sgrad * (x + bb));
+
+                        // d sign(z)/db = s'(z) * w
                         atomicAdd(&gb_row[kw],   go * sgrad * w);
                     }
                 }
@@ -94,6 +101,7 @@ __global__ void bika_conv2d_backward_kernel(
     }
 }
 
+// -------------------- LAUNCHERS --------------------
 torch::Tensor bika_conv2d_forward(torch::Tensor input,
                                    torch::Tensor weight,
                                    torch::Tensor bias) {
@@ -106,9 +114,9 @@ torch::Tensor bika_conv2d_forward(torch::Tensor input,
     TORCH_CHECK(input.size(1)==weight.size(1), "C must match");
     TORCH_CHECK(weight.size(2)==weight.size(3), "K must be square");
 
-    input = input.contiguous();
+    input  = input.contiguous();
     weight = weight.contiguous();
-    bias = bias.contiguous();
+    bias   = bias.contiguous();
 
     int B = input.size(0), C = input.size(1), H = input.size(2), W = input.size(3);
     int O = weight.size(0), K = weight.size(2);
@@ -117,16 +125,18 @@ torch::Tensor bika_conv2d_forward(torch::Tensor input,
     int Ho = H - K + 1, Wo = W - K + 1;
     auto output = torch::empty({B, O, Ho, Wo}, input.options());
 
-    at::cuda::CUDAGuard guard(input.device());
-    auto stream = at::cuda::getCurrentCUDAStream();
+    // Set device and launch on default stream
+    int dev = input.get_device();
+    TORCH_CHECK(dev >= 0, "Input must be a CUDA tensor");
+    cudaSetDevice(dev);
 
     dim3 grid(B, O);
     dim3 block(16, 16);
-    bika_conv2d_forward_kernel<<<grid, block, 0, stream>>>(
+    bika_conv2d_forward_kernel<<<grid, block>>>(
         input.data_ptr<float>(), weight.data_ptr<float>(), bias.data_ptr<float>(),
         output.data_ptr<float>(), B, C, H, W, O, K, Ho, Wo
     );
-    CUDA_CHECK(cudaGetLastError());
+    TORCH_CHECK(cudaGetLastError() == cudaSuccess, "CUDA launch failed (bika_conv2d_forward).");
     return output;
 }
 
@@ -146,14 +156,13 @@ std::vector<torch::Tensor> bika_conv2d_backward(torch::Tensor grad_output,
     TORCH_CHECK(input.size(1)==weight.size(1), "C must match");
     TORCH_CHECK(weight.size(2)==weight.size(3), "K must be square");
 
-    input = input.contiguous();
-    weight = weight.contiguous();
-    bias = bias.contiguous();
-    grad_output = grad_output.contiguous();
+    input        = input.contiguous();
+    weight       = weight.contiguous();
+    bias         = bias.contiguous();
+    grad_output  = grad_output.contiguous();
 
     int B = input.size(0), C = input.size(1), H = input.size(2), W = input.size(3);
     int O = weight.size(0), K = weight.size(2);
-
     TORCH_CHECK(K <= H && K <= W, "Valid conv requires K<=H and K<=W");
 
     int Ho = H - K + 1, Wo = W - K + 1;
@@ -165,19 +174,19 @@ std::vector<torch::Tensor> bika_conv2d_backward(torch::Tensor grad_output,
     auto grad_weight = torch::zeros_like(weight);
     auto grad_bias   = torch::zeros_like(bias);
 
-    at::cuda::CUDAGuard guard(input.device());
-    auto stream = at::cuda::getCurrentCUDAStream();
+    int dev = input.get_device();
+    TORCH_CHECK(dev >= 0, "Input must be a CUDA tensor");
+    cudaSetDevice(dev);
 
     dim3 grid(B, O);
     dim3 block(16, 16);
-    bika_conv2d_backward_kernel<<<grid, block, 0, stream>>>(
+    bika_conv2d_backward_kernel<<<grid, block>>>(
         grad_output.data_ptr<float>(), input.data_ptr<float>(),
         weight.data_ptr<float>(), bias.data_ptr<float>(),
         grad_input.data_ptr<float>(), grad_weight.data_ptr<float>(), grad_bias.data_ptr<float>(),
         B, C, H, W, O, K, Ho, Wo
     );
-    CUDA_CHECK(cudaGetLastError());
+    TORCH_CHECK(cudaGetLastError() == cudaSuccess, "CUDA launch failed (bika_conv2d_backward).");
 
     return {grad_input, grad_weight, grad_bias};
 }
-

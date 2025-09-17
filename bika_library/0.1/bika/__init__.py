@@ -1,6 +1,8 @@
+# bika/__init__.py
 import math
 import torch
 from torch import nn
+from typing import Union, Tuple
 from . import _C  # compiled CUDA extension
 
 # -------- Autograd Functions (thin wrappers over CUDA) --------
@@ -38,10 +40,10 @@ def bika_conv2d(x: torch.Tensor, w: torch.Tensor, b: torch.Tensor) -> torch.Tens
 # -------- nn.Module wrappers (drop-in usage) --------
 class BiKA_Linear(nn.Module):
     """
-    Drop-in like nn.Linear, but:
+    Like nn.Linear, but:
       - weight: (out_features, in_features)
-      - bias:   (out_features, in_features)  # per-connection bias (not shape [out_features])
-    Forward computes sum_i sign((x_i + b_oi) * w_oi), no sign after the sum.
+      - bias:   (out_features, in_features)  # per-connection bias
+    Forward: sum_i sign((x_i + b_oi) * w_oi). No sign after the sum.
     """
     __constants__ = ("in_features", "out_features", "per_connection_bias")
 
@@ -56,13 +58,11 @@ class BiKA_Linear(nn.Module):
         if bias:
             self.bias = nn.Parameter(torch.empty((out_features, in_features), **factory_kwargs))
         else:
-            # keep a zero bias buffer of matching shape so the CUDA kernel always receives a tensor
             self.register_buffer("bias", torch.zeros((out_features, in_features), **factory_kwargs), persistent=False)
 
         self.reset_parameters()
 
     def reset_parameters(self):
-        # mimic nn.Linear's default (kaiming_uniform for weight, and bias ~ U(-1/sqrt(fan_in), 1/sqrt(fan_in)))
         fan_in = self.in_features
         bound = 1.0 / math.sqrt(fan_in) if fan_in > 0 else 0.0
         nn.init.kaiming_uniform_(self.weight, a=math.sqrt(5))
@@ -73,12 +73,8 @@ class BiKA_Linear(nn.Module):
                 self.bias.zero_()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        x: (B, in_features) -> y: (B, out_features)
-        """
         if x.dim() != 2 or x.size(-1) != self.in_features:
             raise ValueError(f"BiKA_Linear: expected x shape (B,{self.in_features}), got {tuple(x.shape)}")
-        # ensure contiguity/dtypes handled in CUDA kernels; parameters live on the same device as module.
         return _BiKALinearFn.apply(x, self.weight, self.bias)
 
     def extra_repr(self) -> str:
@@ -87,10 +83,10 @@ class BiKA_Linear(nn.Module):
 
 class BiKA_Conv2d(nn.Module):
     """
-    Drop-in like nn.Conv2d (subset):
+    Like nn.Conv2d (subset):
       - weight: (out_channels, in_channels, kH, kW)
       - bias:   (out_channels, in_channels, kH, kW)  # per-connection bias
-    Current CUDA supports VALID conv only: stride=1, padding=0, dilation=1, groups=1.
+    Currently supports VALID conv only: stride=1, padding=0, dilation=1, groups=1.
     """
     __constants__ = ("in_channels", "out_channels", "kernel_size", "per_connection_bias")
 
@@ -98,10 +94,10 @@ class BiKA_Conv2d(nn.Module):
         self,
         in_channels: int,
         out_channels: int,
-        kernel_size: int | tuple[int, int],
-        stride: int | tuple[int, int] = 1,
-        padding: int | tuple[int, int] = 0,
-        dilation: int | tuple[int, int] = 1,
+        kernel_size: Union[int, Tuple[int, int]],
+        stride: Union[int, Tuple[int, int]] = 1,
+        padding: Union[int, Tuple[int, int]] = 0,
+        dilation: Union[int, Tuple[int, int]] = 1,
         groups: int = 1,
         bias: bool = True,
         device=None,
@@ -113,7 +109,7 @@ class BiKA_Conv2d(nn.Module):
         else:
             kh, kw = kernel_size
         if stride != 1 or padding != 0 or dilation != 1 or groups != 1:
-            raise NotImplementedError("BiKA_Conv2d currently supports only stride=1, padding=0, dilation=1, groups=1")
+            raise NotImplementedError("BiKA_Conv2d supports only stride=1, padding=0, dilation=1, groups=1")
 
         factory_kwargs = {"device": device, "dtype": dtype}
         self.in_channels = in_channels
@@ -130,8 +126,6 @@ class BiKA_Conv2d(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        # match torch.nn.Conv2d default-ish init
-        # kaiming_uniform on weight; bias uses fan_in bound (per-connection bias has same shape as weight)
         fan_in = self.in_channels * self.kernel_size[0] * self.kernel_size[1]
         bound = 1.0 / math.sqrt(fan_in) if fan_in > 0 else 0.0
         nn.init.kaiming_uniform_(self.weight, a=math.sqrt(5))
@@ -142,9 +136,6 @@ class BiKA_Conv2d(nn.Module):
                 self.bias.zero_()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        x: (B, C, H, W) -> y: (B, O, H-kH+1, W-kW+1)  (valid conv)
-        """
         if x.dim() != 4 or x.size(1) != self.in_channels:
             raise ValueError(f"BiKA_Conv2d: expected x shape (B,{self.in_channels},H,W), got {tuple(x.shape)}")
         return _BiKAConv2dFn.apply(x, self.weight, self.bias)
@@ -161,4 +152,3 @@ __all__ = [
     "BiKA_Linear",
     "BiKA_Conv2d",
 ]
-

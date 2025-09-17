@@ -2,10 +2,9 @@
 #include <torch/extension.h>
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include <ATen/cuda/CUDAContext.h>
+#include <cmath>  // fabsf
 
-#define CUDA_CHECK(err) TORCH_CHECK((err) == cudaSuccess, "CUDA error: ", cudaGetErrorString(err))
-
+// -------------------- KERNELS --------------------
 __global__ void bika_linear_forward_kernel(
     const float* __restrict__ input,   // [B, I]
     const float* __restrict__ weight,  // [O, I]
@@ -26,7 +25,7 @@ __global__ void bika_linear_forward_kernel(
             float z = (xin[i] + brow[i]) * wrow[i];
             acc += (z >= 0.0f) ? 1.0f : -1.0f;
         }
-        output[b * O + o] = acc;
+        output[b * O + o] = acc;  // no sign after the sum
     }
 }
 
@@ -52,17 +51,19 @@ __global__ void bika_linear_backward_kernel(
             const float boi = bias[o * I + i];
             const float z   = (xbi + boi) * woi;
 
-            const float sgrad = (fabsf(z) <= 1.0f) ? 1.0f : 0.0f; // hard-tanh STE
+            // Hard-tanh STE for sign: pass grad when |z| <= 1
+            const float sgrad = (fabsf(z) <= 1.0f) ? 1.0f : 0.0f;
             const float go = grad_output[b * O + o];
 
-            dx += go * sgrad * woi;
-            atomicAdd(&grad_weight[o * I + i], go * sgrad * (xbi + boi));
-            atomicAdd(&grad_bias[o * I + i],   go * sgrad * woi);
+            dx += go * sgrad * woi;                         // dL/dx
+            atomicAdd(&grad_weight[o * I + i], go * sgrad * (xbi + boi)); // dL/dw
+            atomicAdd(&grad_bias[o * I + i],   go * sgrad * woi);         // dL/db
         }
         grad_input[b * I + i] = dx;
     }
 }
 
+// -------------------- LAUNCHERS --------------------
 torch::Tensor bika_linear_forward(torch::Tensor input,
                                   torch::Tensor weight,
                                   torch::Tensor bias) {
@@ -83,17 +84,19 @@ torch::Tensor bika_linear_forward(torch::Tensor input,
 
     auto output = torch::empty({B, O}, input.options());
 
-    at::cuda::CUDAGuard guard(input.device());
-    auto stream = at::cuda::getCurrentCUDAStream();
+    // Set device and launch on default stream
+    int dev = input.get_device();
+    TORCH_CHECK(dev >= 0, "Input must be a CUDA tensor");
+    cudaSetDevice(dev);
 
     const int block = 256;
     const dim3 grid(B);
 
-    bika_linear_forward_kernel<<<grid, block, 0, stream>>>(
+    bika_linear_forward_kernel<<<grid, block>>>(
         input.data_ptr<float>(), weight.data_ptr<float>(), bias.data_ptr<float>(),
         output.data_ptr<float>(), B, I, O
     );
-    CUDA_CHECK(cudaGetLastError());
+    TORCH_CHECK(cudaGetLastError() == cudaSuccess, "CUDA launch failed (bika_linear_forward).");
     return output;
 }
 
@@ -126,20 +129,20 @@ std::vector<torch::Tensor> bika_linear_backward(torch::Tensor grad_output,
     auto grad_weight = torch::zeros_like(weight);
     auto grad_bias   = torch::zeros_like(bias);
 
-    at::cuda::CUDAGuard guard(input.device());
-    auto stream = at::cuda::getCurrentCUDAStream();
+    int dev = input.get_device();
+    TORCH_CHECK(dev >= 0, "Input must be a CUDA tensor");
+    cudaSetDevice(dev);
 
     const int block = 256;
     const dim3 grid(B);
 
-    bika_linear_backward_kernel<<<grid, block, 0, stream>>>(
+    bika_linear_backward_kernel<<<grid, block>>>(
         grad_output.data_ptr<float>(), input.data_ptr<float>(),
         weight.data_ptr<float>(), bias.data_ptr<float>(),
         grad_input.data_ptr<float>(), grad_weight.data_ptr<float>(), grad_bias.data_ptr<float>(),
         B, I, O
     );
-    CUDA_CHECK(cudaGetLastError());
+    TORCH_CHECK(cudaGetLastError() == cudaSuccess, "CUDA launch failed (bika_linear_backward).");
 
     return {grad_input, grad_weight, grad_bias};
 }
-
