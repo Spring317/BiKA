@@ -1,0 +1,13 @@
+nohup: ignoring input
+2025-11-02 03:06:15 - Skipping (already completed): CNV_1bit.ipynb
+2025-11-02 03:06:15 - Skipping (already completed): CNV_2bit.ipynb
+2025-11-02 03:06:15 - Skipping (already completed): CNV_4bit.ipynb
+2025-11-02 03:06:15 - Skipping (already completed): CNV_8bit.ipynb
+2025-11-02 03:06:15 - Starting: CNV_BiKA.ipynb
+2025-11-04 08:02:18 - Finished: CNV_BiKA.ipynb ✅
+2025-11-04 08:02:18 - All notebooks executed successfully.
+iKA.ipynb to notebook
+[NbConvertApp] Writing 3065109 bytes to CNV_BiKA.ipynb
+2025-11-04 08:02:18 - Finished: CNV_BiKA.ipynb ✅
+2025-11-04 08:02:18 - All notebooks executed successfully.
+2025-11-04 08:02:18 - Script interrupted or crashed.
