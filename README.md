@@ -22,15 +22,3 @@ Lightweight neural network accelerator for edge devices is an emerging topic in 
 | ***Brevitas*** | 0.11.0 |
 | ***JupyterLab*** | 4.3.5 |
 
-If you find this work useful, please cite our FCCM 2025 poster:
-
-```bibtex
-@INPROCEEDINGS{BiKA_FCCM2025,
-  author={Liu, Yuhao and Ullah, Salim and Kumar, Akash},
-  booktitle={2025 IEEE 33rd Annual International Symposium on Field-Programmable Custom Computing Machines (FCCM)}, 
-  title={BiKA: Binarized KAN-inspired Neural Network for Efficient Hardware Accelerator Designs}, 
-  year={2025},
-  pages={276-276},
-  keywords={Quantization (signal);Neuromorphic engineering;Computational modeling;Approximate computing;Artificial neural networks;Transforms;Complexity theory;Hardware acceleration;Field programmable gate arrays;fpga;hardware accelerator;approximate computing;kolmogorov-arnold network},
-  doi={10.1109/FCCM62733.2025.00036}
-}
