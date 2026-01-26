@@ -1,17 +1,14 @@
-# BiKA: A Prototype of *Bi*narized *K*olmogorov-*A*rnold Networks [![DOI](https://zenodo.org/badge/833847910.svg)](https://doi.org/10.5281/zenodo.14915114)
+# BiKA: Kolmogorov-Arnold-Network-inspired Ultra Lightweight Neural Network Hardware Accelerator # 
 
+**Yuhao Liu<sup>1,2,3</sup>, Salim Ullah<sup>1</sup>, Akash Kumar<sup>1</sup>**
 
-**Yuhao Liu<sup>1,3</sup>, Salim Ullah<sup>2</sup>, Akash Kumar<sup>2,3</sup>**
+<sup>1</sup>Ruhr University Bochum, Germany; <sup>2</sup>Dresden University of Technology, Germany; <sip>3</sup>Center for Scalable Data Analytics and Artificial Intelligence (ScaDS.AI Dresden/Leipzig), Germany
 
-<sup>1</sup>Dresden University of Technology, Germany; <sup>2</sup>Ruhr University Bochum, Germany; <sip>3</sup>Center for Scalable Data Analytics and Artificial Intelligence (ScaDS.AI Dresden/Leipzig), Germany
-
-Email: yuhao.liu1@tu-dresden.de, salim.ullah@rub.de, akash.kumar@rub.de
-
-
-***This repository is prepared for artifact evaluation of FCCM 2025. We trained the four BiKA modes based on Pytorch from scratch and the corresponding BNN, QNN, and KAN models for comparison. Our current code for BiKA training has a shortcoming of low speed and huge GPU memory consumption. In our future works, we will rebuild this repository based on CUDA and C++ to speed up the training and improve the inference accuracy.***
+Email: yuhao.liu@rub.de, salim.ullah@rub.de, akash.kumar@rub.de
 
 ## Abstract
-Lightweight neural network accelerator for edge devices is an emerging topic in recent research.  Previous works widely explored different schemes, such as quantization and approximation, to reduce hardware resource consumption in accelerator designs. *Kolmogorov-Arnold Network* (KAN) is a recently proposed neural network that can potentially transform the paradigm of neural network design by replacing the multiplication and activation functions with learnable nonlinear functions. However, for hardware accelerator designs, learnable non-linear functions are costly in hardware, such as FPGA. Inspired by KAN and *Binarized Neural Networks* (BNN), we propose a novel neural network, BiKA, with learnable thresholds, which highly simplifies the design of accelerator designs as a series of comparators and accumulators. We present this network on *Ultra96* FPGA, and the results show that our accelerator has reduced hardware resource consumption by more than **27.73%-51.54%** compared to binarized and quantized neural network accelerators with **8.14%-19.77%** and **8.64%-23.20%** accuracy loss.
+Lightweight neural network accelerators are essential for edge devices with limited resources and power constraints. While quantization and binarization can efficiently reduce hardware cost, they still rely on the conventional *Artificial Neural Network* (ANN) computation pattern. The recently proposed
+*Kolmogorov-Arnold Network* (KAN) presents a novel network paradigm built on learnable nonlinear functions. However, it is computationally expensive for hardware deployment. Inspired by KAN, we propose **BiKA**, a multiply-free architecture that replaces nonlinear functions with binary, learnable thresholds, introducing an extremely lightweight computational pattern that requires only comparators and accumulators. Our FPGA prototype on *Ultra96-V2* shows that BiKA reduces hardware resource usage by **27.73%** and **51.54%** compared with binarized and quantized neural network systolic array accelerators, while maintaining competitive accuracy. BiKA provides a promising direction for hardware-friendly neural network design on edge devices.
 
 ## Experiment Environment
 | Library | Version |
@@ -21,4 +18,7 @@ Lightweight neural network accelerator for edge devices is an emerging topic in 
 | ***pykan*** | 0.2.8 |
 | ***Brevitas*** | 0.11.0 |
 | ***JupyterLab*** | 4.3.5 |
+| ***bika***| 0.1.3 |
+
+Please install our CUDA-based library ***bika*** before testing examples.
 
