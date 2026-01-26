@@ -2,7 +2,7 @@
 
 **Yuhao Liu<sup>1,2,3</sup>, Salim Ullah<sup>1</sup>, Akash Kumar<sup>1</sup>**
 
-<sup>1</sup>Ruhr University Bochum, Germany; <sup>2</sup>Dresden University of Technology, Germany; <sip>3</sup>Center for Scalable Data Analytics and Artificial Intelligence (ScaDS.AI Dresden/Leipzig), Germany
+<sup>1</sup>Ruhr University Bochum, Germany; <sup>2</sup>Dresden University of Technology, Germany; <sup>3</sup>Center for Scalable Data Analytics and Artificial Intelligence (ScaDS.AI Dresden/Leipzig), Germany
 
 Email: yuhao.liu@rub.de, salim.ullah@rub.de, akash.kumar@rub.de
 
