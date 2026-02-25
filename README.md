@@ -20,5 +20,5 @@ Lightweight neural network accelerators are essential for edge devices with limi
 | ***JupyterLab*** | 4.3.5 |
 | ***bika***| 0.1.3 |
 
-Please install our CUDA-based library ***bika*** before testing examples.
+Please install our CUDA-based library ***bika*** before testing examples, which is located in the folder "bika_library/0.1"
 
