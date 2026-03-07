@@ -22,3 +22,4 @@ Lightweight neural network accelerators are essential for edge devices with limi
 
 Please install our CUDA-based library ***bika*** before testing examples, which is located in the folder "bika_library/0.1"
 
+Note: Repository also includes several 1/2/4/8-bit QNN baselines for reference. The included QNN baselines are simple in-house reference implementations used for comparison during this project. They may differ from more optimized QNN setups used in dedicated quantization frameworks.
