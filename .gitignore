@@ -1,3 +1,4 @@
-Dataset/
-TrainData/
-new/
+**/dataset/
+**/train/
+**/.ipynb_checkpoints/
+**/archiv/

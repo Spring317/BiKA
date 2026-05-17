@@ -1,0 +1,13 @@
+nohup: ignoring input
+2026-05-17 04:22:16 - Starting: LFC_BiKA.ipynb
+2026-05-17 07:10:06 - Finished: LFC_BiKA.ipynb ✅
+2026-05-17 07:10:06 - Starting: SFC_BiKA.ipynb
+2026-05-17 07:48:10 - Finished: SFC_BiKA.ipynb ✅
+2026-05-17 07:48:10 - All notebooks executed successfully.
+ipynb ✅
+2026-05-17 07:10:06 - Starting: SFC_BiKA.ipynb
+[NbConvertApp] Converting notebook .//SFC_BiKA.ipynb to notebook
+[NbConvertApp] Writing 3254823 bytes to SFC_BiKA.ipynb
+2026-05-17 07:48:10 - Finished: SFC_BiKA.ipynb ✅
+2026-05-17 07:48:10 - All notebooks executed successfully.
+2026-05-17 07:48:10 - Script interrupted or crashed.
