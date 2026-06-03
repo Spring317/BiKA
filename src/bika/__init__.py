@@ -19,6 +19,7 @@ except ImportError as e:
 from .functional import bika_linear, bika_conv2d
 from .BiKA_Linear import BiKA_Linear
 from .BiKA_Conv2d import BiKA_Conv2d
+from .segmentation import BiKASegNet
 
 
 __version__ = "0.1.4"
@@ -29,4 +30,5 @@ __all__ = [
     "bika_conv2d",
     "BiKA_Linear",
     "BiKA_Conv2d",
+    "BiKASegNet",
 ]

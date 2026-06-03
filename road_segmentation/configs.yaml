@@ -1,0 +1,33 @@
+name: bika-seg
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.10
+  - cuda-toolkit
+  - cuda-nvcc
+  - ninja
+  - libxcrypt
+  - pip
+  - pip:
+      - numpy==1.25.0
+      - addict==2.4.0
+      - dataclasses
+      - pandas
+      - pyyaml
+      - albumentations
+      - tqdm
+      - tensorboardX
+      - opencv-python-headless
+      - perceptual==0.1
+      - pillow
+      - scipy
+      - scikit-learn
+      - tifffile==2020.9.3
+      - timm
+      - yapf==0.31.0
+      - matplotlib
+      - ultralytics
+      - typing-extensions==4.11.0
+      - yacs
