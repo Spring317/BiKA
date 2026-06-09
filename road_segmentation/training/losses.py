@@ -54,7 +54,14 @@ class CrossEntropyDiceLoss(nn.Module):
         cardinality = probs.sum(dim=dims) + target_oh.sum(dim=dims)
 
         dice_per_class = (2.0 * intersection + smooth) / (cardinality + smooth)
-        dice_loss = 1.0 - dice_per_class.mean()
+
+        # Only average over classes actually present in this batch —
+        # absent classes produce near-1.0 Dice that dilutes the signal.
+        present = target_oh.sum(dim=(0, 2, 3)) > 0  # (C,)
+        if present.any():
+            dice_loss = 1.0 - dice_per_class[present].mean()
+        else:
+            dice_loss = torch.tensor(0.0, device=input.device)
 
         return self.ce_weight * ce_loss + self.dice_weight * dice_loss
 

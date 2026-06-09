@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import random
 
 # ImageNet statistics (RGB order)
 IMAGENET_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
@@ -24,6 +25,82 @@ def horizontal_flip(image: np.ndarray, mask: np.ndarray):
     image = cv2.flip(image, 1)
     mask = cv2.flip(mask, 1)
     return image, mask
+
+
+def random_scale_crop(
+    image: np.ndarray,
+    mask: np.ndarray,
+    target_h: int,
+    target_w: int,
+    scale_range: tuple = (0.5, 2.0),
+    ignore_index: int = IGNORE_INDEX,
+):
+    """Randomly scale the image/mask then crop to (target_h, target_w).
+
+    This is one of the most effective augmentations for semantic segmentation
+    because it forces the model to handle objects at multiple scales.
+    """
+    h, w = image.shape[:2]
+    scale = random.uniform(*scale_range)
+    new_h, new_w = int(h * scale), int(w * scale)
+
+    image = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
+    mask = cv2.resize(mask, (new_w, new_h), interpolation=cv2.INTER_NEAREST)
+
+    # Pad if scaled image is smaller than target crop
+    pad_h = max(target_h - new_h, 0)
+    pad_w = max(target_w - new_w, 0)
+    if pad_h > 0 or pad_w > 0:
+        image = cv2.copyMakeBorder(
+            image, 0, pad_h, 0, pad_w, cv2.BORDER_CONSTANT, value=(0, 0, 0)
+        )
+        mask = cv2.copyMakeBorder(
+            mask, 0, pad_h, 0, pad_w, cv2.BORDER_CONSTANT, value=ignore_index
+        )
+
+    # Random crop
+    crop_h, crop_w = image.shape[:2]
+    y = random.randint(0, crop_h - target_h)
+    x = random.randint(0, crop_w - target_w)
+    image = image[y : y + target_h, x : x + target_w]
+    mask = mask[y : y + target_h, x : x + target_w]
+
+    return image, mask
+
+
+def color_jitter(
+    image: np.ndarray,
+    brightness: float = 0.3,
+    contrast: float = 0.3,
+    saturation: float = 0.3,
+) -> np.ndarray:
+    """Apply random brightness, contrast, and saturation jitter.
+
+    Operates on uint8 RGB images.
+    """
+    img = image.astype(np.float32)
+
+    # Brightness
+    if random.random() > 0.5:
+        factor = 1.0 + random.uniform(-brightness, brightness)
+        img = img * factor
+
+    # Contrast
+    if random.random() > 0.5:
+        factor = 1.0 + random.uniform(-contrast, contrast)
+        mean = img.mean()
+        img = (img - mean) * factor + mean
+
+    # Saturation (convert to HSV, scale S, convert back)
+    if random.random() > 0.5:
+        factor = 1.0 + random.uniform(-saturation, saturation)
+        hsv = cv2.cvtColor(np.clip(img, 0, 255).astype(np.uint8), cv2.COLOR_RGB2HSV)
+        hsv = hsv.astype(np.float32)
+        hsv[:, :, 1] = hsv[:, :, 1] * factor
+        hsv = np.clip(hsv, 0, 255).astype(np.uint8)
+        img = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB).astype(np.float32)
+
+    return np.clip(img, 0, 255).astype(np.uint8)
 
 
 def normalize(image: np.ndarray,
@@ -93,6 +170,8 @@ __all__ = [
     "IGNORE_INDEX",
     "resize",
     "horizontal_flip",
+    "random_scale_crop",
+    "color_jitter",
     "normalize",
     "to_chw",
     "inverse_normalize",
