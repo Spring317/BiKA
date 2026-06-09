@@ -1,10 +1,10 @@
 amp_dtype: float16
 arch: BiKASegNet
 base_channels: 16
-batch_size: 64
-bdd100k_base: /mnt/ssd-0/M2_internship/bdd100k_seg/bdd100k/seg/
+batch_size: 32
+bdd100k_base: /storage/student11/bdd100k_seg/bdd100k/seg/
 cfg: null
-checkpoint_path: experiment/bdd100k_BiKASegNet/checkpoint_best.pth
+checkpoint_path: experiment/segBiKA_cont/checkpoint_best.pth
 compile_model: false
 data_dir: inputs
 dataseed: 2981
