@@ -2,36 +2,85 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-try:
-    from LovaszSoftmax.pytorch.lovasz_losses import lovasz_hinge  # type: ignore
-except ImportError:
-    lovasz_hinge = None  # type: ignore
 
+class CrossEntropyDiceLoss(nn.Module):
+    """Combined CrossEntropy + Dice loss for multi-class semantic segmentation.
 
-class BCEDiceLoss(nn.Module):
+    Works with raw logits (B, C, H, W) and class-index targets (B, H, W).
+    Properly ignores pixels with *ignore_index* in both loss terms.
+    """
+
+    def __init__(self, ignore_index=255, dice_weight=1.0, ce_weight=1.0):
+        super().__init__()
+        self.ignore_index = ignore_index
+        self.dice_weight = dice_weight
+        self.ce_weight = ce_weight
+        self.ce = nn.CrossEntropyLoss(ignore_index=ignore_index)
+
     def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        bce = F.binary_cross_entropy_with_logits(input, target)
+        """
+        Parameters
+        ----------
+        input  : (B, C, H, W) raw logits
+        target : (B, H, W) class indices, 255 = ignore
+        """
+        # --- Cross-Entropy term ---
+        ce_loss = self.ce(input, target)
+
+        # --- Dice term (per-class, ignoring ignore_index) ---
+        num_classes = input.shape[1]
         smooth = 1e-5
-        inp = torch.sigmoid(input)
-        num = target.size(0)
-        inp = inp.view(num, -1)
-        tgt = target.view(num, -1)
-        intersection = (inp * tgt)
-        dice = (2.0 * intersection.sum(1) + smooth) / (
-            inp.sum(1) + tgt.sum(1) + smooth
-        )
-        dice = 1 - dice.sum() / num
-        return 0.5 * bce + dice
+
+        # Build valid mask and clamp target for one-hot scatter
+        valid = (target != self.ignore_index)          # (B, H, W)
+        target_clamped = target.clone()
+        target_clamped[~valid] = 0                     # safe index for scatter
+
+        # Probabilities: (B, C, H, W)
+        probs = F.softmax(input, dim=1)
+
+        # One-hot encode target: (B, C, H, W)
+        target_oh = torch.zeros_like(probs)
+        target_oh.scatter_(1, target_clamped.unsqueeze(1), 1.0)
+
+        # Zero-out ignored pixels in both predictions and targets
+        valid_mask = valid.unsqueeze(1).float()        # (B, 1, H, W)
+        probs = probs * valid_mask
+        target_oh = target_oh * valid_mask
+
+        # Per-class Dice
+        dims = (0, 2, 3)  # reduce over batch, H, W
+        intersection = (probs * target_oh).sum(dim=dims)
+        cardinality = probs.sum(dim=dims) + target_oh.sum(dim=dims)
+
+        dice_per_class = (2.0 * intersection + smooth) / (cardinality + smooth)
+        dice_loss = 1.0 - dice_per_class.mean()
+
+        return self.ce_weight * ce_loss + self.dice_weight * dice_loss
 
 
-class LovaszHingeLoss(nn.Module):
+class FocalLoss(nn.Module):
+    """Focal Loss for multi-class semantic segmentation.
+
+    Reduces the contribution of easy-to-classify pixels so the model
+    focuses on hard examples.
+    """
+
+    def __init__(self, alpha=1.0, gamma=2.0, ignore_index=255):
+        super().__init__()
+        self.alpha = alpha
+        self.gamma = gamma
+        self.ignore_index = ignore_index
+
     def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
-        if lovasz_hinge is None:
-            raise ImportError(
-                "LovaszSoftmax is not installed. "
-                "Run: pip install git+https://github.com/bermanmaxim/LovaszSoftmax"
-            )
-        return lovasz_hinge(input.squeeze(1), target.squeeze(1), per_image=True)
+        ce = F.cross_entropy(
+            input, target, reduction="none", ignore_index=self.ignore_index
+        )
+        pt = torch.exp(-ce)
+        focal = self.alpha * (1 - pt) ** self.gamma * ce
+
+        valid = target != self.ignore_index
+        return focal[valid].mean()
 
 
-__all__ = ["BCEDiceLoss", "LovaszHingeLoss"]
+__all__ = ["CrossEntropyDiceLoss", "FocalLoss"]

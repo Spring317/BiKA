@@ -1,4 +1,4 @@
-from .losses import BCEDiceLoss, LovaszHingeLoss
-from .metrics import dice_coef, iou_score
+from .losses import CrossEntropyDiceLoss, FocalLoss
+from .metrics import iou_score, pixel_accuracy
 
-__all__ = ["BCEDiceLoss", "LovaszHingeLoss", "iou_score", "dice_coef"]
+__all__ = ["CrossEntropyDiceLoss", "FocalLoss", "iou_score", "pixel_accuracy"]

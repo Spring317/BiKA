@@ -1,11 +1,18 @@
 import os
+import random
 
 import cv2
 import numpy as np
 import torch
 import torch.utils.data
 
-from .transforms import mask_to_onehot
+from .transforms import (
+    IGNORE_INDEX,
+    horizontal_flip,
+    normalize,
+    resize,
+    to_chw,
+)
 
 cv2.setNumThreads(0)
 cv2.ocl.setUseOpenCL(False)
@@ -60,6 +67,15 @@ BDD100K_NUM_CLASSES = 20
 
 
 class BDD100KDataset(torch.utils.data.Dataset):
+    """BDD100K semantic segmentation dataset with cv2-based preprocessing.
+
+    Returns
+    -------
+    image : torch.FloatTensor   (3, H, W)  — ImageNet-normalised
+    mask  : torch.LongTensor    (H, W)     — class indices [0..19], 255 = ignore
+    meta  : dict                           — {"img_id": str}
+    """
+
     def __init__(
         self,
         img_ids,
@@ -68,8 +84,10 @@ class BDD100KDataset(torch.utils.data.Dataset):
         img_ext=".jpg",
         mask_ext=".png",
         num_classes=BDD100K_NUM_CLASSES,
-        transform=None,
-        ignore_index=19,
+        input_h=192,
+        input_w=256,
+        is_training=False,
+        ignore_index=IGNORE_INDEX,
         mask_suffix="",
     ):
         self.img_ids = img_ids
@@ -78,7 +96,9 @@ class BDD100KDataset(torch.utils.data.Dataset):
         self.img_ext = img_ext
         self.mask_ext = mask_ext
         self.num_classes = num_classes
-        self.transform = transform
+        self.input_h = input_h
+        self.input_w = input_w
+        self.is_training = is_training
         self.ignore_index = ignore_index
         self.mask_suffix = mask_suffix
 
@@ -88,31 +108,42 @@ class BDD100KDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         img_id = self.img_ids[idx]
 
+        # --- Read image (BGR -> RGB) ---
         img_path = os.path.join(self.img_dir, img_id + self.img_ext)
-        img = cv2.imread(img_path)
+        img = cv2.imread(img_path, cv2.IMREAD_COLOR)
         if img is None:
             raise FileNotFoundError(f"Image not found: {img_path}")
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        mask_path = os.path.join(self.mask_dir, img_id + self.mask_suffix + self.mask_ext)
+        # --- Read mask (grayscale class indices) ---
+        mask_path = os.path.join(
+            self.mask_dir, img_id + self.mask_suffix + self.mask_ext
+        )
         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
         if mask is None:
             raise FileNotFoundError(f"Mask not found: {mask_path}")
 
-        mask[mask == 255] = self.ignore_index
+        # Keep 255 as the ignore index — do NOT remap it to a valid class.
+        # Pixels with value 255 will be excluded from the loss via
+        # ignore_index=255 in CrossEntropyLoss.
 
-        if self.transform is not None:
-            augmented = self.transform(image=img, mask=mask)
-            img = augmented["image"]
-            mask = augmented["mask"]
+        # --- Resize ---
+        img, mask = resize(img, mask, self.input_h, self.input_w)
 
-        mask_onehot = mask_to_onehot(mask, self.num_classes)
+        # --- Training augmentations ---
+        if self.is_training:
+            if random.random() > 0.5:
+                img, mask = horizontal_flip(img, mask)
 
-        img = img.astype("float32")
-        img = img.transpose(2, 0, 1)
-        mask_onehot = mask_onehot.transpose(2, 0, 1)
+        # --- Normalize image (uint8 -> float32, ImageNet stats) ---
+        img = normalize(img)
+        img = to_chw(img)
 
-        return img, mask_onehot, {"img_id": img_id}
+        # --- Convert to tensors ---
+        img_tensor = torch.from_numpy(img)                      # (3, H, W) float32
+        mask_tensor = torch.from_numpy(mask.copy()).long()       # (H, W)   int64
+
+        return img_tensor, mask_tensor, {"img_id": img_id}
 
 
 __all__ = [

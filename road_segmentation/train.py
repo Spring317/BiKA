@@ -5,8 +5,6 @@ import shutil
 from collections import OrderedDict
 from glob import glob
 
-import albumentations
-import albumentations.augmentations as transforms
 import numpy as np
 import pandas as pd
 import torch
@@ -14,8 +12,6 @@ import torch.distributed as dist
 import torch.nn as nn
 import torch.optim as optim
 import yaml
-from albumentations import RandomRotate90, Resize
-from albumentations.core.composition import Compose
 from tensorboardX import SummaryWriter
 from torch import amp
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -62,7 +58,7 @@ def parse_args():
     parser.add_argument("--base_channels", default=16, type=int)
 
     # Loss
-    parser.add_argument("--loss", default="BCEDiceLoss", choices=losses.__all__ + ["BCEWithLogitsLoss"])
+    parser.add_argument("--loss", default="CrossEntropyDiceLoss", choices=losses.__all__ + ["CrossEntropyLoss"])
 
     # Dataset
     parser.add_argument("--dataset", default="bdd100k")
@@ -194,7 +190,7 @@ def train_one_epoch(
         with amp.autocast("cuda", enabled=config["use_amp"], dtype=getattr(torch, config.get("amp_dtype", "float16"))):
             output = model(inp)
             loss = criterion(output, target)
-            iou, _, _ = iou_score(output, target)
+            iou, _, _ = iou_score(output, target, num_classes=config["num_classes"])
 
             loss = loss / config["grad_accum_steps"]
 
@@ -247,7 +243,7 @@ def validate(config, val_loader, model, criterion, rank, world_size):
             with amp.autocast("cuda", enabled=config["use_amp"], dtype=getattr(torch, config.get("amp_dtype", "float16"))):
                 output = model(inp)
                 loss = criterion(output, target)
-                iou, dice, _ = iou_score(output, target)
+                iou, dice, _ = iou_score(output, target, num_classes=config["num_classes"])
 
             loss_reduced = reduce_tensor(loss.detach(), world_size)
             iou_reduced = reduce_tensor(
@@ -329,8 +325,8 @@ def main():
 
     writer = SummaryWriter(exp_dir) if is_main_process(rank) else None
 
-    if config["loss"] == "BCEWithLogitsLoss":
-        criterion = nn.BCEWithLogitsLoss().cuda()
+    if config["loss"] == "CrossEntropyLoss":
+        criterion = nn.CrossEntropyLoss(ignore_index=255).cuda()
     else:
         criterion = losses.__dict__[config["loss"]]().cuda()
 
@@ -416,18 +412,6 @@ def main():
     if is_main_process(rank):
         shutil.copy2(__file__, os.path.join(exp_dir, "train.py"))
 
-    train_transform = Compose(
-        [
-            RandomRotate90(),
-            albumentations.HorizontalFlip(),
-            Resize(config["input_h"], config["input_w"]),
-            transforms.Normalize(),
-        ]
-    )
-    val_transform = Compose(
-        [Resize(config["input_h"], config["input_w"]), transforms.Normalize()]
-    )
-
     bdd = config["bdd100k_base"]
     train_img_ids = [
         os.path.splitext(os.path.basename(p))[0].replace("_train_id", "")
@@ -445,7 +429,9 @@ def main():
         img_ext=".jpg",
         mask_ext=".png",
         num_classes=BDD100K_NUM_CLASSES,
-        transform=train_transform,
+        input_h=config["input_h"],
+        input_w=config["input_w"],
+        is_training=True,
         mask_suffix="_train_id",
     )
     val_dataset = BDD100KDataset(
@@ -455,7 +441,9 @@ def main():
         img_ext=".jpg",
         mask_ext=".png",
         num_classes=BDD100K_NUM_CLASSES,
-        transform=val_transform,
+        input_h=config["input_h"],
+        input_w=config["input_w"],
+        is_training=False,
         mask_suffix="_train_id",
     )
 
