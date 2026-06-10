@@ -3,15 +3,28 @@ from typing import Union, Tuple
 
 from . import _C
 
+# The CUDA kernels are float32-only. Under torch.amp.autocast, upstream
+# layers may hand us float16/bfloat16 tensors, so mark the autograd
+# functions autocast-aware: inputs are cast back to float32 and autocast
+# is disabled inside forward/backward.
+try:
+    _custom_fwd = torch.amp.custom_fwd(device_type="cuda", cast_inputs=torch.float32)
+    _custom_bwd = torch.amp.custom_bwd(device_type="cuda")
+except (AttributeError, TypeError):  # older torch (< 2.4)
+    _custom_fwd = torch.cuda.amp.custom_fwd(cast_inputs=torch.float32)
+    _custom_bwd = torch.cuda.amp.custom_bwd
+
 
 class _BiKALinearFn(torch.autograd.Function):
     @staticmethod
+    @_custom_fwd
     def forward(ctx, x, w, b):
         y = _C.bika_linear_forward(x, w, b)
         ctx.save_for_backward(x, w, b)
         return y
 
     @staticmethod
+    @_custom_bwd
     def backward(ctx, gy):
         x, w, b = ctx.saved_tensors
         gi, gw, gb = _C.bika_linear_backward(gy.contiguous(), x, w, b)
@@ -20,6 +33,7 @@ class _BiKALinearFn(torch.autograd.Function):
 
 class _BiKAConv2dFn(torch.autograd.Function):
     @staticmethod
+    @_custom_fwd
     def forward(ctx, x, w, b, pad_h: int, pad_w: int, stride_h: int, stride_w: int):
         y = _C.bika_conv2d_forward(
             x,
@@ -40,6 +54,7 @@ class _BiKAConv2dFn(torch.autograd.Function):
         return y
 
     @staticmethod
+    @_custom_bwd
     def backward(ctx, gy):
         x, w, b = ctx.saved_tensors
 
