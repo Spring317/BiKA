@@ -8,10 +8,8 @@ import torch.utils.data
 
 from .transforms import (
     IGNORE_INDEX,
-    color_jitter,
     horizontal_flip,
     normalize,
-    random_scale_crop,
     resize,
     to_chw,
 )
@@ -130,20 +128,14 @@ class BDD100KDataset(torch.utils.data.Dataset):
         # ignore_index=255 in CrossEntropyLoss.
 
         # --- Augmentations & Resize ---
-        if self.is_training:
-            # Random scale + crop (handles resize internally)
-            img, mask = random_scale_crop(
-                img, mask, self.input_h, self.input_w,
-                scale_range=(0.5, 2.0), ignore_index=self.ignore_index,
-            )
-            # Random horizontal flip
-            if random.random() > 0.5:
-                img, mask = horizontal_flip(img, mask)
-            # Color jitter (before normalization, on uint8)
-            img = color_jitter(img)
-        else:
-            # Validation: deterministic resize only
-            img, mask = resize(img, mask, self.input_h, self.input_w)
+        # Training intentionally uses only resize + horizontal flip so the
+        # train and val distributions match. Heavier augmentations
+        # (random_scale_crop, color_jitter in transforms.py) destabilized
+        # training for this small model — reintroduce them only once the
+        # baseline converges.
+        img, mask = resize(img, mask, self.input_h, self.input_w)
+        if self.is_training and random.random() > 0.5:
+            img, mask = horizontal_flip(img, mask)
 
         # --- Normalize image (uint8 -> float32, ImageNet stats) ---
         img = normalize(img)

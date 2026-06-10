@@ -22,7 +22,7 @@ from tqdm import tqdm
 import models as archs
 import training.losses as losses
 from data import BDD100KDataset, BDD100K_NUM_CLASSES
-from training.metrics import iou_score
+from training.metrics import SegmentationMetric
 
 
 def str2bool(v):
@@ -74,6 +74,12 @@ def parse_args():
     parser.add_argument("--momentum", default=0.9, type=float)
     parser.add_argument("--weight_decay", default=1e-4, type=float)
     parser.add_argument("--nesterov", default=False, type=str2bool)
+    parser.add_argument(
+        "--clip_grad",
+        default=5.0,
+        type=float,
+        help="Max gradient norm for clipping; <= 0 disables clipping.",
+    )
 
     # Scheduler
     parser.add_argument(
@@ -174,7 +180,8 @@ def train_one_epoch(
     world_size,
     scheduler=None,
 ):
-    avg_meters = {"loss": AverageMeter(), "iou": AverageMeter()}
+    avg_meters = {"loss": AverageMeter()}
+    seg_metric = SegmentationMetric(config["num_classes"])
     model.train()
     pbar = (
         tqdm(total=len(train_loader), desc=f"Epoch {epoch}")
@@ -190,13 +197,16 @@ def train_one_epoch(
         with amp.autocast("cuda", enabled=config["use_amp"], dtype=getattr(torch, config.get("amp_dtype", "float16"))):
             output = model(inp)
             loss = criterion(output, target)
-            iou, _, _ = iou_score(output, target, num_classes=config["num_classes"])
 
             loss = loss / config["grad_accum_steps"]
 
         scaler.scale(loss).backward()
+        seg_metric.update(output.detach(), target)
 
         if (batch_idx + 1) % config["grad_accum_steps"] == 0:
+            if config["clip_grad"] > 0:
+                scaler.unscale_(optimizer)
+                nn.utils.clip_grad_norm_(model.parameters(), config["clip_grad"])
             scaler.step(optimizer)
             scaler.update()
             optimizer.zero_grad()
@@ -206,16 +216,14 @@ def train_one_epoch(
         loss_reduced = reduce_tensor(
             loss.detach() * config["grad_accum_steps"], world_size
         )
-        iou_reduced = reduce_tensor(torch.tensor(iou, device=inp.device), world_size)
-
         avg_meters["loss"].update(loss_reduced.item(), inp.size(0))
-        avg_meters["iou"].update(iou_reduced.item(), inp.size(0))
 
         if pbar is not None:
+            running_iou, _, _ = seg_metric.compute()
             pbar.set_postfix(
                 OrderedDict(
                     loss=f"{avg_meters['loss'].avg:.4f}",
-                    iou=f"{avg_meters['iou'].avg:.4f}",
+                    iou=f"{running_iou:.4f}",
                 )
             )
             pbar.update(1)
@@ -223,11 +231,15 @@ def train_one_epoch(
     if pbar is not None:
         pbar.close()
 
-    return OrderedDict(loss=avg_meters["loss"].avg, iou=avg_meters["iou"].avg)
+    seg_metric.all_reduce()
+    miou, _, _ = seg_metric.compute()
+
+    return OrderedDict(loss=avg_meters["loss"].avg, iou=miou)
 
 
 def validate(config, val_loader, model, criterion, rank, world_size):
-    avg_meters = {"loss": AverageMeter(), "iou": AverageMeter(), "dice": AverageMeter()}
+    avg_meters = {"loss": AverageMeter()}
+    seg_metric = SegmentationMetric(config["num_classes"])
     model.eval()
     pbar = (
         tqdm(total=len(val_loader), desc="Validation")
@@ -243,26 +255,18 @@ def validate(config, val_loader, model, criterion, rank, world_size):
             with amp.autocast("cuda", enabled=config["use_amp"], dtype=getattr(torch, config.get("amp_dtype", "float16"))):
                 output = model(inp)
                 loss = criterion(output, target)
-                iou, dice, _ = iou_score(output, target, num_classes=config["num_classes"])
 
+            seg_metric.update(output, target)
             loss_reduced = reduce_tensor(loss.detach(), world_size)
-            iou_reduced = reduce_tensor(
-                torch.tensor(iou, device=inp.device), world_size
-            )
-            dice_reduced = reduce_tensor(
-                torch.tensor(dice, device=inp.device), world_size
-            )
-
             avg_meters["loss"].update(loss_reduced.item(), inp.size(0))
-            avg_meters["iou"].update(iou_reduced.item(), inp.size(0))
-            avg_meters["dice"].update(dice_reduced.item(), inp.size(0))
 
             if pbar is not None:
+                running_iou, running_dice, _ = seg_metric.compute()
                 pbar.set_postfix(
                     OrderedDict(
                         loss=f"{avg_meters['loss'].avg:.4f}",
-                        iou=f"{avg_meters['iou'].avg:.4f}",
-                        dice=f"{avg_meters['dice'].avg:.4f}",
+                        iou=f"{running_iou:.4f}",
+                        dice=f"{running_dice:.4f}",
                     )
                 )
                 pbar.update(1)
@@ -270,10 +274,13 @@ def validate(config, val_loader, model, criterion, rank, world_size):
     if pbar is not None:
         pbar.close()
 
+    seg_metric.all_reduce()
+    miou, mdice, _ = seg_metric.compute()
+
     return OrderedDict(
         loss=avg_meters["loss"].avg,
-        iou=avg_meters["iou"].avg,
-        dice=avg_meters["dice"].avg,
+        iou=miou,
+        dice=mdice,
     )
 
 

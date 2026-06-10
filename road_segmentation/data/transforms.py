@@ -32,7 +32,7 @@ def random_scale_crop(
     mask: np.ndarray,
     target_h: int,
     target_w: int,
-    scale_range: tuple = (0.5, 2.0),
+    scale_range: tuple = (0.75, 1.25),
     ignore_index: int = IGNORE_INDEX,
 ):
     """Randomly scale the image/mask then crop to (target_h, target_w).
