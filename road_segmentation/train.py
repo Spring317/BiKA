@@ -21,6 +21,7 @@ from tqdm import tqdm
 
 import models as archs
 import training.losses as losses
+from bika import BiKA_Conv2d, BiKA_Linear
 from data import BDD100KDataset, BDD100K_NUM_CLASSES
 from training.metrics import SegmentationMetric
 
@@ -79,6 +80,15 @@ def parse_args():
         default=5.0,
         type=float,
         help="Max gradient norm for clipping; <= 0 disables clipping.",
+    )
+    parser.add_argument(
+        "--bika_weight_clamp",
+        default=0.0,
+        type=float,
+        help="Clamp BiKA weights to [-v, v] after each optimizer step "
+             "(0 disables). Keeps |z|=(x+b)*w inside the STE window so "
+             "connections keep receiving gradient (BNN practice); try 1.0 "
+             "if training stalls/regresses after some epochs.",
     )
 
     # Scheduler
@@ -160,6 +170,13 @@ def get_base_model(model, distributed):
     return model.module if distributed else model
 
 
+@torch.no_grad()
+def clamp_bika_weights(model, limit):
+    for m in model.modules():
+        if isinstance(m, (BiKA_Conv2d, BiKA_Linear)):
+            m.weight.clamp_(-limit, limit)
+
+
 def load_bika_model(config) -> nn.Module:
     return archs.__dict__[config["arch"]](
         num_classes=config["num_classes"],
@@ -210,6 +227,8 @@ def train_one_epoch(
             scaler.step(optimizer)
             scaler.update()
             optimizer.zero_grad()
+            if config["bika_weight_clamp"] > 0:
+                clamp_bika_weights(model, config["bika_weight_clamp"])
             if config["scheduler"] == "OneCycleLR" and scheduler is not None:
                 scheduler.step()
 
@@ -371,12 +390,29 @@ def main():
         )
 
     base_model = get_base_model(model, distributed)
+    # Exclude biases and BatchNorm affine params from weight decay. This is
+    # critical for BiKA layers: their per-connection biases are the learned
+    # thresholds, and decaying them drags thresholds back toward zero —
+    # exactly the degenerate bunched-at-zero init that prevents learning.
+    decay_params, no_decay_params = [], []
+    for name, p in base_model.named_parameters():
+        if not p.requires_grad:
+            continue
+        if p.ndim == 1 or name.endswith(".bias"):
+            no_decay_params.append(p)
+        else:
+            decay_params.append(p)
     param_groups = [
         {
-            "params": base_model.parameters(),
+            "params": decay_params,
             "lr": config["lr"],
             "weight_decay": config["weight_decay"],
-        }
+        },
+        {
+            "params": no_decay_params,
+            "lr": config["lr"],
+            "weight_decay": 0.0,
+        },
     ]
 
     if config["optimizer"] == "Adam":
