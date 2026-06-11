@@ -390,15 +390,24 @@ def main():
         )
 
     base_model = get_base_model(model, distributed)
-    # Exclude biases and BatchNorm affine params from weight decay. This is
-    # critical for BiKA layers: their per-connection biases are the learned
-    # thresholds, and decaying them drags thresholds back toward zero —
-    # exactly the degenerate bunched-at-zero init that prevents learning.
+    # Exclude ALL BiKA-layer parameters, plus biases and BatchNorm affine
+    # params, from weight decay. BiKA forward output depends only on
+    # sign(w) and the threshold (= -bias), so no loss pressure opposes the
+    # decay term: decaying biases drags thresholds back to the degenerate
+    # bunched-at-zero init, and decaying weights grinds |w| to zero, which
+    # kills the backward pass entirely (grad_bias and grad_input are both
+    # proportional to w). Verified empirically: v4 trunk weights collapsed
+    # to ~0 by epoch 30 and training plateaued.
+    bika_param_ids = set()
+    for m in base_model.modules():
+        if isinstance(m, (BiKA_Conv2d, BiKA_Linear)):
+            bika_param_ids.update(id(p) for p in m.parameters(recurse=False))
+
     decay_params, no_decay_params = [], []
     for name, p in base_model.named_parameters():
         if not p.requires_grad:
             continue
-        if p.ndim == 1 or name.endswith(".bias"):
+        if id(p) in bika_param_ids or p.ndim == 1 or name.endswith(".bias"):
             no_decay_params.append(p)
         else:
             decay_params.append(p)
