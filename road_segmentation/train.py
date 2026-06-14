@@ -121,6 +121,16 @@ def parse_args():
              "If empty and --resume True, auto-discovers "
              "'checkpoint_last.pth' inside the experiment output dir.",
     )
+    parser.add_argument(
+        "--init_weights",
+        default="",
+        type=str,
+        help="Path to a checkpoint to load MODEL WEIGHTS ONLY from, then "
+             "train from epoch 0 with a fresh optimizer/scheduler at --lr. "
+             "Use for a warm restart (SGDR-style) of a converged run — "
+             "unlike --resume, which also restores the (decayed) optimizer "
+             "LR. Ignored if --resume is True.",
+    )
 
     # DDP/AMP
     parser.add_argument("--local_rank", type=int, default=-1)
@@ -357,6 +367,17 @@ def main():
         criterion = losses.__dict__[config["loss"]]().cuda()
 
     model = load_bika_model(config)
+
+    # Warm restart: load weights only, then train fresh from epoch 0. Done
+    # before DDP/cuda wrapping so it targets the plain module. Skipped when
+    # --resume is set (resume restores full training state instead).
+    if config.get("init_weights") and not config["resume"]:
+        ckpt = torch.load(config["init_weights"], map_location="cpu", weights_only=False)
+        state = ckpt.get("model_state_dict", ckpt) if isinstance(ckpt, dict) else ckpt
+        missing, unexpected = model.load_state_dict(state, strict=False)
+        if is_main_process(rank):
+            print(f"[InitWeights] Loaded weights from '{config['init_weights']}' "
+                  f"(missing={len(missing)}, unexpected={len(unexpected)})")
 
     if is_main_process(rank):
         total_params = sum(p.numel() for p in model.parameters())
