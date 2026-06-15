@@ -47,6 +47,10 @@ class BiKASegNet(nn.Module):
         full_precision_stem: bool = True,
         full_precision_head: bool = True,
         bika_bias_init: tuple = (-2.0, 0.5),
+        # Larger-magnitude weight init improves backward flow to deep layers
+        # (grad ∝ w) but tested worse on the 10-image overfit benchmark
+        # (0.517 vs 0.560 mIoU) — keep disabled by default.
+        bika_weight_init: tuple = None,
     ):
         super().__init__()
         self.pool = nn.MaxPool2d(2, 2)
@@ -77,12 +81,25 @@ class BiKASegNet(nn.Module):
         else:
             self.final = BiKA_Conv2d(base_channels, num_classes, kernel_size=1)
 
-        if bika_bias_init is not None:
-            low, high = bika_bias_init
-            with torch.no_grad():
-                for m in self.modules():
-                    if isinstance(m, BiKA_Conv2d) and isinstance(m.bias, nn.Parameter):
-                        m.bias.uniform_(low, high)
+        with torch.no_grad():
+            for m in self.modules():
+                if not isinstance(m, BiKA_Conv2d):
+                    continue
+                if bika_bias_init is not None and isinstance(m.bias, nn.Parameter):
+                    low, high = bika_bias_init
+                    m.bias.uniform_(low, high)
+                if bika_weight_init is not None:
+                    # BiKA forward uses only sign(w); the magnitude's sole
+                    # effect is backward gain (grad_input and grad_bias are
+                    # both ∝ w). The default ~1/sqrt(fan_in) init starves
+                    # deep layers of gradient (observed: enc3/bottleneck
+                    # frozen at init in v5), so init magnitude is chosen
+                    # for gradient flow, with random signs.
+                    lo, hi = bika_weight_init
+                    sign = torch.randint_like(m.weight, 0, 2) * 2 - 1
+                    m.weight.copy_(
+                        torch.empty_like(m.weight).uniform_(lo, hi) * sign
+                    )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         t1 = self.enc1(x)
