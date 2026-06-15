@@ -66,6 +66,49 @@ BDD100K_COLOR_DICT = {
 BDD100K_NUM_CLASSES = 20
 
 
+# ---------------------------------------------------------------------------
+# Label groupings — pure remaps of the 20 seg classes (no new data needed).
+# ---------------------------------------------------------------------------
+
+def _make_label_map(src_to_dst, default, ignore_index=IGNORE_INDEX):
+    """256-entry lookup: original train_id -> grouped id. Unspecified ids fall
+    to `default`; the ignore index is preserved."""
+    arr = np.full(256, default, dtype=np.uint8)
+    for src, dst in src_to_dst.items():
+        arr[src] = dst
+    arr[ignore_index] = ignore_index
+    return arr
+
+
+# "drive5": collision-avoidance taxonomy built from the existing seg masks.
+#   0 road | 1 sidewalk | 2 vehicle | 3 person | 4 background
+DRIVE5_CLASSES = {0: "road", 1: "sidewalk", 2: "vehicle", 3: "person", 4: "background"}
+DRIVE5_COLOR_DICT = {
+    0: (0.7, 0.7, 0.7),   # road       - gray
+    1: (0.9, 0.9, 0.2),   # sidewalk   - yellow
+    2: (0.0, 0.0, 1.0),   # vehicle    - blue
+    3: (1.0, 0.0, 0.0),   # person     - red
+    4: (0.0, 0.0, 0.0),   # background - black
+}
+_DRIVE5_SRC = {
+    0: 0,                                  # road
+    1: 1,                                  # sidewalk
+    11: 3, 12: 3,                          # person, rider -> person
+    13: 2, 14: 2, 15: 2, 16: 2, 17: 2, 18: 2,  # car/truck/bus/train/moto/bike -> vehicle
+    # all others (building, wall, fence, pole, lights, signs, vegetation,
+    # terrain, sky, unknown) -> background (4)
+}
+
+LABEL_GROUPINGS = {
+    "drive5": {
+        "num_classes": 5,
+        "classes": DRIVE5_CLASSES,
+        "color_dict": DRIVE5_COLOR_DICT,
+        "label_map": _make_label_map(_DRIVE5_SRC, default=4),
+    },
+}
+
+
 class BDD100KDataset(torch.utils.data.Dataset):
     """BDD100K semantic segmentation dataset with cv2-based preprocessing.
 
@@ -89,7 +132,9 @@ class BDD100KDataset(torch.utils.data.Dataset):
         is_training=False,
         ignore_index=IGNORE_INDEX,
         mask_suffix="",
+        label_map=None,
     ):
+        self.label_map = label_map
         self.img_ids = img_ids
         self.img_dir = img_dir
         self.mask_dir = mask_dir
@@ -123,6 +168,10 @@ class BDD100KDataset(torch.utils.data.Dataset):
         if mask is None:
             raise FileNotFoundError(f"Mask not found: {mask_path}")
 
+        # Optional label grouping: remap original train_ids -> grouped ids.
+        if self.label_map is not None:
+            mask = self.label_map[mask]
+
         # Keep 255 as the ignore index — do NOT remap it to a valid class.
         # Pixels with value 255 will be excluded from the loss via
         # ignore_index=255 in CrossEntropyLoss.
@@ -153,4 +202,7 @@ __all__ = [
     "BDD100K_COLOR_DICT",
     "BDD100K_NUM_CLASSES",
     "BDD100KDataset",
+    "LABEL_GROUPINGS",
+    "DRIVE5_CLASSES",
+    "DRIVE5_COLOR_DICT",
 ]

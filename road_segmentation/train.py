@@ -22,7 +22,7 @@ from tqdm import tqdm
 import models as archs
 import training.losses as losses
 from bika import BiKA_Conv2d, BiKA_Linear
-from data import BDD100KDataset, BDD100K_NUM_CLASSES
+from data import BDD100KDataset, BDD100K_NUM_CLASSES, LABEL_GROUPINGS
 from training.metrics import SegmentationMetric
 
 
@@ -60,9 +60,26 @@ def parse_args():
 
     # Loss
     parser.add_argument("--loss", default="CrossEntropyDiceLoss", choices=losses.__all__ + ["CrossEntropyLoss"])
+    parser.add_argument(
+        "--class_weights",
+        default="",
+        type=str,
+        help="Per-class loss weights to counteract imbalance. Either a "
+             "comma-separated list (len = num_classes), or a path to a "
+             ".npy/.pt file (as produced by compute_class_freq.py). Empty "
+             "or 'none' disables weighting.",
+    )
 
     # Dataset
     parser.add_argument("--dataset", default="bdd100k")
+    parser.add_argument(
+        "--label_grouping",
+        default="none",
+        choices=["none"] + list(LABEL_GROUPINGS),
+        help="Remap the 20 seg classes into a smaller grouped set (no new "
+             "data). 'drive5' = road/sidewalk/vehicle/person/background. "
+             "Sets num_classes automatically.",
+    )
     parser.add_argument("--data_dir", default="inputs")
     parser.add_argument("--output_dir", default="outputs")
     parser.add_argument(
@@ -142,6 +159,28 @@ def parse_args():
     parser.add_argument("--compile_model", default=False, type=str2bool)
 
     return vars(parser.parse_args())
+
+
+def parse_class_weights(spec, num_classes):
+    """Parse --class_weights into a float32 tensor of length num_classes,
+    or None. Accepts a comma-separated list or a .npy/.pt file path."""
+    spec = (spec or "").strip()
+    if not spec or spec.lower() == "none":
+        return None
+    if "," in spec:
+        w = [float(x) for x in spec.split(",")]
+    elif os.path.isfile(spec):
+        if spec.endswith(".npy"):
+            w = np.load(spec).tolist()
+        else:
+            w = torch.load(spec, map_location="cpu").tolist()
+    else:
+        raise ValueError(f"--class_weights: not a list or existing file: {spec!r}")
+    if len(w) != num_classes:
+        raise ValueError(
+            f"--class_weights has {len(w)} entries but num_classes={num_classes}"
+        )
+    return torch.tensor(w, dtype=torch.float32)
 
 
 def setup_distributed():
@@ -356,13 +395,28 @@ def main():
         with open(os.path.join(exp_dir, "config.yml"), "w") as f:
             yaml.safe_dump(config, f)
 
+    label_map = None
     if config["dataset"] == "bdd100k":
         config["num_classes"] = BDD100K_NUM_CLASSES
+    grouping = config.get("label_grouping", "none")
+    if grouping and grouping != "none":
+        g = LABEL_GROUPINGS[grouping]
+        config["num_classes"] = g["num_classes"]
+        label_map = g["label_map"]
+        if is_main_process(rank):
+            print(f"[Grouping] '{grouping}' -> {g['num_classes']} classes: "
+                  f"{list(g['classes'].values())}")
 
     writer = SummaryWriter(exp_dir) if is_main_process(rank) else None
 
+    class_weights = parse_class_weights(config.get("class_weights"), config["num_classes"])
+    if class_weights is not None and is_main_process(rank):
+        print(f"[Loss] Using class weights: {class_weights.tolist()}")
+
     if config["loss"] == "CrossEntropyLoss":
-        criterion = nn.CrossEntropyLoss(ignore_index=255).cuda()
+        criterion = nn.CrossEntropyLoss(ignore_index=255, weight=class_weights).cuda()
+    elif config["loss"] == "CrossEntropyDiceLoss":
+        criterion = losses.CrossEntropyDiceLoss(class_weights=class_weights).cuda()
     else:
         criterion = losses.__dict__[config["loss"]]().cuda()
 
@@ -501,11 +555,12 @@ def main():
         mask_dir=os.path.join(bdd, "labels", "train"),
         img_ext=".jpg",
         mask_ext=".png",
-        num_classes=BDD100K_NUM_CLASSES,
+        num_classes=config["num_classes"],
         input_h=config["input_h"],
         input_w=config["input_w"],
         is_training=True,
         mask_suffix="_train_id",
+        label_map=label_map,
     )
     val_dataset = BDD100KDataset(
         img_ids=val_img_ids,
@@ -513,11 +568,12 @@ def main():
         mask_dir=os.path.join(bdd, "labels", "val"),
         img_ext=".jpg",
         mask_ext=".png",
-        num_classes=BDD100K_NUM_CLASSES,
+        num_classes=config["num_classes"],
         input_h=config["input_h"],
         input_w=config["input_w"],
         is_training=False,
         mask_suffix="_train_id",
+        label_map=label_map,
     )
 
     train_sampler = (

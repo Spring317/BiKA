@@ -10,12 +10,19 @@ class CrossEntropyDiceLoss(nn.Module):
     Properly ignores pixels with *ignore_index* in both loss terms.
     """
 
-    def __init__(self, ignore_index=255, dice_weight=1.0, ce_weight=1.0):
+    def __init__(self, ignore_index=255, dice_weight=1.0, ce_weight=1.0,
+                 class_weights=None):
         super().__init__()
         self.ignore_index = ignore_index
         self.dice_weight = dice_weight
         self.ce_weight = ce_weight
-        self.ce = nn.CrossEntropyLoss(ignore_index=ignore_index)
+        # class_weights: 1-D tensor (len = num_classes) up-weighting rare
+        # classes in the CE term to counteract pixel-count imbalance.
+        # Registered as a buffer via nn.CrossEntropyLoss(weight=...), so
+        # .cuda() on this module moves it to GPU automatically.
+        self.ce = nn.CrossEntropyLoss(
+            ignore_index=ignore_index, weight=class_weights
+        )
 
     def forward(self, input: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
         """

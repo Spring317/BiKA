@@ -202,6 +202,45 @@ layer = BiKA_Conv2d(
 
 ---
 
+## BiKASegNet Architecture
+
+`BiKASegNet` (in `src/bika/segmentation.py`) is a lightweight U-Net built almost
+entirely from BiKA layers, used for the BDD100K road-segmentation experiment.
+Each `BiKAConvBlock` is two `BiKA_Conv2d` (3×3, pad 1) layers, each followed by
+BatchNorm + ReLU. Following standard binary-network practice, the input **stem**
+and the 1×1 **classifier head** are kept full-precision (`nn.Conv2d`) by default.
+
+Channel counts below are for `base_channels=16`; an input of `[B, 3, H, W]`:
+
+```text
+                 Input  [B,   3,  H,    W   ]
+                          │
+   ┌──────────────────── Encoder ─────────────────────┐
+   enc1   FP Conv3x3 + BiKA Conv3x3 ─► t1 [ 16,  H,    W   ] ───────────┐ skip
+                          │  maxpool ↓2                                  │
+   enc2   BiKAConvBlock            ─► t2 [ 32,  H/2,  W/2 ] ──────────┐  │ skip
+                          │  maxpool ↓2                               │  │
+   enc3   BiKAConvBlock            ─► t3 [ 64,  H/4,  W/4 ] ───────┐  │  │ skip
+                          │  maxpool ↓2                            │  │  │
+   bottleneck  BiKAConvBlock          [128,  H/8,  W/8 ]           │  │  │
+                          │  upsample ↑2 ⊕ concat(t3) ◄────────────┘  │  │
+   dec3   BiKAConvBlock               [ 64,  H/4,  W/4 ]               │  │
+                          │  upsample ↑2 ⊕ concat(t2) ◄────────────────┘  │
+   dec2   BiKAConvBlock               [ 32,  H/2,  W/2 ]                   │
+                          │  upsample ↑2 ⊕ concat(t1) ◄───────────────────┘
+   dec1   BiKAConvBlock               [ 16,  H,    W   ]
+                          │
+   final  FP Conv1x1                ─► logits [num_classes, H, W]
+   └───────────────────────────────────────────────────┘
+```
+
+- Skip connections concatenate encoder features onto the upsampled decoder
+  features (channel dim) before each decoder block, so `dec3`/`dec2`/`dec1`
+  receive `8C+4C`, `4C+2C`, `2C+C` input channels respectively.
+- Upsampling is bilinear `F.interpolate`; downsampling is `MaxPool2d(2, 2)`.
+
+---
+
 ## Experiments
 
 ### CNN-like Experiments

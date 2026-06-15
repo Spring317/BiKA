@@ -16,7 +16,9 @@ from glob import glob
 
 import torch
 
-from data import BDD100KDataset, BDD100K_NUM_CLASSES, BDD100K_CLASSES
+from data import (
+    BDD100KDataset, BDD100K_NUM_CLASSES, BDD100K_CLASSES, LABEL_GROUPINGS,
+)
 from models import BiKASegNet
 from training.metrics import SegmentationMetric
 
@@ -33,6 +35,8 @@ def parse_args():
     p.add_argument("--input_w", default=256, type=int)
     p.add_argument("--batch_size", default=16, type=int)
     p.add_argument("--num_workers", default=8, type=int)
+    p.add_argument("--label_grouping", default="none",
+                   choices=["none"] + list(LABEL_GROUPINGS))
     return p.parse_args()
 
 
@@ -44,27 +48,33 @@ def main():
         os.path.splitext(os.path.basename(p))[0].replace("_train_id", "")
         for p in sorted(glob(os.path.join(args.bdd100k_base, "labels", "val", "*.png")))
     ]
+    if args.label_grouping != "none":
+        g = LABEL_GROUPINGS[args.label_grouping]
+        num_classes, class_names, label_map = g["num_classes"], g["classes"], g["label_map"]
+    else:
+        num_classes, class_names, label_map = BDD100K_NUM_CLASSES, BDD100K_CLASSES, None
+
     val_ds = BDD100KDataset(
         img_ids=val_ids,
         img_dir=os.path.join(args.bdd100k_base, "images", "val"),
         mask_dir=os.path.join(args.bdd100k_base, "labels", "val"),
-        num_classes=BDD100K_NUM_CLASSES,
+        num_classes=num_classes,
         input_h=args.input_h, input_w=args.input_w,
-        is_training=False, mask_suffix="_train_id",
+        is_training=False, mask_suffix="_train_id", label_map=label_map,
     )
     loader = torch.utils.data.DataLoader(
         val_ds, batch_size=args.batch_size, shuffle=False,
         num_workers=args.num_workers, pin_memory=True,
     )
 
-    model = BiKASegNet(num_classes=BDD100K_NUM_CLASSES,
+    model = BiKASegNet(num_classes=num_classes,
                        base_channels=args.base_channels).cuda()
     ckpt = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
     state = ckpt.get("model_state_dict", ckpt) if isinstance(ckpt, dict) else ckpt
     model.load_state_dict(state, strict=True)
     model.eval()
 
-    metric = SegmentationMetric(BDD100K_NUM_CLASSES)
+    metric = SegmentationMetric(num_classes)
     with torch.no_grad():
         for inp, target, _ in loader:
             out = model(inp.cuda(non_blocking=True))
@@ -72,7 +82,7 @@ def main():
 
     miou, mdice, per_class = metric.compute()
     rows = sorted(
-        ((BDD100K_CLASSES.get(i, str(i)), v) for i, v in enumerate(per_class)),
+        ((class_names.get(i, str(i)), v) for i, v in enumerate(per_class)),
         key=lambda r: (r[1] != r[1], r[1]),  # NaN last, then ascending
     )
     print(f"\n{'class':<16} {'IoU':>8}")

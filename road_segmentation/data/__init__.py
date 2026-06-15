@@ -3,6 +3,9 @@ from .bdd100k import (
     BDD100K_COLOR_DICT,
     BDD100K_NUM_CLASSES,
     BDD100KDataset,
+    LABEL_GROUPINGS,
+    DRIVE5_CLASSES,
+    DRIVE5_COLOR_DICT,
 )
 from .transforms import (
     IGNORE_INDEX,
@@ -21,6 +24,9 @@ __all__ = [
     "BDD100K_COLOR_DICT",
     "BDD100K_NUM_CLASSES",
     "BDD100KDataset",
+    "LABEL_GROUPINGS",
+    "DRIVE5_CLASSES",
+    "DRIVE5_COLOR_DICT",
     "IGNORE_INDEX",
     "colorize_mask",
     "horizontal_flip",

@@ -1,5 +1,30 @@
+# --- existing project patterns ---
 **/dataset/
 **/train/
 **/.ipynb_checkpoints/
 **/archiv/
 **/RNN-like/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- packaging / build artifacts (CUDA extension) ---
+build/
+dist/
+*.egg-info/
+*.so
+
+# --- training run outputs ---
+outputs/
+# model checkpoints (large binaries, anywhere in the tree)
+*.pth
+*.pt
+*.ckpt
+# tensorboard event files
+events.out.tfevents.*
+
+# --- env ---
+.venv/
+venv/
