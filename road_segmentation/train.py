@@ -428,10 +428,23 @@ def main():
     if config.get("init_weights") and not config["resume"]:
         ckpt = torch.load(config["init_weights"], map_location="cpu", weights_only=False)
         state = ckpt.get("model_state_dict", ckpt) if isinstance(ckpt, dict) else ckpt
-        missing, unexpected = model.load_state_dict(state, strict=False)
+        # Keep only tensors whose shape matches the current model, so a
+        # checkpoint with a different head (e.g. 20-class v5 -> 19-class
+        # bench19) loads its shared backbone and leaves the mismatched
+        # layers (the final 1x1 head) at their fresh init. strict=False
+        # alone is not enough — it still errors on shape mismatches.
+        model_sd = model.state_dict()
+        filtered = {
+            k: v for k, v in state.items()
+            if k in model_sd and v.shape == model_sd[k].shape
+        }
+        skipped = [k for k in state if k not in filtered]
+        missing, unexpected = model.load_state_dict(filtered, strict=False)
         if is_main_process(rank):
-            print(f"[InitWeights] Loaded weights from '{config['init_weights']}' "
-                  f"(missing={len(missing)}, unexpected={len(unexpected)})")
+            print(f"[InitWeights] Loaded {len(filtered)}/{len(state)} tensors "
+                  f"from '{config['init_weights']}'")
+            if skipped:
+                print(f"[InitWeights] Re-initialized (shape mismatch / new): {skipped}")
 
     if is_main_process(rank):
         total_params = sum(p.numel() for p in model.parameters())
