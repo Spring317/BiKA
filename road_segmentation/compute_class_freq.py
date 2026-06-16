@@ -18,7 +18,7 @@ from glob import glob
 import cv2
 import numpy as np
 
-from data import BDD100K_NUM_CLASSES, BDD100K_CLASSES
+from data import BDD100K_NUM_CLASSES, BDD100K_CLASSES, LABEL_GROUPINGS
 
 IGNORE_INDEX = 255
 
@@ -33,6 +33,10 @@ def parse_args():
     p.add_argument("--clip", default=0.0, type=float,
                    help="If >0, clip weights to [1/clip, clip] to avoid "
                         "extreme values for ultra-rare classes.")
+    p.add_argument("--label_grouping", default="none",
+                   choices=["none"] + list(LABEL_GROUPINGS),
+                   help="Compute frequencies over the grouped classes "
+                        "(must match the --label_grouping used in training).")
     return p.parse_args()
 
 
@@ -43,12 +47,20 @@ def main():
         mask_paths = mask_paths[: args.max_images]
     assert mask_paths, f"No masks under {args.bdd100k_base}/labels/train"
 
-    counts = np.zeros(BDD100K_NUM_CLASSES, dtype=np.int64)
+    if args.label_grouping != "none":
+        g = LABEL_GROUPINGS[args.label_grouping]
+        num_classes, class_names, label_map = g["num_classes"], g["classes"], g["label_map"]
+    else:
+        num_classes, class_names, label_map = BDD100K_NUM_CLASSES, BDD100K_CLASSES, None
+
+    counts = np.zeros(num_classes, dtype=np.int64)
     for i, mp in enumerate(mask_paths):
         m = cv2.imread(mp, cv2.IMREAD_GRAYSCALE)
+        if label_map is not None:
+            m = label_map[m]  # remap to grouped ids before counting
         valid = m[m != IGNORE_INDEX]
-        binc = np.bincount(valid, minlength=BDD100K_NUM_CLASSES)
-        counts += binc[:BDD100K_NUM_CLASSES]
+        binc = np.bincount(valid, minlength=num_classes)
+        counts += binc[:num_classes]
         if (i + 1) % 500 == 0:
             print(f"  ...{i + 1}/{len(mask_paths)} masks")
 
@@ -56,15 +68,15 @@ def main():
     freq = counts / max(total, 1)
     present = freq > 0
     med = np.median(freq[present]) if present.any() else 0.0
-    weights = np.zeros(BDD100K_NUM_CLASSES, dtype=np.float64)
+    weights = np.zeros(num_classes, dtype=np.float64)
     weights[present] = med / freq[present]
     if args.clip > 0:
         weights[present] = np.clip(weights[present], 1.0 / args.clip, args.clip)
 
     print(f"\n{'class':<16} {'pixels%':>9} {'MFB weight':>11}")
     print("-" * 40)
-    for c in range(BDD100K_NUM_CLASSES):
-        name = BDD100K_CLASSES.get(c, str(c))
+    for c in range(num_classes):
+        name = class_names.get(c, str(c))
         print(f"{name:<16} {100 * freq[c]:>8.4f}% {weights[c]:>11.3f}")
     print("-" * 40)
     print(f"total labeled pixels: {total:,}  over {len(mask_paths)} masks")

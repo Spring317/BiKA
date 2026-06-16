@@ -99,12 +99,25 @@ _DRIVE5_SRC = {
     # terrain, sky, unknown) -> background (4)
 }
 
+# "bench19": the official BDD100K benchmark convention — the 19 standard
+# classes (0..18), with class 19 ("unknown") dropped to the ignore index so
+# results are directly comparable to the bdd100k-models / MMSegmentation zoo.
+BENCH19_CLASSES = {k: v for k, v in BDD100K_CLASSES.items() if k < 19}
+BENCH19_COLOR_DICT = {k: v for k, v in BDD100K_COLOR_DICT.items() if k < 19}
+_BENCH19_SRC = {i: i for i in range(19)}  # identity 0..18; 19 -> default (ignore)
+
 LABEL_GROUPINGS = {
     "drive5": {
         "num_classes": 5,
         "classes": DRIVE5_CLASSES,
         "color_dict": DRIVE5_COLOR_DICT,
         "label_map": _make_label_map(_DRIVE5_SRC, default=4),
+    },
+    "bench19": {
+        "num_classes": 19,
+        "classes": BENCH19_CLASSES,
+        "color_dict": BENCH19_COLOR_DICT,
+        "label_map": _make_label_map(_BENCH19_SRC, default=IGNORE_INDEX),
     },
 }
 
