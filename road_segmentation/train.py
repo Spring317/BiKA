@@ -287,11 +287,12 @@ def train_one_epoch(
         avg_meters["loss"].update(loss_reduced.item(), inp.size(0))
 
         if pbar is not None:
-            running_iou, _, _ = seg_metric.compute()
+            running_iou, _, per_class = seg_metric.compute()
             pbar.set_postfix(
                 OrderedDict(
                     loss=f"{avg_meters['loss'].avg:.4f}",
                     iou=f"{running_iou:.4f}",
+                    iou_0=f"{per_class[0]:.4f}",
                 )
             )
             pbar.update(1)
@@ -300,9 +301,9 @@ def train_one_epoch(
         pbar.close()
 
     seg_metric.all_reduce()
-    miou, _, _ = seg_metric.compute()
+    miou, _, per_class = seg_metric.compute()
 
-    return OrderedDict(loss=avg_meters["loss"].avg, iou=miou)
+    return OrderedDict(loss=avg_meters["loss"].avg, iou=miou, iou_0=per_class[0])
 
 
 def validate(config, val_loader, model, criterion, rank, world_size):
@@ -329,11 +330,12 @@ def validate(config, val_loader, model, criterion, rank, world_size):
             avg_meters["loss"].update(loss_reduced.item(), inp.size(0))
 
             if pbar is not None:
-                running_iou, running_dice, _ = seg_metric.compute()
+                running_iou, running_dice, per_class = seg_metric.compute()
                 pbar.set_postfix(
                     OrderedDict(
                         loss=f"{avg_meters['loss'].avg:.4f}",
                         iou=f"{running_iou:.4f}",
+                        iou_0=f"{per_class[0]:.4f}",
                         dice=f"{running_dice:.4f}",
                     )
                 )
@@ -343,12 +345,13 @@ def validate(config, val_loader, model, criterion, rank, world_size):
         pbar.close()
 
     seg_metric.all_reduce()
-    miou, mdice, _ = seg_metric.compute()
+    miou, mdice, per_class = seg_metric.compute()
 
     return OrderedDict(
         loss=avg_meters["loss"].avg,
         iou=miou,
         dice=mdice,
+        iou_0=per_class[0],
     )
 
 
@@ -632,7 +635,7 @@ def main():
     best_iou = 0.0
     trigger = 0
     log = OrderedDict(
-        epoch=[], lr=[], loss=[], iou=[], val_loss=[], val_iou=[], val_dice=[]
+        epoch=[], lr=[], loss=[], iou=[], train_iou_0=[], val_loss=[], val_iou=[], val_dice=[], val_iou_0=[]
     )
 
     if config["resume"]:
@@ -723,17 +726,21 @@ def main():
             log["lr"].append(lr_now)
             log["loss"].append(train_log["loss"])
             log["iou"].append(train_log["iou"])
+            log["train_iou_0"].append(train_log["iou_0"])
             log["val_loss"].append(val_log["loss"])
             log["val_iou"].append(val_log["iou"])
             log["val_dice"].append(val_log["dice"])
+            log["val_iou_0"].append(val_log["iou_0"])
             pd.DataFrame(log).to_csv(os.path.join(exp_dir, "log.csv"), index=False)
 
             if writer is not None:
                 writer.add_scalar("train/loss", train_log["loss"], epoch)
                 writer.add_scalar("train/iou", train_log["iou"], epoch)
+                writer.add_scalar("train/iou_0", train_log["iou_0"], epoch)
                 writer.add_scalar("val/loss", val_log["loss"], epoch)
                 writer.add_scalar("val/iou", val_log["iou"], epoch)
                 writer.add_scalar("val/dice", val_log["dice"], epoch)
+                writer.add_scalar("val/iou_0", val_log["iou_0"], epoch)
                 writer.add_scalar("lr", lr_now, epoch)
 
             base_model = get_base_model(model, distributed)

@@ -70,6 +70,7 @@ BDD100K_NUM_CLASSES = 20
 # Label groupings — pure remaps of the 20 seg classes (no new data needed).
 # ---------------------------------------------------------------------------
 
+
 def _make_label_map(src_to_dst, default, ignore_index=IGNORE_INDEX):
     """256-entry lookup: original train_id -> grouped id. Unspecified ids fall
     to `default`; the ignore index is preserved."""
@@ -84,19 +85,52 @@ def _make_label_map(src_to_dst, default, ignore_index=IGNORE_INDEX):
 #   0 road | 1 sidewalk | 2 vehicle | 3 person | 4 background
 DRIVE5_CLASSES = {0: "road", 1: "sidewalk", 2: "vehicle", 3: "person", 4: "background"}
 DRIVE5_COLOR_DICT = {
-    0: (0.7, 0.7, 0.7),   # road       - gray
-    1: (0.9, 0.9, 0.2),   # sidewalk   - yellow
-    2: (0.0, 0.0, 1.0),   # vehicle    - blue
-    3: (1.0, 0.0, 0.0),   # person     - red
-    4: (0.0, 0.0, 0.0),   # background - black
+    0: (0.7, 0.7, 0.7),  # road       - gray
+    1: (0.9, 0.9, 0.2),  # sidewalk   - yellow
+    2: (0.0, 0.0, 1.0),  # vehicle    - blue
+    3: (1.0, 0.0, 0.0),  # person     - red
+    4: (0.0, 0.0, 0.0),  # background - black
 }
 _DRIVE5_SRC = {
-    0: 0,                                  # road
-    1: 1,                                  # sidewalk
-    11: 3, 12: 3,                          # person, rider -> person
-    13: 2, 14: 2, 15: 2, 16: 2, 17: 2, 18: 2,  # car/truck/bus/train/moto/bike -> vehicle
+    0: 0,  # road
+    1: 1,  # sidewalk
+    11: 3,
+    12: 3,  # person, rider -> person
+    13: 2,
+    14: 2,
+    15: 2,
+    16: 2,
+    17: 2,
+    18: 2,  # car/truck/bus/train/moto/bike -> vehicle
     # all others (building, wall, fence, pole, lights, signs, vegetation,
     # terrain, sky, unknown) -> background (4)
+}
+
+# "lane2": lane-focused binary setup from the existing semantic masks.
+#   0 lane(road) | 1 background
+# NOTE: BDD100K semantic masks do not include a dedicated painted-lane-marking
+# class, so this uses class 0 (road) as the positive lane target.
+LANE2_CLASSES = {0: "lane", 1: "background"}
+LANE2_COLOR_DICT = {
+    0: (1.0, 1.0, 0.0),  # lane       - yellow
+    1: (0.0, 0.0, 0.0),  # background - black
+}
+_LANE2_SRC = {
+    0: 0,  # road -> lane
+    # all others -> background (1)
+}
+
+# "lane_fg": strict lane-positive training/eval.
+#   0 lane(road) | non-lane -> background (1)
+# Keeps a 2-logit head for stable CE training.
+LANE_FG_CLASSES = {0: "lane", 1: "background"}
+LANE_FG_COLOR_DICT = {
+    0: (1.0, 1.0, 0.0),  # lane               - yellow
+    1: (0.0, 0.0, 0.0),  # background         - black
+}
+_LANE_FG_SRC = {
+    0: 0,  # road -> lane
+    # all others -> background (1)
 }
 
 # "bench19": the official BDD100K benchmark convention — the 19 standard
@@ -112,6 +146,18 @@ LABEL_GROUPINGS = {
         "classes": DRIVE5_CLASSES,
         "color_dict": DRIVE5_COLOR_DICT,
         "label_map": _make_label_map(_DRIVE5_SRC, default=4),
+    },
+    "lane2": {
+        "num_classes": 2,
+        "classes": LANE2_CLASSES,
+        "color_dict": LANE2_COLOR_DICT,
+        "label_map": _make_label_map(_LANE2_SRC, default=1),
+    },
+    "lane_fg": {
+        "num_classes": 2,
+        "classes": LANE_FG_CLASSES,
+        "color_dict": LANE_FG_COLOR_DICT,
+        "label_map": _make_label_map(_LANE_FG_SRC, default=1),
     },
     "bench19": {
         "num_classes": 19,
@@ -204,8 +250,8 @@ class BDD100KDataset(torch.utils.data.Dataset):
         img = to_chw(img)
 
         # --- Convert to tensors ---
-        img_tensor = torch.from_numpy(img)                      # (3, H, W) float32
-        mask_tensor = torch.from_numpy(mask.copy()).long()       # (H, W)   int64
+        img_tensor = torch.from_numpy(img)  # (3, H, W) float32
+        mask_tensor = torch.from_numpy(mask.copy()).long()  # (H, W)   int64
 
         return img_tensor, mask_tensor, {"img_id": img_id}
 
@@ -218,4 +264,8 @@ __all__ = [
     "LABEL_GROUPINGS",
     "DRIVE5_CLASSES",
     "DRIVE5_COLOR_DICT",
+    "LANE2_CLASSES",
+    "LANE2_COLOR_DICT",
+    "LANE_FG_CLASSES",
+    "LANE_FG_COLOR_DICT",
 ]

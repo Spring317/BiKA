@@ -62,9 +62,10 @@ class CrossEntropyDiceLoss(nn.Module):
 
         dice_per_class = (2.0 * intersection + smooth) / (cardinality + smooth)
 
-        # Only average over classes actually present in this batch —
-        # absent classes produce near-1.0 Dice that dilutes the signal.
-        present = target_oh.sum(dim=(0, 2, 3)) > 0  # (C,)
+        # Only average over classes actually present in the target OR heavily predicted —
+        # absent classes produce near-1.0 Dice that dilutes the signal, but we must
+        # not ignore massive false positives.
+        present = (target_oh.sum(dim=(0, 2, 3)) > 0) | (probs.sum(dim=(0, 2, 3)) > 1.0)
         if present.any():
             dice_loss = 1.0 - dice_per_class[present].mean()
         else:
