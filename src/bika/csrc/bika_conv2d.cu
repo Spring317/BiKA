@@ -294,6 +294,9 @@ __global__ void bika_conv2d_backward_input_kernel(
     for (int h_in = threadIdx.y; h_in < H; h_in += blockDim.y) {
         for (int w_in = threadIdx.x; w_in < W; w_in += blockDim.x) {
             float acc = 0.0f;
+            
+            // HOISTED: Read input pixel ONCE per thread, instead of O * K * K times!
+            const float x = input[(((b * C + c) * H + h_in) * W) + w_in];
 
             for (int o = 0; o < O; ++o) {
                 const float* w_oc = weight + ((o * C + c) * K) * K;
@@ -317,7 +320,6 @@ __global__ void bika_conv2d_backward_input_kernel(
                         const float w  = w_row[kw];
                         const float bb = b_row[kw];
 
-                        const float x  = input[(((b * C + c) * H + h_in) * W) + w_in];
                         const float z  = (x + bb) * w;
                         const float sgrad = (fabsf(z) <= 1.0f) ? 1.0f : 0.0f;
 
