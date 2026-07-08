@@ -17,9 +17,19 @@ class BiKAConvBlock(nn.Module):
             nn.BatchNorm2d(out_ch),
             nn.ReLU(inplace=True),
         )
+        
+        # FP32 Skip Connection (Bi-Real Net style) to preserve spatial details
+        # lost during 1-bit quantization.
+        if in_ch != out_ch:
+            self.skip = nn.Sequential(
+                nn.Conv2d(in_ch, out_ch, kernel_size=1, bias=False),
+                nn.BatchNorm2d(out_ch)
+            )
+        else:
+            self.skip = nn.Identity()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.block(x)
+        return self.block(x) + self.skip(x)
 
 
 class BiKASegNet(nn.Module):
