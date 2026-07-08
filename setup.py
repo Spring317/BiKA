@@ -17,10 +17,12 @@ setup(
                 "src/bika/csrc/bika_binding.cpp",
                 "src/bika/csrc/bika_linear.cu",
                 "src/bika/csrc/bika_conv2d.cu",
+                "src/bika/csrc/bika_conv2d_cpu.cpp",
             ],
             extra_compile_args={
-                "cxx": ["-O3"],
-                "nvcc": ["-O3", "-lineinfo"],
+                "cxx": ["-O3", "-fopenmp", "-mavx2", "-msse4.2", "-mpopcnt", "-mbmi2", "-ffast-math"],
+                "nvcc": ["-O3", "-lineinfo", "--use_fast_math",
+                         "-gencode=arch=compute_75,code=sm_75"],
             },
         )
     ],

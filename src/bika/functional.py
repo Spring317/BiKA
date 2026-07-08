@@ -1,5 +1,5 @@
 import torch
-from typing import Union, Tuple
+from typing import Union, Tuple, Optional
 
 from . import _C
 
@@ -34,11 +34,22 @@ class _BiKALinearFn(torch.autograd.Function):
 class _BiKAConv2dFn(torch.autograd.Function):
     @staticmethod
     @_custom_fwd
-    def forward(ctx, x, w, b, pad_h: int, pad_w: int, stride_h: int, stride_w: int):
+    def forward(ctx, x, w, b, out_scale, out_shift, packed_weight, neg_bias_half, do_relu, pad_h: int, pad_w: int, stride_h: int, stride_w: int):
+        # We need empty tensors if they are None
+        if out_scale is None: out_scale = torch.empty(0, dtype=torch.float32, device=x.device)
+        if out_shift is None: out_shift = torch.empty(0, dtype=torch.float32, device=x.device)
+        if packed_weight is None: packed_weight = torch.empty(0, dtype=torch.int32, device=x.device)
+        if neg_bias_half is None: neg_bias_half = torch.empty(0, dtype=torch.float16, device=x.device)
+        
         y = _C.bika_conv2d_forward(
             x,
             w,
             b,
+            out_scale,
+            out_shift,
+            packed_weight,
+            neg_bias_half,
+            bool(do_relu),
             int(pad_h),
             int(pad_w),
             int(stride_h),
@@ -69,7 +80,7 @@ class _BiKAConv2dFn(torch.autograd.Function):
             ctx.stride_w,
         )
 
-        return gi, gw, gb, None, None, None, None
+        return gi, gw, gb, None, None, None, None, None, None, None, None, None
 
 
 def bika_linear(
@@ -77,15 +88,29 @@ def bika_linear(
     w: torch.Tensor,
     b: torch.Tensor,
 ) -> torch.Tensor:
+    if not x.is_cuda:
+        # Pure PyTorch CPU fallback
+        x_reshaped = x.unsqueeze(1)  # [B, 1, I]
+        b_reshaped = b.unsqueeze(0)  # [1, O, I]
+        w_reshaped = w.unsqueeze(0)  # [1, O, I]
+        x_bin = torch.where(x_reshaped + b_reshaped >= 0, 1.0, -1.0)
+        w_bin = torch.where(w_reshaped >= 0, 1.0, -1.0)
+        return (x_bin * w_bin).sum(dim=2)
+
     return _BiKALinearFn.apply(x, w, b)
 
 
 def bika_conv2d(
-    x: torch.Tensor,
-    w: torch.Tensor,
-    b: torch.Tensor,
-    padding: Union[int, Tuple[int, int]] = 0,
+    input: torch.Tensor,
+    weight: torch.Tensor,
+    bias: Optional[torch.Tensor] = None,
     stride: Union[int, Tuple[int, int]] = 1,
+    padding: Union[int, Tuple[int, int]] = 0,
+    out_scale: Optional[torch.Tensor] = None,
+    out_shift: Optional[torch.Tensor] = None,
+    packed_weight: Optional[torch.Tensor] = None,
+    neg_bias_half: Optional[torch.Tensor] = None,
+    do_relu: bool = False,
 ) -> torch.Tensor:
     if isinstance(padding, int):
         ph = pw = padding
@@ -97,10 +122,35 @@ def bika_conv2d(
     else:
         sh, sw = stride
 
+    if not input.is_cuda:
+        # Fast C++ CPU fallback with OpenMP and bit-packing
+        out_scale_t = out_scale if out_scale is not None else torch.empty(0, device=input.device, dtype=torch.float32)
+        out_shift_t = out_shift if out_shift is not None else torch.empty(0, device=input.device, dtype=torch.float32)
+        packed_weight_t = packed_weight if packed_weight is not None else torch.empty(0, device=input.device, dtype=torch.int32)
+        
+        return _C.bika_conv2d_forward_cpu(
+            input.contiguous(),
+            weight.contiguous(),
+            bias if bias is not None else torch.zeros(weight.shape[0], device=input.device),
+            out_scale_t,
+            out_shift_t,
+            packed_weight_t,
+            do_relu,
+            int(ph),
+            int(pw),
+            int(sh),
+            int(sw),
+        )
+
     return _BiKAConv2dFn.apply(
-        x,
-        w,
-        b,
+        input,
+        weight,
+        bias,
+        out_scale,
+        out_shift,
+        packed_weight,
+        neg_bias_half,
+        do_relu,
         int(ph),
         int(pw),
         int(sh),

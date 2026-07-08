@@ -4,7 +4,7 @@ import torch
 from torch import nn
 from typing import Union, Tuple
 
-from .functional import _BiKAConv2dFn
+from .functional import bika_conv2d
 
 
 class BiKA_Conv2d(nn.Module):
@@ -111,7 +111,30 @@ class BiKA_Conv2d(nn.Module):
                 persistent=False,
             )
 
+        self.register_buffer("out_scale", None, persistent=False)
+        self.register_buffer("out_shift", None, persistent=False)
+        self.do_relu = False
+
         self.reset_parameters()
+        self.register_buffer("packed_weight", None)
+        self.register_buffer("neg_bias_half", None)
+        
+    def pack_weights(self):
+        """Pre-packs float32 weights into int32 buffer for lightning-fast CUDA loading.
+        Also pre-computes negated bias in half-precision for shared memory bandwidth savings."""
+        O, C, K, _ = self.weight.shape
+        w_flat = self.weight.view(O, C * K * K) >= 0.0
+        num_words = (C * K * K + 31) // 32
+        packed = torch.zeros((O, num_words), dtype=torch.int32, device=self.weight.device)
+        for i in range(C * K * K):
+            word_idx = i // 32
+            bit_idx = i % 32
+            bit_val = w_flat[:, i].to(torch.int32)
+            packed[:, word_idx] |= (bit_val << bit_idx)
+        self.packed_weight = packed
+        # Pre-negate bias and convert to half precision
+        # In the kernel: (x + bias) >= 0 becomes x >= -bias
+        self.neg_bias_half = (-self.bias.detach()).half()
 
     def reset_parameters(self):
         fan_in = (
@@ -140,14 +163,17 @@ class BiKA_Conv2d(nn.Module):
         ph, pw = self.padding
         sh, sw = self.stride
 
-        return _BiKAConv2dFn.apply(
+        return bika_conv2d(
             x,
             self.weight,
             self.bias,
-            ph,
-            pw,
-            sh,
-            sw,
+            out_scale=self.out_scale,
+            out_shift=self.out_shift,
+            packed_weight=self.packed_weight,
+            neg_bias_half=self.neg_bias_half,
+            do_relu=self.do_relu,
+            padding=(ph, pw),
+            stride=(sh, sw),
         )
 
 

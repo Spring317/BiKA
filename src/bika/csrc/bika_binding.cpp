@@ -14,6 +14,11 @@ std::vector<torch::Tensor> bika_linear_backward(torch::Tensor grad_output,
 torch::Tensor bika_conv2d_forward(torch::Tensor input,
                                   torch::Tensor weight,
                                   torch::Tensor bias,
+                                  torch::Tensor out_scale,
+                                  torch::Tensor out_shift,
+                                  torch::Tensor packed_weight,
+                                  torch::Tensor neg_bias_half,
+                                  bool do_relu,
                                   int pad_h,
                                   int pad_w,
                                   int stride_h,
@@ -27,10 +32,22 @@ std::vector<torch::Tensor> bika_conv2d_backward(torch::Tensor grad_output,
                                                 int stride_h,
                                                 int stride_w);
 
-PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-  m.def("bika_linear_forward",  &bika_linear_forward,  "BiKA Linear forward (CUDA)");
-  m.def("bika_linear_backward", &bika_linear_backward, "BiKA Linear backward (CUDA)");
+torch::Tensor bika_conv2d_forward_cpu(
+    torch::Tensor input,
+    torch::Tensor weight,
+    torch::Tensor bias,
+    torch::Tensor out_scale,
+    torch::Tensor out_shift,
+    torch::Tensor packed_weight,
+    bool do_relu,
+    int pad_h, int pad_w,
+    int stride_h, int stride_w
+);
 
-  m.def("bika_conv2d_forward",  &bika_conv2d_forward,  "BiKA Conv2d forward (stride>=1, padding>=0, dilation=1, groups=1)");
-  m.def("bika_conv2d_backward", &bika_conv2d_backward, "BiKA Conv2d backward (stride>=1, padding>=0, dilation=1, groups=1)");
+PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
+    m.def("bika_linear_forward", &bika_linear_forward, "BiKA Linear Forward (CUDA)");
+    m.def("bika_linear_backward", &bika_linear_backward, "BiKA Linear Backward (CUDA)");
+    m.def("bika_conv2d_forward", &bika_conv2d_forward, "BiKA Conv2d Forward (CUDA)");
+    m.def("bika_conv2d_backward", &bika_conv2d_backward, "BiKA Conv2d Backward (CUDA)");
+    m.def("bika_conv2d_forward_cpu", &bika_conv2d_forward_cpu, "BiKA Conv2d Forward (CPU)");
 }
