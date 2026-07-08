@@ -19,8 +19,6 @@ class BiKAConvBlock(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        if self.training and x.requires_grad:
-            return checkpoint.checkpoint(self.block, x, use_reentrant=False)
         return self.block(x)
 
 
