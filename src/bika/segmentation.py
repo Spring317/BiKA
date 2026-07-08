@@ -4,6 +4,7 @@ from torch import nn
 
 from .BiKA_Conv2d import BiKA_Conv2d
 
+import torch.utils.checkpoint as checkpoint
 
 class BiKAConvBlock(nn.Module):
     def __init__(self, in_ch: int, out_ch: int):
@@ -18,6 +19,8 @@ class BiKAConvBlock(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if self.training and x.requires_grad:
+            return checkpoint.checkpoint(self.block, x, use_reentrant=False)
         return self.block(x)
 
 
