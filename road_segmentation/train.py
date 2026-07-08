@@ -56,7 +56,7 @@ def parse_args():
     parser.add_argument("--num_classes", default=20, type=int)
     parser.add_argument("--input_w", default=256, type=int)
     parser.add_argument("--input_h", default=192, type=int)
-    parser.add_argument("--base_channels", default=16, type=int)
+    parser.add_argument("--base_channels", default=32, type=int)
 
     # Loss
     parser.add_argument("--loss", default="CrossEntropyDiceLoss", choices=losses.__all__ + ["CrossEntropyLoss"])
