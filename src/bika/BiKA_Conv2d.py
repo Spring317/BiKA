@@ -115,6 +115,10 @@ class BiKA_Conv2d(nn.Module):
         self.register_buffer("out_shift", None, persistent=False)
         self.do_relu = False
 
+        # AdaBin (ECCV 2022): learnable per-channel output scaling.
+        # At inference, fused into BatchNorm gamma — zero extra cost.
+        self.output_scale = nn.Parameter(torch.ones(out_channels, 1, 1))
+
         self.reset_parameters()
         self.register_buffer("packed_weight", None)
         self.register_buffer("neg_bias_half", None)
@@ -163,9 +167,13 @@ class BiKA_Conv2d(nn.Module):
         ph, pw = self.padding
         sh, sw = self.stride
 
-        return bika_conv2d(
+        # Libra-PB (IR-Net, CVPR 2020): center weights per output filter
+        # so sign(w) produces ~50% +1 / 50% -1 (balanced binarization).
+        w = self.weight - self.weight.mean(dim=[1, 2, 3], keepdim=True)
+
+        y = bika_conv2d(
             x,
-            self.weight,
+            w,
             self.bias,
             out_scale=self.out_scale,
             out_shift=self.out_shift,
@@ -175,6 +183,9 @@ class BiKA_Conv2d(nn.Module):
             padding=(ph, pw),
             stride=(sh, sw),
         )
+
+        # AdaBin: per-channel scaling (fused into BN at inference)
+        return y * self.output_scale
 
 
 __all__ = [

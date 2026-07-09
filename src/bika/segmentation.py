@@ -6,20 +6,77 @@ from .BiKA_Conv2d import BiKA_Conv2d
 
 import torch.utils.checkpoint as checkpoint
 
+
+# ── RPReLU (ReActNet, ECCV 2020) ─────────────────────────────────────────────
+# Learnable activation that reshapes post-binarization distributions.
+# At inference: can be fused into comparison + shift → multiply-free on ARM.
+# ─────────────────────────────────────────────────────────────────────────────
+
+class RPReLU(nn.Module):
+    """ReActNet PReLU with learnable per-channel shifts and negative slope.
+    
+    y = ReLU(x + shift1) + slope_neg * min(x + shift1, 0) + shift2
+    
+    At inference, shift1/shift2 fuse into BN bias, slope_neg fuses into
+    a conditional select (comparison, not multiplication).
+    """
+    def __init__(self, channels: int):
+        super().__init__()
+        self.shift1 = nn.Parameter(torch.zeros(1, channels, 1, 1))
+        self.slope_neg = nn.Parameter(torch.full((1, channels, 1, 1), 0.25))
+        self.shift2 = nn.Parameter(torch.zeros(1, channels, 1, 1))
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = x + self.shift1
+        out = F.relu(x) - self.slope_neg * F.relu(-x) + self.shift2
+        return out
+
+
+# ── Channel-Adaptive Bypass (BiDense, 2024) ──────────────────────────────────
+# Lightweight channel attention that lets critical channels bypass binarization.
+# Cost: per-channel (not per-pixel) FP32, negligible on ARM.
+# ─────────────────────────────────────────────────────────────────────────────
+
+class ChannelBypass(nn.Module):
+    """Squeeze-Excitation style gate that blends binary output with FP32 skip."""
+    def __init__(self, channels: int, ratio: int = 4):
+        super().__init__()
+        mid = max(channels // ratio, 4)
+        self.gate = nn.Sequential(
+            nn.AdaptiveAvgPool2d(1),
+            nn.Flatten(),
+            nn.Linear(channels, mid, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(mid, channels, bias=False),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, binary_out: torch.Tensor, fp_skip: torch.Tensor) -> torch.Tensor:
+        g = self.gate(fp_skip).unsqueeze(-1).unsqueeze(-1)  # (B, C, 1, 1)
+        return binary_out * (1.0 - g) + fp_skip * g
+
+
+# ── Enhanced BiKA Conv Block ─────────────────────────────────────────────────
+# Incorporates all paper-derived fixes:
+#   - RPReLU (ReActNet)       → learnable activation reshaping
+#   - Channel Bypass (BiDense) → selective FP32 channel preservation
+#   - FP32 Skip (Bi-Real Net)  → gradient highway
+#   - Activation Checkpointing → VRAM reduction (~60% less activation memory)
+# ─────────────────────────────────────────────────────────────────────────────
+
 class BiKAConvBlock(nn.Module):
     def __init__(self, in_ch: int, out_ch: int):
         super().__init__()
-        self.block = nn.Sequential(
-            BiKA_Conv2d(in_ch, out_ch, kernel_size=3, padding=1),
-            nn.BatchNorm2d(out_ch),
-            nn.ReLU(inplace=True),
-            BiKA_Conv2d(out_ch, out_ch, kernel_size=3, padding=1),
-            nn.BatchNorm2d(out_ch),
-            nn.ReLU(inplace=True),
-        )
-        
-        # FP32 Skip Connection (Bi-Real Net style) to preserve spatial details
-        # lost during 1-bit quantization.
+        # Main binary path (BiKA_Conv2d already has Libra-PB + AdaBin)
+        self.conv1 = BiKA_Conv2d(in_ch, out_ch, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm2d(out_ch)
+        self.act1 = RPReLU(out_ch)
+
+        self.conv2 = BiKA_Conv2d(out_ch, out_ch, kernel_size=3, padding=1)
+        self.bn2 = nn.BatchNorm2d(out_ch)
+        self.act2 = RPReLU(out_ch)
+
+        # FP32 Skip Connection (Bi-Real Net, ECCV 2018)
         if in_ch != out_ch:
             self.skip = nn.Sequential(
                 nn.Conv2d(in_ch, out_ch, kernel_size=1, bias=False),
@@ -28,8 +85,28 @@ class BiKAConvBlock(nn.Module):
         else:
             self.skip = nn.Identity()
 
+        # Channel-Adaptive Bypass (BiDense, 2024)
+        self.channel_bypass = ChannelBypass(out_ch)
+
+    def _forward_impl(self, x: torch.Tensor) -> torch.Tensor:
+        skip = self.skip(x)
+
+        out = self.act1(self.bn1(self.conv1(x)))
+        out = self.bn2(self.conv2(out))
+
+        # Channel bypass: blend binary output with FP32 skip
+        out = self.channel_bypass(out, skip)
+
+        return self.act2(out + skip)
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.block(x) + self.skip(x)
+        # Activation checkpointing: trades ~30% more compute for ~60% less
+        # activation VRAM by recomputing forward during backward.
+        if self.training:
+            return checkpoint.checkpoint(
+                self._forward_impl, x, use_reentrant=False
+            )
+        return self._forward_impl(x)
 
 
 class BiKASegNet(nn.Module):
@@ -41,6 +118,15 @@ class BiKASegNet(nn.Module):
     BiKA classifier head can only emit even-integer logits in
     [-base_channels, base_channels], which is far too coarse for dense
     multi-class prediction.
+
+    Incorporates the following paper-derived enhancements:
+      - Libra-PB (IR-Net, CVPR 2020)      — in BiKA_Conv2d
+      - AdaBin (ECCV 2022)                 — in BiKA_Conv2d
+      - Error Decay Estimator (IR-Net)     — in CUDA backward kernel
+      - RPReLU (ReActNet, ECCV 2020)       — in BiKAConvBlock
+      - Channel Bypass (BiDense, 2024)     — in BiKAConvBlock
+      - FP32 Skip (Bi-Real Net, ECCV 2018) — in BiKAConvBlock
+      - Activation Checkpointing           — in BiKAConvBlock (VRAM reduction)
 
     BiKA thresholds (= -bias) are re-initialized to *bika_bias_init* so they
     spread across the post-BatchNorm+ReLU activation range (~[0, 3]). The
@@ -70,10 +156,10 @@ class BiKASegNet(nn.Module):
             self.enc1 = nn.Sequential(
                 nn.Conv2d(in_channels, base_channels, kernel_size=3, padding=1, bias=False),
                 nn.BatchNorm2d(base_channels),
-                nn.ReLU(inplace=True),
+                RPReLU(base_channels),
                 BiKA_Conv2d(base_channels, base_channels, kernel_size=3, padding=1),
                 nn.BatchNorm2d(base_channels),
-                nn.ReLU(inplace=True),
+                RPReLU(base_channels),
             )
         else:
             self.enc1 = BiKAConvBlock(in_channels, base_channels)

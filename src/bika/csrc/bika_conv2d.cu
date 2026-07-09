@@ -243,7 +243,7 @@ __global__ void bika_conv2d_backward_wb_kernel(
             const float x = inb ? input[(((b * C + c) * H + h_in) * W) + w_in] : 0.0f;
 
             const float z = (x + bb_reg[kidx]) * w_reg[kidx];
-            const float sgrad = (fabsf(z) <= 1.0f) ? 1.0f : 0.0f;
+            const float sgrad = fmaxf(1.0f - fabsf(z), 0.0f);  // EDE (IR-Net): smooth triangle STE
 
             acc_w[kidx] += go * sgrad * (x + bb_reg[kidx]);
             acc_b[kidx] += go * sgrad * w_reg[kidx];
@@ -321,7 +321,7 @@ __global__ void bika_conv2d_backward_input_kernel(
                         const float bb = b_row[kw];
 
                         const float z  = (x + bb) * w;
-                        const float sgrad = (fabsf(z) <= 1.0f) ? 1.0f : 0.0f;
+                        const float sgrad = fmaxf(1.0f - fabsf(z), 0.0f);  // EDE (IR-Net): smooth triangle STE
 
                         const float go = grad_output[(((b * O + o) * Ho) + h_out) * Wo + w_out];
 
