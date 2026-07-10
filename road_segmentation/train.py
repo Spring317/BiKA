@@ -268,6 +268,16 @@ def parse_args():
         help="KD softmax temperature (higher = softer probabilities).",
     )
     parser.add_argument(
+        "--teacher_input_h", default=0, type=int,
+        help="Teacher's training input height (e.g. 384 for UKAN lane_fg). "
+             "0 = same as student's --input_h.",
+    )
+    parser.add_argument(
+        "--teacher_input_w", default=0, type=int,
+        help="Teacher's training input width (e.g. 640 for UKAN lane_fg). "
+             "0 = same as student's --input_w.",
+    )
+    parser.add_argument(
         "--boundary_weight", default=0.5, type=float,
         help="Weight for boundary-aware auxiliary loss (0 = disabled).",
     )
@@ -388,8 +398,20 @@ def train_one_epoch(
             # Knowledge Distillation loss (CKD — BNext, 2024)
             if teacher is not None and kd_alpha > 0:
                 with torch.no_grad():
-                    teacher_out = teacher(inp)
-                    # Handle resolution mismatch between teacher and student
+                    # UKAN uses patch embeddings that require specific spatial dims.
+                    # Resize input to teacher's training resolution, then resize
+                    # output back to student's resolution for the KD loss.
+                    t_h = config.get("teacher_input_h") or inp.shape[2]
+                    t_w = config.get("teacher_input_w") or inp.shape[3]
+                    if (t_h, t_w) != (inp.shape[2], inp.shape[3]):
+                        teacher_inp = F.interpolate(
+                            inp, size=(t_h, t_w),
+                            mode="bilinear", align_corners=False,
+                        )
+                    else:
+                        teacher_inp = inp
+                    teacher_out = teacher(teacher_inp)
+                    # Always match to student output resolution
                     if teacher_out.shape[2:] != output.shape[2:]:
                         teacher_out = F.interpolate(
                             teacher_out, size=output.shape[2:],
