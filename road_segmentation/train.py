@@ -436,6 +436,30 @@ def main():
         # bench19) loads its shared backbone and leaves the mismatched
         # layers (the final 1x1 head) at their fresh init. strict=False
         # alone is not enough — it still errors on shape mismatches.
+        
+        # Map old Sequential keys (e.g., block.0) to new attribute keys (e.g., conv1, bn1)
+        mapped_state = {}
+        for k, v in state.items():
+            new_k = k
+            if ".block." in k:
+                parts = k.split(".")
+                try:
+                    block_idx = parts.index("block")
+                    idx = parts[block_idx + 1]
+                    if idx == "0":
+                        parts[block_idx:block_idx+2] = ["conv1"]
+                    elif idx == "1":
+                        parts[block_idx:block_idx+2] = ["bn1"]
+                    elif idx == "3":
+                        parts[block_idx:block_idx+2] = ["conv2"]
+                    elif idx == "4":
+                        parts[block_idx:block_idx+2] = ["bn2"]
+                except (ValueError, IndexError):
+                    pass
+                new_k = ".".join(parts)
+            mapped_state[new_k] = v
+        state = mapped_state
+
         model_sd = model.state_dict()
         filtered = {
             k: v for k, v in state.items()
