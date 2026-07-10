@@ -2,6 +2,7 @@ import argparse
 import os
 import random
 import shutil
+import sys
 from collections import OrderedDict
 from glob import glob
 
@@ -10,6 +11,7 @@ import pandas as pd
 import torch
 import torch.distributed as dist
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim
 import yaml
 from tensorboardX import SummaryWriter
@@ -24,6 +26,92 @@ import training.losses as losses
 from bika import BiKA_Conv2d, BiKA_Linear
 from data import BDD100KDataset, BDD100K_NUM_CLASSES, LABEL_GROUPINGS
 from training.metrics import SegmentationMetric
+
+
+# ── Knowledge Distillation helpers ───────────────────────────────────────────
+
+def load_teacher_model(teacher_weights, kan_seg_root, num_classes, device):
+    """Load a trained UKAN teacher model for knowledge distillation.
+    
+    Args:
+        teacher_weights: Path to the teacher's model_best.pth.
+        kan_seg_root: Root of the KAN-Road-Segmentation/Seg_UKAN directory.
+        num_classes: Number of segmentation classes (must match teacher).
+        device: CUDA device to place the teacher on.
+    
+    Returns:
+        Frozen teacher model in eval mode, or None if loading fails.
+    """
+    # Add KAN-Road-Segmentation to path so we can import UKAN
+    if kan_seg_root not in sys.path:
+        sys.path.insert(0, kan_seg_root)
+    try:
+        from archs import UKAN
+    except ImportError:
+        print("[KD] WARNING: Could not import UKAN from KAN-Road-Segmentation. "
+              "Skipping knowledge distillation.")
+        return None
+    
+    # Read teacher config to get kan_type and embed_dims
+    config_path = os.path.join(os.path.dirname(teacher_weights), "config.yml")
+    if os.path.isfile(config_path):
+        with open(config_path) as f:
+            teacher_cfg = yaml.safe_load(f)
+        kan_type = teacher_cfg.get("kan_type", "ReLU")
+        embed_dims = teacher_cfg.get("input_list", [64, 128, 256])
+    else:
+        kan_type = "ReLU"
+        embed_dims = [64, 128, 256]
+    
+    teacher = UKAN(
+        num_classes=num_classes,
+        input_channels=3,
+        embed_dims=embed_dims,
+        kan_type=kan_type,
+    )
+    
+    state = torch.load(teacher_weights, map_location="cpu", weights_only=False)
+    if isinstance(state, dict) and "model_state_dict" in state:
+        state = state["model_state_dict"]
+    teacher.load_state_dict(state, strict=False)
+    teacher = teacher.to(device).eval()
+    
+    # Freeze all parameters
+    for p in teacher.parameters():
+        p.requires_grad = False
+    
+    print(f"[KD] Loaded teacher UKAN ({kan_type}) from '{teacher_weights}'")
+    return teacher
+
+
+def kd_loss(student_logits, teacher_logits, temperature=4.0):
+    """KL-divergence distillation loss between student and teacher logits."""
+    s = F.log_softmax(student_logits / temperature, dim=1)
+    t = F.softmax(teacher_logits / temperature, dim=1)
+    return F.kl_div(s, t, reduction="batchmean") * (temperature * temperature)
+
+
+def boundary_loss(pred_logits, target, kernel_size=3):
+    """Auxiliary loss that penalizes errors on boundary pixels."""
+    with torch.no_grad():
+        target_f = target.float().unsqueeze(1)
+        kernel = torch.ones(1, 1, kernel_size, kernel_size,
+                            device=target.device, dtype=target_f.dtype)
+        pad = kernel_size // 2
+        dilated = F.conv2d(target_f, kernel, padding=pad).clamp(0, 1)
+        eroded = 1.0 - F.conv2d(1.0 - target_f, kernel, padding=pad).clamp(0, 1)
+        boundary_mask = ((dilated - eroded) > 0).float().squeeze(1)  # (B, H, W)
+    
+    # Only compute loss on boundary pixels
+    boundary_sum = boundary_mask.sum() + 1e-5
+    pred_prob = F.softmax(pred_logits, dim=1)[:, 0]  # class-0 probability
+    target_binary = (target == 0).float()
+    loss = F.binary_cross_entropy(
+        (pred_prob * boundary_mask).clamp(1e-6, 1 - 1e-6),
+        target_binary * boundary_mask,
+        reduction="sum",
+    ) / boundary_sum
+    return loss
 
 
 def str2bool(v):
@@ -158,6 +246,31 @@ def parse_args():
     parser.add_argument("--prefetch_factor", default=4, type=int)
     parser.add_argument("--compile_model", default=False, type=str2bool)
 
+    # Knowledge Distillation (CKD — BNext, 2024)
+    parser.add_argument(
+        "--teacher_weights", default="", type=str,
+        help="Path to teacher model_best.pth (UKAN from KAN-Road-Segmentation). "
+             "Set to enable knowledge distillation.",
+    )
+    parser.add_argument(
+        "--kan_seg_root", default="", type=str,
+        help="Path to KAN-Road-Segmentation/Seg_UKAN root (for importing UKAN). "
+             "Auto-detected if not set.",
+    )
+    parser.add_argument(
+        "--kd_alpha", default=0.3, type=float,
+        help="Distillation weight: loss = (1-alpha)*task + alpha*kd. "
+             "CKD schedule: round1=0.3, round2=0.5, round3=0.7.",
+    )
+    parser.add_argument(
+        "--kd_temperature", default=4.0, type=float,
+        help="KD softmax temperature (higher = softer probabilities).",
+    )
+    parser.add_argument(
+        "--boundary_weight", default=0.5, type=float,
+        help="Weight for boundary-aware auxiliary loss (0 = disabled).",
+    )
+
     return vars(parser.parse_args())
 
 
@@ -245,6 +358,7 @@ def train_one_epoch(
     rank,
     world_size,
     scheduler=None,
+    teacher=None,
 ):
     avg_meters = {"loss": AverageMeter()}
     seg_metric = SegmentationMetric(config["num_classes"])
@@ -256,13 +370,36 @@ def train_one_epoch(
     )
     optimizer.zero_grad()
 
+    kd_alpha = config.get("kd_alpha", 0.0) if teacher is not None else 0.0
+    kd_temp = config.get("kd_temperature", 4.0)
+    bnd_weight = config.get("boundary_weight", 0.0)
+
     for batch_idx, (inp, target, _) in enumerate(train_loader):
         inp = inp.cuda(non_blocking=True)
         target = target.cuda(non_blocking=True)
 
         with amp.autocast("cuda", enabled=config["use_amp"], dtype=getattr(torch, config.get("amp_dtype", "float16"))):
             output = model(inp)
-            loss = criterion(output, target)
+            task_loss = criterion(output, target)
+
+            loss = task_loss
+
+            # Knowledge Distillation loss (CKD — BNext, 2024)
+            if teacher is not None and kd_alpha > 0:
+                with torch.no_grad():
+                    teacher_out = teacher(inp)
+                    # Handle resolution mismatch between teacher and student
+                    if teacher_out.shape[2:] != output.shape[2:]:
+                        teacher_out = F.interpolate(
+                            teacher_out, size=output.shape[2:],
+                            mode="bilinear", align_corners=False,
+                        )
+                distill = kd_loss(output, teacher_out, temperature=kd_temp)
+                loss = (1.0 - kd_alpha) * task_loss + kd_alpha * distill
+
+            # Boundary-aware auxiliary loss
+            if bnd_weight > 0:
+                loss = loss + bnd_weight * boundary_loss(output, target)
 
             loss = loss / config["grad_accum_steps"]
 
@@ -579,6 +716,22 @@ def main():
     if is_main_process(rank):
         shutil.copy2(__file__, os.path.join(exp_dir, "train.py"))
 
+    # ── Load teacher model for Knowledge Distillation ──────────────────────
+    teacher = None
+    if config.get("teacher_weights"):
+        kan_root = config.get("kan_seg_root", "").strip()
+        if not kan_root:
+            # Auto-detect: assume KAN-Road-Segmentation is a sibling of BiKA
+            bika_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+            parent = os.path.dirname(bika_root)
+            kan_root = os.path.join(parent, "KAN-Road-Segmentation", "Seg_UKAN")
+        teacher = load_teacher_model(
+            config["teacher_weights"],
+            kan_root,
+            config["num_classes"],
+            device=f"cuda:{local_rank}",
+        )
+
     bdd = config["bdd100k_base"]
     train_img_ids = [
         os.path.splitext(os.path.basename(p))[0].replace("_train_id", "")
@@ -734,6 +887,7 @@ def main():
             rank,
             world_size,
             scheduler=scheduler,
+            teacher=teacher,
         )
         val_log = validate(config, val_loader, model, criterion, rank, world_size)
 
