@@ -92,7 +92,7 @@ def kd_loss(student_logits, teacher_logits, temperature=4.0):
 
 
 def boundary_loss(pred_logits, target, kernel_size=3):
-    """Auxiliary loss that penalizes errors on boundary pixels."""
+    """Auxiliary loss that penalizes errors on boundary pixels (AMP-safe)."""
     with torch.no_grad():
         target_f = target.float().unsqueeze(1)
         kernel = torch.ones(1, 1, kernel_size, kernel_size,
@@ -102,12 +102,13 @@ def boundary_loss(pred_logits, target, kernel_size=3):
         eroded = 1.0 - F.conv2d(1.0 - target_f, kernel, padding=pad).clamp(0, 1)
         boundary_mask = ((dilated - eroded) > 0).float().squeeze(1)  # (B, H, W)
     
-    # Only compute loss on boundary pixels
+    # Use class-0 logits directly (AMP-safe, no softmax needed)
+    # For 2-class: logit difference = logits[:,0] - logits[:,1]
     boundary_sum = boundary_mask.sum() + 1e-5
-    pred_prob = F.softmax(pred_logits, dim=1)[:, 0]  # class-0 probability
+    logit_diff = pred_logits[:, 0] - pred_logits[:, 1]  # (B, H, W)
     target_binary = (target == 0).float()
-    loss = F.binary_cross_entropy(
-        (pred_prob * boundary_mask).clamp(1e-6, 1 - 1e-6),
+    loss = F.binary_cross_entropy_with_logits(
+        logit_diff * boundary_mask,
         target_binary * boundary_mask,
         reduction="sum",
     ) / boundary_sum
@@ -721,10 +722,18 @@ def main():
     if config.get("teacher_weights"):
         kan_root = config.get("kan_seg_root", "").strip()
         if not kan_root:
-            # Auto-detect: assume KAN-Road-Segmentation is a sibling of BiKA
+            # Auto-detect: check common layouts relative to BiKA repo
             bika_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
             parent = os.path.dirname(bika_root)
-            kan_root = os.path.join(parent, "KAN-Road-Segmentation", "Seg_UKAN")
+            for candidate in [
+                os.path.join(parent, "KAN-Road-Segmentation", "Seg_UKAN"),
+                os.path.join(parent, "kan", "KAN-Road-Segmentation", "Seg_UKAN"),
+            ]:
+                if os.path.isdir(candidate):
+                    kan_root = candidate
+                    break
+            else:
+                kan_root = os.path.join(parent, "KAN-Road-Segmentation", "Seg_UKAN")
         teacher = load_teacher_model(
             config["teacher_weights"],
             kan_root,
