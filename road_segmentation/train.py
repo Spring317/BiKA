@@ -85,10 +85,16 @@ def load_teacher_model(teacher_weights, kan_seg_root, num_classes, device):
 
 
 def kd_loss(student_logits, teacher_logits, temperature=4.0):
-    """KL-divergence distillation loss between student and teacher logits."""
+    """KL-divergence distillation loss between student and teacher logits.
+    
+    Normalised by both batch size AND spatial dimensions (H*W) so the
+    magnitude is comparable to per-pixel cross-entropy losses.
+    """
     s = F.log_softmax(student_logits / temperature, dim=1)
     t = F.softmax(teacher_logits / temperature, dim=1)
-    return F.kl_div(s, t, reduction="batchmean") * (temperature * temperature)
+    # batchmean divides by N only; for dense prediction divide by H*W too
+    spatial = student_logits.shape[2] * student_logits.shape[3]
+    return F.kl_div(s, t, reduction="batchmean") * (temperature * temperature) / spatial
 
 
 def boundary_loss(pred_logits, target, kernel_size=3):
@@ -107,9 +113,11 @@ def boundary_loss(pred_logits, target, kernel_size=3):
     boundary_sum = boundary_mask.sum() + 1e-5
     logit_diff = pred_logits[:, 0] - pred_logits[:, 1]  # (B, H, W)
     target_binary = (target == 0).float()
+    # Use `weight` so non-boundary pixels contribute exactly 0
     loss = F.binary_cross_entropy_with_logits(
-        logit_diff * boundary_mask,
-        target_binary * boundary_mask,
+        logit_diff,
+        target_binary,
+        weight=boundary_mask,
         reduction="sum",
     ) / boundary_sum
     return loss
