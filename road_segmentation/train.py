@@ -204,6 +204,18 @@ def parse_args():
              "connections keep receiving gradient (BNN practice); try 1.0 "
              "if training stalls/regresses after some epochs.",
     )
+    parser.add_argument(
+        "--lambda_bipolar",
+        default=0.0,
+        type=float,
+        help="Weight for bipolar regularization. Pushes BNN latent weights towards +/- 1",
+    )
+    parser.add_argument(
+        "--cutmix_prob",
+        default=0.0,
+        type=float,
+        help="Probability of applying CutMix augmentation during training.",
+    )
 
     # Scheduler
     parser.add_argument(
@@ -392,14 +404,52 @@ def train_one_epoch(
     kd_alpha = config.get("kd_alpha", 0.0) if teacher is not None else 0.0
     kd_temp = config.get("kd_temperature", 4.0)
     bnd_weight = config.get("boundary_weight", 0.0)
+    lambda_bipolar = config.get("lambda_bipolar", 0.0)
+    cutmix_prob = config.get("cutmix_prob", 0.0)
+
+    # Pre-fetch bika weights for fast regularization computation
+    bika_weights = []
+    if lambda_bipolar > 0:
+        for m in model.modules():
+            if isinstance(m, BiKA_Conv2d):
+                bika_weights.append(m.weight)
 
     for batch_idx, (inp, target, _) in enumerate(train_loader):
         inp = inp.cuda(non_blocking=True)
         target = target.cuda(non_blocking=True)
 
         with amp.autocast("cuda", enabled=config["use_amp"], dtype=getattr(torch, config.get("amp_dtype", "float16"))):
+            # CutMix augmentation
+            use_cutmix = False
+            if cutmix_prob > 0 and torch.rand(1).item() < cutmix_prob:
+                use_cutmix = True
+                B, C, H, W = inp.size()
+                # Generate random bounding box
+                lam = torch.distributions.beta.Beta(1.0, 1.0).sample().item()
+                cut_ratio = torch.sqrt(torch.tensor(1. - lam))
+                cut_w = int(W * cut_ratio)
+                cut_h = int(H * cut_ratio)
+                cx = torch.randint(0, W, (1,)).item()
+                cy = torch.randint(0, H, (1,)).item()
+                bbx1 = torch.clamp(torch.tensor(cx - cut_w // 2), 0, W).item()
+                bby1 = torch.clamp(torch.tensor(cy - cut_h // 2), 0, H).item()
+                bbx2 = torch.clamp(torch.tensor(cx + cut_w // 2), 0, W).item()
+                bby2 = torch.clamp(torch.tensor(cy + cut_h // 2), 0, H).item()
+                
+                # Roll batch indices to get mixing partners
+                rand_index = torch.randperm(B).cuda()
+                inp[:, :, bby1:bby2, bbx1:bbx2] = inp[rand_index, :, bby1:bby2, bbx1:bbx2]
+                target_a = target
+                target_b = target[rand_index]
+            
             output = model(inp)
-            task_loss = criterion(output, target)
+            
+            if use_cutmix:
+                task_loss = criterion(output, target_a) * lam + criterion(output, target_b) * (1. - lam)
+                target_for_metric = target_a # Track original targets for metric
+            else:
+                task_loss = criterion(output, target)
+                target_for_metric = target
 
             loss = task_loss
 
@@ -430,12 +480,20 @@ def train_one_epoch(
 
             # Boundary-aware auxiliary loss
             if bnd_weight > 0:
-                loss = loss + bnd_weight * boundary_loss(output, target)
+                if use_cutmix:
+                    loss = loss + bnd_weight * (boundary_loss(output, target_a) * lam + boundary_loss(output, target_b) * (1. - lam))
+                else:
+                    loss = loss + bnd_weight * boundary_loss(output, target)
+
+            # Bipolar Regularization loss
+            if lambda_bipolar > 0 and len(bika_weights) > 0:
+                bipolar_reg = sum((1 - w**2).mean() for w in bika_weights)
+                loss = loss + lambda_bipolar * bipolar_reg
 
             loss = loss / config["grad_accum_steps"]
 
         scaler.scale(loss).backward()
-        seg_metric.update(output.detach(), target)
+        seg_metric.update(output.detach(), target_for_metric)
 
         if (batch_idx + 1) % config["grad_accum_steps"] == 0:
             if config["clip_grad"] > 0:

@@ -7,6 +7,18 @@ from .BiKA_Conv2d import BiKA_Conv2d
 import torch.utils.checkpoint as checkpoint
 
 
+class RPReLU(nn.Module):
+    """ReActNet-style PReLU with learnable pre/post shifts for BNNs."""
+    def __init__(self, channels):
+        super().__init__()
+        self.shift_pre = nn.Parameter(torch.zeros(1, channels, 1, 1))
+        self.prelu = nn.PReLU(channels)
+        self.shift_post = nn.Parameter(torch.zeros(1, channels, 1, 1))
+    
+    def forward(self, x):
+        return self.prelu(x + self.shift_pre) + self.shift_post
+
+
 class BiKAConvBlock(nn.Module):
     """Enhanced BiKA block with paper-derived accuracy fixes.
 
@@ -20,11 +32,11 @@ class BiKAConvBlock(nn.Module):
         super().__init__()
         self.conv1 = BiKA_Conv2d(in_ch, out_ch, kernel_size=3, padding=1)
         self.bn1 = nn.BatchNorm2d(out_ch)
-        self.act1 = nn.PReLU(out_ch)  # ReActNet-inspired: learnable slope
+        self.act1 = RPReLU(out_ch)  # ReActNet-inspired: distribution reshape
 
         self.conv2 = BiKA_Conv2d(out_ch, out_ch, kernel_size=3, padding=1)
         self.bn2 = nn.BatchNorm2d(out_ch)
-        self.act2 = nn.PReLU(out_ch)
+        self.act2 = RPReLU(out_ch)
 
         # FP32 Skip Connection (Bi-Real Net, ECCV 2018)
         if in_ch != out_ch:
@@ -63,7 +75,7 @@ class BiKASegNet(nn.Module):
       - Libra-PB (IR-Net, CVPR 2020)      — in BiKA_Conv2d
       - AdaBin (ECCV 2022)                 — in BiKA_Conv2d
       - Error Decay Estimator (IR-Net)     — in CUDA backward kernel
-      - PReLU (ReActNet-inspired)          — replaces ReLU for learnable slopes
+      - RPReLU (ReActNet)                  — replaces PReLU for distribution shifts
       - FP32 Skip (Bi-Real Net, ECCV 2018) — gradient highway
       - Activation Checkpointing           — VRAM reduction
     """
@@ -85,10 +97,10 @@ class BiKASegNet(nn.Module):
             self.enc1 = nn.Sequential(
                 nn.Conv2d(in_channels, base_channels, kernel_size=3, padding=1, bias=False),
                 nn.BatchNorm2d(base_channels),
-                nn.PReLU(base_channels),
+                RPReLU(base_channels),
                 BiKA_Conv2d(base_channels, base_channels, kernel_size=3, padding=1),
                 nn.BatchNorm2d(base_channels),
-                nn.PReLU(base_channels),
+                RPReLU(base_channels),
             )
         else:
             self.enc1 = BiKAConvBlock(in_channels, base_channels)
