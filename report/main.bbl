@@ -1,0 +1,91 @@
+\begin{thebibliography}{10}
+
+\bibitem{liu2024kan}
+Z.~Liu, Y.~Wang, S.~Vaidya, F.~Ruehle, J.~Halverson, M.~Solja{\v{c}}i{\'c},
+  T.~Y. Hou, and M.~Tegmark, ``{KAN}: Kolmogorov-arnold networks,'' {\em arXiv
+  preprint arXiv:2404.19756}, 2024.
+
+\bibitem{ronneberger2015unet}
+O.~Ronneberger, P.~Fischer, and T.~Brox, ``{U-Net}: Convolutional networks for
+  biomedical image segmentation,'' in {\em International Conference on Medical
+  Image Computing and Computer-Assisted Intervention (MICCAI)}, pp.~234--241,
+  2015.
+
+\bibitem{long2015fcn}
+J.~Long, E.~Shelhamer, and T.~Darrell, ``Fully convolutional networks for
+  semantic segmentation,'' in {\em Proceedings of the IEEE Conference on
+  Computer Vision and Pattern Recognition (CVPR)}, pp.~3431--3440, 2015.
+
+\bibitem{xie2021segformer}
+E.~Xie, W.~Wang, Z.~Yu, A.~Anandkumar, J.~M. Alvarez, and P.~Luo,
+  ``{SegFormer}: Simple and efficient design for semantic segmentation with
+  transformers,'' in {\em Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2021.
+
+\bibitem{cao2022swinunet}
+H.~Cao, Y.~Wang, J.~Chen, D.~Jiang, X.~Zhang, Q.~Tian, and M.~Wang,
+  ``{Swin-Unet}: Unet-like pure transformer for medical image segmentation,''
+  {\em arXiv preprint arXiv:2105.05537}, 2022.
+
+\bibitem{kolmogorov1957}
+A.~N. Kolmogorov, ``On the representation of continuous functions of several
+  variables by superposition of continuous functions of one variable and
+  addition,'' {\em Doklady Akademii Nauk SSSR}, vol.~114, pp.~953--956, 1957.
+
+\bibitem{arnold2009}
+V.~I. Arnold, ``On the representation of functions of several variables as a
+  superposition of functions of a smaller number of variables,'' {\em Selected
+  Works}, 2009.
+
+\bibitem{li2024ukan}
+C.~Li, X.~Liu, W.~Li, C.~Wang, H.~Liu, and Y.~Yuan, ``{U-KAN} makes strong
+  backbone for medical image segmentation and generation,'' {\em arXiv preprint
+  arXiv:2406.02918}, 2024.
+
+\bibitem{qin2020bireal}
+Z.~Liu, B.~Wu, W.~Luo, X.~Yang, W.~Liu, and K.-T. Cheng, ``{Bi-Real Net}:
+  Enhancing the performance of 1-bit {CNNs} with improved representational
+  capability and advanced training algorithm,'' in {\em European Conference on
+  Computer Vision (ECCV)}, 2018.
+
+\bibitem{liu2020reactnet}
+Z.~Liu, Z.~Shen, M.~Savvides, and K.-T. Cheng, ``{ReActNet}: Towards precise
+  binary neural network with generalized activation functions,'' in {\em
+  European Conference on Computer Vision (ECCV)}, 2020.
+
+\bibitem{chen2018deeplabv3plus}
+L.-C. Chen, Y.~Zhu, G.~Papandreou, F.~Schroff, and H.~Adam, ``Encoder-decoder
+  with atrous separable convolution for semantic image segmentation,'' in {\em
+  European Conference on Computer Vision (ECCV)}, 2018.
+
+\bibitem{fasterkan2024}
+T.~Athanasios, ``{FasterKAN}: Accelerating kolmogorov-arnold networks with
+  rswaf basis functions,'' {\em GitHub Repository}, 2024.
+
+\bibitem{rastegari2016xnor}
+M.~Rastegari, V.~Ordonez, J.~Redmon, and A.~Farhadi, ``{XNOR-Net}: Imagenet
+  classification using binary convolutional neural networks,'' in {\em European
+  Conference on Computer Vision (ECCV)}, pp.~525--542, 2016.
+
+\bibitem{qin2020irnet}
+H.~Qin, R.~Gong, X.~Liu, M.~Shen, Z.~Wei, F.~Yu, and J.~Song, ``Forward and
+  backward information retention for accurate binary neural networks,'' in {\em
+  IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, 2020.
+
+\bibitem{tu2022adabin}
+Z.~Tu, X.~Chen, P.~Ren, and Y.~Wang, ``{AdaBin}: Improving binary neural
+  networks with adaptive binary sets,'' in {\em European Conference on Computer
+  Vision (ECCV)}, 2022.
+
+\bibitem{bengio2013ste}
+Y.~Bengio, N.~L{\'e}onard, and A.~Courville, ``Estimating or propagating
+  gradients through stochastic neurons for conditional computation,'' in {\em
+  arXiv preprint arXiv:1308.3432}, 2013.
+
+\bibitem{bdd100k2020}
+F.~Yu, H.~Chen, X.~Wang, W.~Xian, Y.~Chen, F.~Liu, V.~Madhavan, and T.~Darrell,
+  ``{BDD100K}: A diverse driving dataset for heterogeneous multitask
+  learning,'' in {\em IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition (CVPR)}, 2020.
+
+\end{thebibliography}

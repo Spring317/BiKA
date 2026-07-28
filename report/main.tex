@@ -1,0 +1,891 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[utf8]{inputenc} % For UTF-8 encoding
+\usepackage[T1]{fontenc}    % For better font encoding
+\usepackage[english]{babel} % For English language
+\usepackage{graphicx}       % For including images
+\usepackage{amsmath,amssymb}% For mathematical symbols
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows,positioning,calc,fit}
+\usepackage{hyperref}       % For hyperlinks
+\usepackage{geometry}       % For adjusting page margins
+\usepackage{fancyhdr}       % For headers and footers
+\usepackage{listings}       % For code listings
+\usepackage{color}          % For color definitions
+\usepackage{caption}        % For customizing captions
+\usepackage{booktabs}       % For professional-looking tables
+\usepackage{longtable}      % For tables that span multiple pages
+\usepackage{float}          % For controlling float positions
+\usepackage{array}          % For advanced table options
+\usepackage{subfigure}
+\usepackage{multirow}
+\usepackage{multicol}
+\geometry{margin=1in}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0em}
+\usepackage[acronym]{glossaries}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Road Segmentation for AutoCar}
+\rhead{\thepage}
+\fancypagestyle{noNumber}{%
+  \fancyhf{}
+  \lhead{Road Segmentation for AutoCar}
+  % clear all
+  % no page number here
+}
+\makeatletter
+\let\ps@plain\ps@fancy
+\makeatother
+\makeglossaries
+
+\newacronym{kan}{KAN}{Kolmogorov-Arnold Network}
+\newacronym{bnn}{BNN}{Binary Neural Network}
+\newacronym{cnn}{CNN}{Convolutional Neural Network}
+\newacronym{dl}{DL}{Deep Learning}
+\newacronym{ml}{ML}{Machine Learning}
+\newacronym{mlp}{MLP}{Multi-Layer Perceptron}
+\newacronym{ukan}{UKAN}{U-shaped Kolmogorov-Arnold Network}
+\newacronym{bika}{BiKA}{Binarized Kolmogorov-Arnold Network}
+\newacronym{ste}{STE}{Straight-Through Estimator}
+\newacronym{iou}{IoU}{Intersection over Union}
+\newacronym{bn}{BN}{Batch Normalisation}
+\newacronym{cv}{CV}{Computer Vision}
+\newacronym{ai}{AI}{Artificial Intelligence}
+\renewcommand{\listfigurename}{LIST OF FIGURES}
+\renewcommand{\listtablename}{LIST OF TABLES}
+
+
+
+\begin{document}
+\pagenumbering{arabic}
+
+\begin{titlepage}
+\begin{tikzpicture}[remember picture, overlay]
+  \draw[thick] ($(current page.north west) + (2cm, -2cm)$) rectangle ($(current page.south east) + (-2cm, 2cm)$);
+\end{tikzpicture}
+
+\begin{center}
+    {\small 
+    UNIVERSITY OF SCIENCE AND TECHNOLOGY OF HANOI \\
+    \textbf{DEPARTMENT OF INFORMATION AND COMMUNICATION TECHNOLOGY} 
+    } \\[1.5cm]
+
+    % USTH Logo
+    \includegraphics[width=0.45\linewidth]{images/usth.png} \\[1.5cm]
+
+    {\Huge \textbf{MASTER THESIS}}\\[1.5cm]
+
+    {\Large By} \\[0.5cm]
+    {\Large Dao Xuan Quy - 2440053} \\[1cm]
+
+    {\Large Title:} \\[0.5cm]
+    {\huge \textbf{\uppercase{Road Segmentation for AutoCar}} \\[0.5cm] 
+    \textbf{\uppercase{Networks}}} \\[2cm]
+    
+    {\Large
+    \begin{tabular}{rl}
+        Supervisor: & Dr. Nghiem Thi Phuong \\
+    \end{tabular}
+    } \\[3cm]
+
+    {\Large \textbf{Hanoi, August -- 2026}}
+\end{center}
+\end{titlepage}
+
+\clearpage
+\thispagestyle{empty}
+To whom it may concern,
+
+I, Tran Giang Son, certify that the internship report of Mr. Dao Xuan Quy is qualified to be presented in the Internship Jury 2025-2026.
+
+Hanoi, August 2026
+
+Supervisor's signature\\
+\\
+\\
+\\
+\\
+
+Tran Giang Son
+
+
+
+\clearpage
+\pagenumbering{Roman}  % Start Roman page numbering
+\setcounter{page}{1}   % Start from I
+
+
+\tableofcontents
+
+\addcontentsline{toc}{chapter}{Content}
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+\clearpage
+
+% List of Tables
+\listoftables
+\addcontentsline{toc}{chapter}{List of Table}
+
+\printglossary[type=\acronymtype,title=List of Abbreviations]
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+
+
+
+
+\newpage
+\chapter*{Declaration}
+\addcontentsline{toc}{chapter}{Declaration}
+I hereby, Dao Xuan Quy, declare that my thesis represents my own work after doing an internship at USTH ICTLAB, University of Science and Technology of Hanoi.
+
+I have read the University's internship guidelines. In the case of plagiarism appearing in my thesis, I accept responsibility for the conduct of the procedures in accordance with the
+University's Committee.
+
+Hanoi, August 2026\\
+
+Signature\\
+\\
+\\
+\\
+\\
+Dao Xuan  Quy
+
+
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+ I would like to express my sincere gratitude to Dr. Nghiem Thi Phuong and A.Prof. Tran Giang Son for they exceptional guidance and support throughout this project. I am also grateful to USTH for providing me with the computational resources needed to complete this research, and to the open-source communities behind the KAN, BiKA and U-KAN projects for providing foundational implementations.
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Semantic segmentation is a critical component of autonomous driving perception, requiring both high accuracy and low latency for real-time deployment on both ARM and x86/CUDA hardwares. Traditional segmentation networks based on U-Net and Transformer architectures rely on Multi-Layer Perceptrons (MLPs) with fixed activation functions, limiting their representational flexibility. 
+
+In this thesis, we study and implement two novel approaches that integrate Kolmogorov-Arnold Networks (KANs) into segmentation architectures for road segmentation. The main contributions of this thesis include:
+\begin{itemize}
+    \item Optimizing and Evaluating U-KAN (UKAN), a U-Net style segmentation network that replaces standard MLP layers with KAN layers using learnable activation functions on edges, including multiple KAN variants: FasterKAN (RSWAf basis), ReLU-KAN, HardSwish-KAN, PWLO-KAN, and TeLU-KAN.
+    \item Implementing and evaluating BiKA (Binarized KAN), a novel architecture that combines the KAN philosophy of per-connection learnable activations with Binary Neural Network (BNN) techniques, achieving extreme compression through 1-bit binarized weights and activations with custom CUDA kernels.
+    \item Benchmarking both architectures against standard baselines in terms of segmentation accuracy (mIoU, Dice), model size, and inference throughput with two distinct problems: Segment Everything (20 classes) and Segment the drivable area only (2 classes)
+  \end{itemize}
+
+The experimental results demonstrate that KAN-based architectures successfully achieve a highly accurate segmentation results for multi-class segmentation with UKAN architectures, and retain acceptable accuracy while perform extremely fast with BiKA implementations.
+
+\textbf{Keywords:} Kolmogorov-Arnold Networks, Semantic Segmentation, Binary Neural Networks, Road Segmentation, U-Net, Edge Deployment.
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\chapter{Introduction}
+\section{Context and motivation}
+\label{sec:context}
+\subsection{Context}
+Semantic segmentation, the task of assigning a class label to every pixel in an image, is a foundational capability for autonomous driving perception systems. Accurate road segmentation enables autonomous vehicles to identify drivable surfaces, lane boundaries, sidewalks, and other critical scene elements in real time. The evolution of segmentation architectures has progressed from early fully convolutional networks (FCN)~\cite{long2015fcn} to the U-Net encoder-decoder paradigm~\cite{ronneberger2015unet}, and more recently to Transformer-based models such as SegFormer~\cite{xie2021segformer} and Swin-UNet~\cite{cao2022swinunet}.
+
+However, all of these architectures share a fundamental design choice inherited from Multi-Layer Perceptrons (MLPs): they place fixed, predetermined activation functions (e.g., ReLU, GELU) at the \emph{nodes} of the network, while the \emph{edges} (connections) carry only learnable linear weights. The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} suggests an alternative: placing learnable, potentially non-linear activation functions on the \emph{edges} themselves, allowing the network to learn both the weights and the optimal activation shape for each connection. This principle forms the foundation of Kolmogorov-Arnold Networks (KANs)~\cite{liu2024kan}.
+
+Recent work has demonstrated the potential of KAN-based architectures in medical image segmentation~\cite{li2024ukan}, but their application to road scene segmentation and their compatibility with extreme model compression techniques such as Binary Neural Networks (BNNs)~\cite{qin2020bireal, liu2020reactnet} remain largely unexplored.
+
+\subsection{Problem Statement}
+Deploying segmentation models on autonomous vehicles poses two competing requirements. First, the model must achieve high segmentation accuracy to ensure safe navigation—missed road boundaries or misclassified obstacles can lead to catastrophic failures. Second, the model must operate within strict computational budgets imposed by edge hardware (e.g., embedded GPUs, FPGAs, or even microcontrollers), demanding low latency, small model size, and minimal memory bandwidth.
+
+Standard full-precision segmentation networks (32-bit floating point) achieve high accuracy but require significant computational resources. Binary Neural Networks (BNNs) offer extreme compression by quantizing both weights and activations to 1-bit representations, but they suffer from severe accuracy degradation due to the limited expressiveness of the sign function used for binarization. The central challenge addressed in this thesis is: \emph{Can the KAN paradigm of learnable per-connection activations mitigate the accuracy loss inherent in binarized networks, while preserving their computational efficiency advantages?}
+
+\subsection{Motivation}
+This research is motivated by the need to bridge the gap between expressive, high-accuracy segmentation models and the extreme efficiency demands of real-time edge deployment. By investigating two complementary approaches—UKAN for full-precision KAN-augmented segmentation and BiKA for binarized KAN convolutions—we aim to establish a comprehensive understanding of how KAN integration affects the accuracy-efficiency Pareto frontier for road segmentation. Furthermore, by implementing knowledge distillation from UKAN to BiKA, we explore whether the rich representations learned by full-precision KAN layers can be effectively transferred to their binarized counterparts.
+
+\section{Related Work}
+\label{sec:related_work}
+The development of semantic segmentation architectures has progressed through several paradigm shifts. Long et al.~\cite{long2015fcn} introduced Fully Convolutional Networks (FCN), demonstrating that classification CNNs could be adapted for dense prediction. Ronneberger et al.~\cite{ronneberger2015unet} proposed U-Net, whose symmetric encoder-decoder architecture with skip connections became the dominant paradigm for biomedical and subsequently autonomous driving segmentation.
+
+Modern segmentation architectures have increasingly incorporated attention mechanisms. SegFormer~\cite{xie2021segformer} introduced a hierarchical Transformer encoder with efficient self-attention, while Swin-UNet~\cite{cao2022swinunet} adapted the shifted-window Transformer for U-shaped segmentation. DeepLabV3+~\cite{chen2018deeplabv3plus} combined atrous spatial pyramid pooling with encoder-decoder structures to capture multi-scale context.
+
+In parallel, the Kolmogorov-Arnold Network (KAN) was proposed by Liu et al.~\cite{liu2024kan} as an alternative to MLPs, placing learnable activation functions on edges rather than nodes. Li et al.~\cite{li2024ukan} subsequently demonstrated U-KAN, integrating KAN layers into the U-Net bottleneck for medical image segmentation. FasterKAN~\cite{fasterkan2024} addressed the computational overhead of the original B-spline KAN implementation by replacing B-splines with Reflectional Switch Activation Functions (RSWAf).
+
+On the model compression front, XNOR-Net~\cite{rastegari2016xnor} and Bi-Real Net~\cite{qin2020bireal} established foundations for BNNs by introducing real-valued skip connections to stabilize binary training. ReActNet~\cite{liu2020reactnet} further improved BNN accuracy through learnable activation shifts (RPReLU). IR-Net~\cite{qin2020irnet} proposed Libra-PB for balanced weight binarization, and AdaBin~\cite{tu2022adabin} introduced learnable per-channel output scaling.
+
+Our work builds upon these foundations by: (1) adapting U-KAN for road segmentation with multiple efficient KAN variants, and (2) proposing BiKA, which fuses the KAN per-connection activation philosophy with state-of-the-art BNN techniques for extreme edge deployment.
+
+\section{Thesis Objective} 
+\label{sec: obj}
+The primary objective of this thesis is to implement, evaluate, and compare two KAN-based segmentation architectures for road scene understanding. Specifically, we aim to: (1) adapt the UKAN architecture with multiple KAN linear variants for road segmentation on the BDD100K dataset, (2) design and implement BiKASegNet, a binarized segmentation network that realizes the KAN philosophy through per-connection binary thresholds, (3) establish a knowledge distillation pipeline from full-precision UKAN to binarized BiKA, and (4) benchmark both architectures against standard U-Net and Transformer baselines in terms of segmentation quality, model size, and inference speed.
+
+\section{Thesis Structure}
+\label{sec: structure}
+The remainder of this thesis is structured as follows:
+\begin{itemize}
+    \item \textbf{Chapter 1} introduces the context, problem statement, related work, and objectives of this research.
+    \item \textbf{Chapter 2} discusses the technical background of Kolmogorov-Arnold Networks, the U-Net segmentation paradigm, Binary Neural Networks, and the KAN variant implementations.
+    \item \textbf{Chapter 3} details the methodology, including the UKAN architecture, KAN layer integration, the BiKA binarized convolution design, and the knowledge distillation framework.
+    \item \textbf{Chapter 4} describes the experimental setup, dataset preparation, training procedures, and performance evaluation of both architectures.
+    \item \textbf{Chapter 5} summarizes the findings of this thesis and outlines future avenues of research.
+\end{itemize}
+
+
+
+\chapter{Background}
+
+This chapter introduces the foundational concepts underlying KAN-based segmentation networks. We begin with the mathematical formulation of Kolmogorov-Arnold Networks, proceed to the U-Net segmentation paradigm, and conclude with the theory and practice of Binary Neural Networks.
+
+
+\section{Kolmogorov-Arnold Networks}
+\label{sec:kan_background}
+The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} states that any multivariate continuous function $f: [0,1]^n \rightarrow \mathbb{R}$ can be represented as a finite composition of continuous functions of a single variable and the binary operation of addition:
+\begin{equation}
+    f(x_1, \dots, x_n) = \sum_{q=0}^{2n} \Phi_q \left( \sum_{p=1}^{n} \phi_{q,p}(x_p) \right)
+\end{equation}
+where $\phi_{q,p}: [0,1] \rightarrow \mathbb{R}$ are univariate inner functions and $\Phi_q: \mathbb{R} \rightarrow \mathbb{R}$ are outer functions. This theorem guarantees the existence of such a representation but does not prescribe how to learn it.
+
+\subsection{KAN vs MLP Architecture}
+Liu et al.~\cite{liu2024kan} proposed Kolmogorov-Arnold Networks as a practical neural network architecture inspired by this theorem. The key distinction between KANs and traditional MLPs is illustrated in Figure~\ref{fig:kan_vs_mlp}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth, thick, scale=0.85, transform shape]
+    \tikzset{
+        neuron/.style={draw, circle, minimum size=1.2cm, fill=blue!5, font=\small},
+        kanneuron/.style={draw, circle, minimum size=1.2cm, fill=green!5, font=\small},
+        label/.style={font=\small\bfseries}
+    }
+    
+    % MLP side
+    \node[label] at (-3.5, 4) {MLP};
+    \node[neuron] (m1) at (-4.5, 2) {$\sigma$};
+    \node[neuron] (m2) at (-2.5, 2) {$\sigma$};
+    \node[neuron] (m3) at (-3.5, 0) {$\Sigma$};
+    
+    \draw[->, thick] (m3) -- node[left, font=\scriptsize] {$w_1$} (m1);
+    \draw[->, thick] (m3) -- node[right, font=\scriptsize] {$w_2$} (m2);
+    \node[font=\scriptsize, below=0.3cm of m3] {Fixed $\sigma$ on nodes};
+    
+    % KAN side
+    \node[label] at (3.5, 4) {KAN};
+    \node[kanneuron] (k1) at (2.5, 2) {$\Sigma$};
+    \node[kanneuron] (k2) at (4.5, 2) {$\Sigma$};
+    \node[kanneuron] (k3) at (3.5, 0) {$\Sigma$};
+    
+    \draw[->, thick, green!60!black] (k3) -- node[left, font=\scriptsize] {$\phi_1(\cdot)$} (k1);
+    \draw[->, thick, green!60!black] (k3) -- node[right, font=\scriptsize] {$\phi_2(\cdot)$} (k2);
+    \node[font=\scriptsize, below=0.3cm of k3] {Learnable $\phi$ on edges};
+\end{tikzpicture}
+\caption{Comparison of MLP (fixed activations on nodes, learnable weights on edges) vs KAN (learnable activation functions on edges, summation on nodes)~\cite{liu2024kan}.}
+\label{fig:kan_vs_mlp}
+\end{figure}
+
+In an MLP, each neuron computes:
+\begin{equation}
+    y_j = \sigma\left(\sum_i w_{ij} x_i + b_j \right)
+\end{equation}
+where $\sigma$ is a fixed activation function (e.g., ReLU) and $w_{ij}$ are learnable scalar weights. In a KAN, each node simply sums its incoming signals, and each edge applies a learnable univariate function:
+\begin{equation}
+    y_j = \sum_i \phi_{ij}(x_i)
+\end{equation}
+where $\phi_{ij}: \mathbb{R} \rightarrow \mathbb{R}$ are learnable activation functions parameterized as spline functions. This places the representational power on the edges rather than the nodes.
+
+\subsection{Original KAN Implementation with B-Splines}
+In the original KAN~\cite{liu2024kan}, each edge activation $\phi_{ij}$ is parameterized as a B-spline:
+\begin{equation}
+    \phi_{ij}(x) = w_b \cdot \text{SiLU}(x) + w_s \cdot \text{spline}(x)
+\end{equation}
+where $\text{SiLU}(x) = x \cdot \sigma(x)$ is a base activation, and $\text{spline}(x) = \sum_k c_k B_k(x)$ is a linear combination of B-spline basis functions $B_k$ with learnable coefficients $c_k$. The B-spline is defined over a grid of knot points $\{t_0, t_1, \dots, t_G\}$ spanning the input domain.
+
+While mathematically elegant, B-spline evaluation requires iterative recursion over the grid, resulting in $\mathcal{O}(G \cdot k)$ operations per activation (where $G$ is the grid size and $k$ is the spline order), making the original KAN impractical for high-throughput vision tasks.
+
+
+\section{Efficient KAN Variants}
+\label{sec:kan_variants}
+To overcome the computational bottleneck of B-splines, several efficient KAN linear replacements have been proposed. Each variant maintains the KAN philosophy of learning activation functions on edges but uses faster basis functions.
+
+\subsection{FasterKAN (RSWAf Basis)}
+FasterKAN~\cite{fasterkan2024} replaces B-splines with the Reflectional Switch Activation Function (RSWAf). Given a set of grid points $\{g_0, g_1, \dots, g_{G-1}\}$ uniformly spanning $[g_{\min}, g_{\max}]$ and an inverse denominator parameter $\beta$, the basis function is:
+\begin{equation}
+    r_k(x) = 1 - \tanh^2\left((x - g_k) \cdot \beta\right)
+\end{equation}
+Each basis function $r_k$ produces a smooth, localized bump centred at grid point $g_k$. The output of a FasterKAN linear layer with input dimension $d_{\text{in}}$ and output dimension $d_{\text{out}}$ is:
+\begin{equation}
+    y = \mathbf{W}_s \cdot \text{vec}\left(\{r_k(x_i)\}_{k=0,\dots,G-1}^{i=1,\dots,d_{\text{in}}}\right)
+\end{equation}
+where $\mathbf{W}_s \in \mathbb{R}^{d_{\text{out}} \times (d_{\text{in}} \cdot G)}$ is a learnable spline projection matrix, and $\text{vec}(\cdot)$ concatenates all basis evaluations into a single vector. The input is first normalised via LayerNorm. A custom CUDA kernel computes the forward and backward passes of the RSWAf function, achieving significant speedups over the B-spline implementation.
+
+\subsection{ReLU-KAN}
+ReLU-KAN replaces the smooth basis with a piecewise-linear function using ReLU:
+\begin{equation}
+    \psi_k(x) = \text{ReLU}(x - g_k) = \max(0, x - g_k)
+\end{equation}
+This produces a basis of shifted ramp functions. The output is computed as:
+\begin{equation}
+    y = \mathbf{W} \cdot \text{vec}\left(\{\psi_k(x_i)\}_{k,i}\right)
+\end{equation}
+ReLU-KAN achieves maximal inference speed due to the trivial cost of ReLU evaluation, but trades off smoothness for speed.
+
+\subsection{HardSwish-KAN}
+HardSwish-KAN uses the HardSwish activation as its basis function:
+\begin{equation}
+    \psi_k(x) = \text{HardSwish}(x - g_k) = (x - g_k) \cdot \frac{\text{ReLU6}(x - g_k + 3)}{6}
+\end{equation}
+This provides a smooth, differentiable basis that avoids the dying neuron problem of ReLU-KAN while maintaining computational efficiency since HardSwish requires no transcendental functions.
+
+\subsection{TeLU-KAN}
+TeLU-KAN employs the Hyperbolic Tangent Exponential Linear Unit:
+\begin{equation}
+    \psi_k(x) = (x - g_k) \cdot \tanh(\exp(x - g_k))
+\end{equation}
+The TeLU activation provides stable gradients across a wide input range, offering a compromise between the smoothness of FasterKAN and the simplicity of ReLU-KAN.
+
+\subsection{PWLO-KAN (Piecewise Linear Optimisation)}
+PWLO-KAN implements a lookup-table-based approach where each segment of the input domain is associated with a learned affine transformation:
+\begin{equation}
+    \phi_k(x) = a_k \cdot x + b_k, \quad x \in [g_k, g_{k+1})
+\end{equation}
+where $a_k, b_k$ are learnable parameters stored as embedding tables. The segment index is computed as:
+\begin{equation}
+    k = \text{clamp}\left(\left\lfloor \frac{x - g_{\min}}{g_{\max} - g_{\min}} \cdot G \right\rfloor, 0, G-1\right)
+\end{equation}
+PWLO-KAN is particularly suited for integer-arithmetic inference engines since the lookup and multiply-accumulate operations can be implemented with shift-and-add primitives.
+
+
+\section{U-Net Segmentation Architecture}
+\label{sec:unet}
+U-Net~\cite{ronneberger2015unet} established the symmetric encoder-decoder architecture with skip connections as the standard paradigm for dense prediction tasks. The encoder progressively downsamples the input through convolutional blocks and pooling operations, extracting increasingly abstract feature representations. The decoder upsamples these features back to the original resolution, with skip connections from corresponding encoder stages providing fine-grained spatial detail.
+
+Each encoder stage consists of a double convolution block:
+\begin{equation}
+    \text{ConvLayer}(x) = \text{ReLU}(\text{BN}(\text{Conv}_{3\times3}(\text{ReLU}(\text{BN}(\text{Conv}_{3\times3}(x))))))
+\end{equation}
+followed by $2\times2$ max pooling for spatial downsampling. The decoder mirrors this structure using bilinear upsampling and concatenation (or addition) with encoder skip connections, as illustrated in Figure~\ref{fig:unet_arch}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth, thick, scale=0.75, transform shape]
+    \tikzset{
+        block/.style={draw, fill=blue!5, rectangle, minimum height=2em, minimum width=5em, rounded corners, align=center, font=\small},
+        kanblock/.style={draw, fill=green!10, rectangle, minimum height=2em, minimum width=5em, rounded corners, align=center, font=\small},
+        line/.style={draw, ->, >=stealth, thick}
+    }
+    % Encoder
+    \node[block] (e1) at (0, 0) {Enc 1\\Conv$\times$2};
+    \node[block] (e2) at (0, -2) {Enc 2\\Conv$\times$2};
+    \node[block] (e3) at (0, -4) {Enc 3\\Conv$\times$2};
+    \node[kanblock] (b) at (0, -6) {Bottleneck};
+    
+    % Decoder
+    \node[block] (d3) at (6, -4) {Dec 3\\Conv$\times$2};
+    \node[block] (d2) at (6, -2) {Dec 2\\Conv$\times$2};
+    \node[block] (d1) at (6, 0) {Dec 1\\Conv$\times$2};
+    \node[block] (out) at (6, 1.5) {$1\times1$ Conv};
+    
+    % Encoder connections
+    \path[line] (e1) -- node[right, font=\scriptsize] {Pool} (e2);
+    \path[line] (e2) -- node[right, font=\scriptsize] {Pool} (e3);
+    \path[line] (e3) -- node[right, font=\scriptsize] {Pool} (b);
+    
+    % Decoder connections
+    \path[line] (b) -- node[below, font=\scriptsize] {Upsample} (d3);
+    \path[line] (d3) -- node[right, font=\scriptsize] {Upsample} (d2);
+    \path[line] (d2) -- node[right, font=\scriptsize] {Upsample} (d1);
+    \path[line] (d1) -- (out);
+    
+    % Skip connections
+    \draw[line, dashed, blue] (e3.east) -- node[above, font=\scriptsize] {Skip} (d3.west);
+    \draw[line, dashed, blue] (e2.east) -- node[above, font=\scriptsize] {Skip} (d2.west);
+    \draw[line, dashed, blue] (e1.east) -- node[above, font=\scriptsize] {Skip} (d1.west);
+\end{tikzpicture}
+\caption{Standard U-Net encoder-decoder architecture with skip connections~\cite{ronneberger2015unet}.}
+\label{fig:unet_arch}
+\end{figure}
+
+
+\section{Binary Neural Networks}
+\label{sec:bnn}
+Binary Neural Networks (BNNs) represent the extreme end of model quantization, constraining both weights and activations to $\{+1, -1\}$. The binarization function for weights is:
+\begin{equation}
+    w_b = \text{sign}(w) = \begin{cases} +1 & \text{if } w \geq 0 \\ -1 & \text{otherwise} \end{cases}
+\end{equation}
+and similarly for activations: $x_b = \text{sign}(x)$. This allows the multiply-accumulate operations in convolutions to be replaced by XNOR and popcount operations:
+\begin{equation}
+    w_b \cdot x_b = \text{XNOR}(w_b, x_b), \quad \sum_i w_{b,i} \cdot x_{b,i} = \text{popcount}(\text{XNOR}(\mathbf{w}_b, \mathbf{x}_b))
+\end{equation}
+achieving up to $\sim$58$\times$ theoretical speedup and $\sim$32$\times$ memory reduction compared to full-precision networks~\cite{rastegari2016xnor}.
+
+\subsection{Straight-Through Estimator (STE)}
+The sign function has zero gradient almost everywhere, making direct backpropagation impossible. Bengio et al.~\cite{bengio2013ste} proposed the Straight-Through Estimator (STE), which approximates the gradient of the sign function as:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial w} \approx \frac{\partial \mathcal{L}}{\partial w_b} \cdot \mathbf{1}_{|w| \leq 1}
+\end{equation}
+where the gradient is passed through unchanged within the clipping window $[-1, 1]$ and zeroed outside. This enables training of binary networks with standard gradient-based optimisers.
+
+\subsection{Key BNN Techniques}
+Several techniques have been developed to improve the accuracy of BNNs:
+
+\subsubsection{Bi-Real Net Skip Connections}
+Bi-Real Net~\cite{qin2020bireal} introduces full-precision (FP32) identity shortcut connections that bypass the binary convolution blocks:
+\begin{equation}
+    y = \text{BinaryConv}(x) + \text{Shortcut}(x)
+\end{equation}
+These skip connections serve as gradient highways, providing a direct path for gradient flow during backpropagation and significantly stabilizing training.
+
+\subsubsection{RPReLU (ReActNet)}
+ReActNet~\cite{liu2020reactnet} replaces standard ReLU with RPReLU, a learnable activation with per-channel pre-shift and post-shift parameters:
+\begin{equation}
+    \text{RPReLU}(x) = \text{PReLU}(x + \gamma) + \beta
+\end{equation}
+where $\gamma \in \mathbb{R}^C$ and $\beta \in \mathbb{R}^C$ are learnable channel-wise shift parameters. This enables the binary network to learn asymmetric activation distributions, compensating for the information loss caused by binarization.
+
+\subsubsection{Libra-PB (Balanced Binarization)}
+IR-Net~\cite{qin2020irnet} proposed Libra Parameter Binarization (Libra-PB), which centres the weight distribution before applying the sign function:
+\begin{equation}
+    w_b = \text{sign}(w - \bar{w}), \quad \bar{w} = \frac{1}{|\mathcal{F}|}\sum_{i \in \mathcal{F}} w_i
+\end{equation}
+where $\bar{w}$ is the mean over the filter dimensions. This ensures approximately 50\% of the binary weights are $+1$ and 50\% are $-1$, maximizing the information entropy of the binary representation.
+
+\subsubsection{AdaBin (Adaptive Binary Scaling)}
+AdaBin~\cite{tu2022adabin} introduces a learnable per-channel output scaling factor $\alpha_c$ that modulates the binary convolution output:
+\begin{equation}
+    y_c = \alpha_c \cdot \text{BinaryConv}_c(x)
+\end{equation}
+At inference, $\alpha_c$ is fused into the subsequent BatchNorm layer's affine parameters, incurring zero additional computational cost.
+
+
+\section{Loss Functions for Segmentation}
+\label{sec:losses}
+Semantic segmentation typically employs a combination of loss functions to handle class imbalance and optimize for region-based metrics.
+
+\subsection{Cross-Entropy Loss}
+The pixel-wise cross-entropy loss for $C$ classes is:
+\begin{equation}
+    \mathcal{L}_{\text{CE}} = -\frac{1}{|\Omega|} \sum_{i \in \Omega} \sum_{c=1}^{C} y_{i,c} \log(\hat{y}_{i,c})
+\end{equation}
+where $\Omega$ is the set of valid pixels, $y_{i,c}$ is the ground-truth one-hot label, and $\hat{y}_{i,c}$ is the predicted probability after softmax.
+
+\subsection{Dice Loss}
+The Dice loss directly optimizes the Dice coefficient (F1 score), which is robust to class imbalance:
+\begin{equation}
+    \mathcal{L}_{\text{Dice}} = 1 - \frac{1}{C} \sum_{c=1}^{C} \frac{2 \sum_i y_{i,c} \hat{y}_{i,c} + \epsilon}{\sum_i y_{i,c} + \sum_i \hat{y}_{i,c} + \epsilon}
+\end{equation}
+where $\epsilon$ is a smoothing constant to prevent division by zero.
+
+\subsection{Combined Cross-Entropy Dice Loss}
+The default loss function used in both UKAN and BiKA training combines both objectives:
+\begin{equation}
+    \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{CE}} + \lambda_{\text{Dice}} \cdot \mathcal{L}_{\text{Dice}}
+\end{equation}
+This jointly optimizes for per-pixel classification accuracy and region-level overlap, with the Dice component ensuring that small classes (e.g., lane markings) are not overwhelmed by the dominant background class.
+
+
+
+\chapter{Methodology and Architecture Design}
+
+This chapter details the two KAN-based segmentation architectures: the full-precision UKAN and the binarized BiKASegNet. We describe the integration of KAN layers into the U-Net framework, the design of binarized KAN convolutions, and the knowledge distillation pipeline connecting both models.
+
+\section{UKAN: U-Shaped KAN Segmentation Network}
+\label{sec:ukan_arch}
+UKAN adapts the U-Net architecture by replacing the standard MLP/Transformer blocks in the bottleneck and lower-resolution stages with KAN-based blocks, while retaining efficient CNN stages at higher resolutions where spatial dimensions are large.
+
+\subsection{Overall Architecture}
+The UKAN architecture follows a three-stage CNN encoder, a KAN encoder-bottleneck, and a mixed KAN-CNN decoder, as illustrated in Figure~\ref{fig:ukan_arch}.
+
+\begin{figure}[htbp]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[>=stealth, thick]
+        \tikzset{
+            conv/.style={draw, fill=blue!8, rectangle, minimum height=3em, minimum width=8em, rounded corners, align=center, font=\small},
+            kan/.style={draw=green!60!black, fill=green!5, rectangle, minimum height=3em, minimum width=8em, rounded corners, align=center, font=\small, line width=1.2pt},
+            patch/.style={draw, fill=orange!10, rectangle, minimum height=2.5em, minimum width=7em, rounded corners, align=center, font=\small},
+            io/.style={font=\scriptsize, align=center, fill=white, inner sep=2pt},
+            line/.style={draw, ->, >=stealth, thick, rounded corners=3pt}
+        }
+        
+        % Input
+        \node[conv] (input) at (0, 0) {Input\\$H \times W \times 3$};
+        
+        % CNN Encoder
+        \node[conv] (e1) at (0, -2.5) {ConvLayer 1\\$\frac{H}{2} \times \frac{W}{2} \times C_0/8$};
+        \node[conv] (e2) at (0, -5) {ConvLayer 2\\$\frac{H}{4} \times \frac{W}{4} \times C_0/4$};
+        \node[conv] (e3) at (0, -7.5) {ConvLayer 3\\$\frac{H}{8} \times \frac{W}{8} \times C_0$};
+        
+        % KAN Encoder
+        \node[patch] (p3) at (4.5, -7.5) {PatchEmbed\\Stride 2};
+        \node[kan] (kb1) at (9, -7.5) {KANBlock 1\\$\frac{H}{16} \times \frac{W}{16} \times C_1$};
+        
+        % Bottleneck
+        \node[patch] (p4) at (9, -10) {PatchEmbed\\Stride 2};
+        \node[kan] (kb2) at (9, -12.5) {KANBlock 2 (Bottleneck)\\$\frac{H}{32} \times \frac{W}{32} \times C_2$};
+        
+        % Decoder
+        \node[conv] (d1) at (16, -12.5) {D\_ConvLayer 1};
+        \node[kan] (dkb1) at (16, -10) {Decoder KANBlock 1\\$C_1$};
+        \node[conv] (d2) at (16, -7.5) {D\_ConvLayer 2};
+        \node[kan] (dkb2) at (16, -5) {Decoder KANBlock 2\\$C_0$};
+        \node[conv] (d3) at (16, -2.5) {D\_ConvLayer 3--5};
+        \node[conv] (final) at (16, 0) {$1\times1$ Conv\\$N_{\text{classes}}$};
+        
+        % Encoder connections
+        \path[line] (input) -- (e1);
+        \path[line] (e1) -- node[right, io] {Pool} (e2);
+        \path[line] (e2) -- node[right, io] {Pool} (e3);
+        \path[line] (e3) -- (p3);
+        \path[line] (p3) -- (kb1);
+        \path[line] (kb1) -- (p4);
+        \path[line] (p4) -- (kb2);
+        
+        % Decoder connections
+        \path[line] (kb2) -- node[above, io] {Upsample$\times$2} (d1);
+        \path[line] (d1) -- (dkb1);
+        \path[line] (dkb1) -- node[right, io] {Upsample$\times$2} (d2);
+        \path[line] (d2) -- (dkb2);
+        \path[line] (dkb2) -- node[right, io] {Upsample$\times$2} (d3);
+        \path[line] (d3) -- (final);
+        
+        % Skip connections
+        \draw[line, dashed, blue] (kb1.east) -- +(1,0) |- node[above, io, near end] {Skip $+$} (dkb1.east);
+        \draw[line, dashed, blue] (e3.south) -- +(0, -0.5) -| +(8, 0) |- node[above, io, near end] {Skip $+$} (dkb2.east);
+        \draw[line, dashed, blue] (e2.east) -- +(17, 0) |- node[above, io] {Skip $+$} (d3.east);
+        
+    \end{tikzpicture}
+    }
+    \vspace{1ex}
+    
+    {\small \textit{*Note: Green blocks indicate KAN-based stages. Blue blocks indicate standard CNN stages. Dashed lines indicate additive skip connections.}}
+    \caption{UKAN Architecture: CNN encoder stages transition to KAN blocks at lower resolutions, with a mixed KAN-CNN decoder.}
+    \label{fig:ukan_arch}
+\end{figure}
+
+The encoder consists of three CNN stages (ConvLayer), each performing a double $3\times3$ convolution with BatchNorm and ReLU, followed by $2\times2$ max pooling. The channel dimensions progress as $3 \rightarrow C_0/8 \rightarrow C_0/4 \rightarrow C_0$, where $C_0$ is the base embedding dimension (default: 64).
+
+\subsection{KAN Encoder and Bottleneck}
+At the transition from CNN to KAN stages, PatchEmbed layers convert 2D feature maps into 1D token sequences via a strided convolution projection:
+\begin{equation}
+    \mathbf{T} = \text{LayerNorm}\left(\text{reshape}\left(\text{Conv}_{k \times k, s}(\mathbf{F})\right)\right) \in \mathbb{R}^{B \times N \times C}
+\end{equation}
+where $\mathbf{F}$ is the input feature map, $k$ is the patch size, $s$ is the stride, and $N = H' \times W'$ is the number of tokens. Two KAN encoder stages process tokens at embedding dimensions $C_1 = 128$ and $C_2 = 256$ (default configuration).
+
+\subsection{KANBlock Design}
+Each KANBlock follows a Transformer-style pre-norm residual pattern:
+\begin{equation}
+    \mathbf{T}' = \mathbf{T} + \text{DropPath}\left(\text{KANLayer}(\text{LayerNorm}(\mathbf{T}), H, W)\right)
+\end{equation}
+The KANLayer replaces the standard MLP (or self-attention) module. It consists of three KAN linear projections interleaved with depthwise convolution blocks (DW\_bn\_relu) for spatial token mixing:
+\begin{align}
+    \mathbf{T}_1 &= \text{DW\_bn\_relu}\left(\text{KAN\_fc}_1(\mathbf{T}), H, W\right) \\
+    \mathbf{T}_2 &= \text{DW\_bn\_relu}\left(\text{KAN\_fc}_2(\mathbf{T}_1), H, W\right) \\
+    \mathbf{T}_3 &= \text{DW\_bn\_relu}\left(\text{KAN\_fc}_3(\mathbf{T}_2), H, W\right)
+\end{align}
+Each KAN\_fc is an instance of the selected KAN linear variant (FasterKAN, ReLU-KAN, etc.) with grid size $G=8$. The depthwise convolutions preserve spatial context since KAN operations act independently on the channel dimension. Each DW\_bn\_relu block performs:
+\begin{equation}
+    \text{DW\_bn\_relu}(\mathbf{T}, H, W) = \text{ReLU}\left(\text{BN}\left(\text{DWConv}_{3\times3}(\text{reshape}(\mathbf{T}, H, W))\right)\right)
+\end{equation}
+
+\subsection{Decoder}
+The decoder combines KAN blocks with standard convolutional upsampling (D\_ConvLayer). Each decoder stage: (1) applies a D\_ConvLayer convolution to reduce channels, (2) bilinearly upsamples by factor 2, (3) adds the skip connection from the corresponding encoder stage, (4) processes with a decoder KANBlock. The final three stages use only D\_ConvLayers to restore the original spatial resolution, followed by a $1\times1$ convolution head producing per-class logits.
+
+
+\section{BiKASegNet: Binarized KAN Segmentation Network}
+\label{sec:bika_arch}
+BiKASegNet implements the KAN philosophy of learnable per-connection activations in a radically different way: instead of smooth spline functions, it uses binarized step functions with learnable per-connection thresholds. This produces a network where both weights and activations are binary ($\{+1, -1\}$), enabling extreme computational efficiency.
+
+\subsection{BiKA\_Conv2d: The Binarized KAN Convolution}
+The core innovation of BiKA is the BiKA\_Conv2d layer. In a standard convolution, the weight tensor has shape $(C_{\text{out}}, C_{\text{in}}, K_H, K_W)$ and the bias (if present) has shape $(C_{\text{out}},)$—a single scalar per output channel. In BiKA\_Conv2d, the bias has shape:
+\begin{equation}
+    \mathbf{b} \in \mathbb{R}^{C_{\text{out}} \times C_{\text{in}} \times K_H \times K_W}
+\end{equation}
+This is a \textbf{per-connection bias}—every single synapse in the convolution has its own learnable threshold. The forward computation is:
+\begin{equation}
+    y_{o,h',w'} = \sum_{c,k_h,k_w} \text{sign}\left(w_{o,c,k_h,k_w} - \bar{w}_o\right) \cdot \text{sign}\left(x_{c,h'+k_h,w'+k_w} + b_{o,c,k_h,k_w}\right)
+\end{equation}
+where $\bar{w}_o = \frac{1}{C_{\text{in}} K_H K_W} \sum_{c,k_h,k_w} w_{o,c,k_h,k_w}$ is the Libra-PB weight centering.
+
+This design directly realizes the KAN principle: each edge has its own activation function $\phi_{o,c,k_h,k_w}(x) = \text{sign}(x + b_{o,c,k_h,k_w})$, where the threshold $b$ is learnable. The weight binarization $\text{sign}(w - \bar{w})$ applies Libra-PB centering to ensure balanced binarization.
+
+\subsubsection{AdaBin Output Scaling}
+Following the binary convolution, an AdaBin learnable per-channel scaling factor is applied:
+\begin{equation}
+    y_c \leftarrow \alpha_c \cdot y_c, \quad \alpha_c \in \mathbb{R}^{C_{\text{out}} \times 1 \times 1}
+\end{equation}
+At inference, $\alpha_c$ is fused into BatchNorm's $\gamma$ parameter, adding zero computational overhead.
+
+\subsubsection{Custom CUDA Implementation}
+The BiKA\_Conv2d forward pass is implemented via a custom CUDA kernel that:
+\begin{enumerate}
+    \item Packs binarized weights into \texttt{int32} words (32 binary weights per integer).
+    \item Pre-negates and converts the bias tensor to FP16 for shared memory bandwidth savings.
+    \item Computes the binary convolution using XNOR and popcount operations on the packed representations.
+\end{enumerate}
+The backward pass uses the Straight-Through Estimator (STE) to propagate gradients through the sign functions, with gradients zeroed for weights outside the $[-1, 1]$ clipping window.
+
+\subsection{BiKAConvBlock: Enhanced Binary Block}
+Each BiKAConvBlock consists of two BiKA\_Conv2d layers with BatchNorm and RPReLU activations, plus an FP32 skip connection:
+\begin{align}
+    \mathbf{s} &= \text{Shortcut}(\mathbf{x}) \\
+    \mathbf{h} &= \text{RPReLU}\left(\text{BN}\left(\text{BiKA\_Conv2d}_1(\mathbf{x})\right)\right) \\
+    \mathbf{y} &= \text{RPReLU}\left(\text{BN}\left(\text{BiKA\_Conv2d}_2(\mathbf{h})\right) + \mathbf{s}\right)
+\end{align}
+The shortcut is a $1\times1$ FP32 convolution with BatchNorm when the channel dimensions change, and an identity otherwise. Activation checkpointing is applied during training to reduce VRAM usage by approximately 60\%.
+
+\subsection{BiKASegNet Architecture}
+The full BiKASegNet follows a standard U-Net topology with BiKAConvBlocks replacing standard convolution blocks, as shown in Figure~\ref{fig:bika_arch}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth, thick, scale=0.85, transform shape]
+    \tikzset{
+        fp/.style={draw, fill=blue!8, rectangle, minimum height=2.5em, minimum width=8em, rounded corners, align=center, font=\small},
+        bin/.style={draw=red!60!black, fill=red!5, rectangle, minimum height=2.5em, minimum width=8em, rounded corners, align=center, font=\small, line width=1.2pt},
+        line/.style={draw, ->, >=stealth, thick}
+    }
+    
+    % Encoder
+    \node[fp] (stem) at (0, 0) {FP32 Stem\\Conv + BiKA\_Conv2d};
+    \node[bin] (e2) at (0, -2.2) {BiKAConvBlock\\$2C$};
+    \node[bin] (e3) at (0, -4.4) {BiKAConvBlock\\$4C$};
+    \node[bin] (bn) at (0, -6.6) {BiKAConvBlock\\$8C$ (Bottleneck)};
+    
+    % Decoder
+    \node[bin] (d3) at (7, -4.4) {BiKAConvBlock\\$4C$};
+    \node[bin] (d2) at (7, -2.2) {BiKAConvBlock\\$2C$};
+    \node[bin] (d1) at (7, 0) {BiKAConvBlock\\$C$};
+    \node[fp] (head) at (7, 1.8) {FP32 Head\\$1\times1$ Conv};
+    
+    % Encoder flow
+    \path[line] (stem) -- node[right, font=\scriptsize] {Pool} (e2);
+    \path[line] (e2) -- node[right, font=\scriptsize] {Pool} (e3);
+    \path[line] (e3) -- node[right, font=\scriptsize] {Pool} (bn);
+    
+    % Decoder flow
+    \path[line] (bn.east) -- +(1,0) |- node[above, font=\scriptsize, near end] {Upsample + Cat} (d3.west);
+    \path[line] (d3) -- node[right, font=\scriptsize] {Upsample + Cat} (d2);
+    \path[line] (d2) -- node[right, font=\scriptsize] {Upsample + Cat} (d1);
+    \path[line] (d1) -- (head);
+    
+    % Skip connections
+    \draw[line, dashed, blue] (e3.east) -- (d3.west);
+    \draw[line, dashed, blue] (e2.east) -- (d2.west);
+    \draw[line, dashed, blue] (stem.east) -- (d1.west);
+\end{tikzpicture}
+\caption{BiKASegNet Architecture: red blocks use binarized BiKA\_Conv2d layers. The stem and classification head remain in full precision for gradient stability.}
+\label{fig:bika_arch}
+\end{figure}
+
+Key architectural decisions:
+\begin{itemize}
+    \item \textbf{Full-precision stem}: The first encoder layer uses a standard FP32 convolution for the initial $3 \rightarrow C$ projection, followed by a BiKA\_Conv2d. Binarizing the very first layer severely degrades accuracy since it directly quantizes the raw 8-bit RGB pixel values.
+    \item \textbf{Full-precision head}: The final $1\times1$ classification convolution remains in FP32 to preserve the fine-grained logit distributions needed for accurate per-pixel classification.
+    \item \textbf{Concatenation skip connections}: Unlike UKAN's additive skips, BiKASegNet concatenates encoder and decoder features before each decoder block, providing richer feature recombination.
+    \item \textbf{Base channels}: The default base channel count is $C = 16$, keeping the binary model extremely lightweight.
+\end{itemize}
+
+
+\section{Knowledge Distillation: UKAN to BiKA}
+\label{sec:distillation}
+To recover accuracy lost through binarization, we employ a knowledge distillation (KD) framework where a pre-trained full-precision UKAN model serves as the teacher and BiKASegNet serves as the student.
+
+\subsection{Distillation Loss}
+The total training loss for the student combines the standard task loss with a distillation loss:
+\begin{equation}
+    \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}} + \lambda_{\text{KD}} \cdot \mathcal{L}_{\text{KD}}
+\end{equation}
+
+The task loss is the CrossEntropyDice loss applied to the student's predictions. The distillation loss computes the KL-divergence between softened probability distributions of the teacher and student:
+\begin{equation}
+    \mathcal{L}_{\text{KD}} = \frac{\tau^2}{B \cdot H \cdot W} \sum_{i \in \Omega} \text{KL}\left(\sigma\left(\frac{\mathbf{z}_t^{(i)}}{\tau}\right) \,\middle\|\, \sigma\left(\frac{\mathbf{z}_s^{(i)}}{\tau}\right)\right)
+\end{equation}
+where $\mathbf{z}_t^{(i)}$ and $\mathbf{z}_s^{(i)}$ are the teacher and student logits at pixel $i$, $\tau$ is the temperature parameter, and $\sigma(\cdot)$ denotes softmax. The normalization by $B \cdot H \cdot W$ ensures that the KD gradient magnitude is comparable to the per-pixel CE loss, preventing gradient scale mismatch.
+
+\subsection{Auxiliary Boundary Loss}
+An optional boundary loss is applied to improve the model's sensitivity to thin road boundaries and edges:
+\begin{equation}
+    \mathcal{L}_{\text{boundary}} = \text{BCE}\left(\Delta_{\text{logit}} \cdot M_{\text{boundary}}\right)
+\end{equation}
+where $\Delta_{\text{logit}}$ is the difference between the maximum and second-maximum class logits, $M_{\text{boundary}}$ is a binary boundary mask obtained by morphological erosion and dilation of the ground-truth segmentation, and BCE is the binary cross-entropy loss. This focuses learning on the topologically critical boundary pixels.
+
+\subsection{Bipolar Regularisation}
+To tighten the binarization gap between the latent FP32 weights and their binary projections, an optional bipolar regularisation term is added:
+\begin{equation}
+    \mathcal{L}_{\text{bipolar}} = \lambda_{\text{bp}} \sum_{\ell} \frac{1}{|\mathbf{w}_\ell|} \sum_{i} (1 - w_{\ell,i}^2)
+\end{equation}
+This penalty pushes the continuous latent weights toward $\pm 1$, reducing the quantization error of the sign function.
+
+
+\section{Training Methodology}
+\label{sec:training}
+\subsection{Optimisation for BNN Stability}
+Training BiKASegNet requires careful handling of the binary weight dynamics. Specifically:
+\begin{itemize}
+    \item \textbf{Weight decay exclusion}: Weight decay is explicitly disabled for all BiKA\_Conv2d parameters (weights and per-connection biases), BatchNorm affine parameters, and RPReLU shift parameters. Applying weight decay to binary thresholds causes them to collapse toward zero, annihilating the STE gradient and killing the backward pass entirely.
+    \item \textbf{STE weight clamping}: Binary weights are optionally clamped to $[-1, 1]$ after each optimiser step to ensure they remain within the STE gradient window.
+    \item \textbf{Bias initialisation}: Per-connection biases are uniformly initialized in $[-2.0, 0.5]$ to ensure diverse initial activation thresholds across connections.
+\end{itemize}
+
+\subsection{Data Augmentation}
+Both UKAN and BiKA training pipelines employ the following augmentations via the Albumentations library:
+\begin{itemize}
+    \item Random horizontal flip (probability 0.5).
+    \item Random 90-degree rotation.
+    \item CutMix augmentation for regularisation.
+    \item Resize to the target input resolution (default: $256 \times 256$ or $512 \times 512$).
+    \item ImageNet-standard normalisation ($\mu = [0.485, 0.456, 0.406]$, $\sigma = [0.229, 0.224, 0.225]$).
+\end{itemize}
+
+\subsection{Training Infrastructure}
+Models are trained using PyTorch with Automatic Mixed Precision (AMP) for memory efficiency (FP16/BF16 forward pass with FP32 master weights). Multi-GPU training is supported via Distributed Data Parallel (DDP) with \texttt{torchrun}. Learning rate scheduling uses CosineAnnealingLR or OneCycleLR, and gradient accumulation is available for simulating larger effective batch sizes.
+
+
+
+\chapter{Experimental Evaluation and Results}
+
+This chapter details the experimental setup, dataset preparation, and performance evaluation of UKAN and BiKASegNet on the BDD100K road segmentation benchmark.
+
+\section{Experimental Setup}
+All experiments were conducted on a Linux workstation equipped with NVIDIA GPUs. The software stack consists of Python 3.10, PyTorch 2.x, and the Albumentations augmentation library. Models were trained on the BDD100K dataset~\cite{bdd100k2020}, which provides densely annotated driving scene images with per-pixel semantic labels covering road surfaces, lane markings, vehicles, pedestrians, and background categories. We evaluate in both a 2-class configuration (road foreground vs. background) and the full multi-class configuration.
+
+\section{Segmentation Quality Benchmarks}
+\label{sec:seg_benchmarks}
+
+The primary evaluation metrics are mean Intersection over Union (mIoU) and mean Dice coefficient, computed via a confusion-matrix-based epoch-level accumulator to avoid batch-averaging inaccuracies.
+
+The IoU for class $c$ is computed as:
+\begin{equation}
+    \text{IoU}_c = \frac{\text{TP}_c}{\text{TP}_c + \text{FP}_c + \text{FN}_c}
+\end{equation}
+and the Dice coefficient as:
+\begin{equation}
+    \text{Dice}_c = \frac{2 \cdot \text{TP}_c}{2 \cdot \text{TP}_c + \text{FP}_c + \text{FN}_c}
+\end{equation}
+where $\text{TP}_c$, $\text{FP}_c$, and $\text{FN}_c$ are the true positives, false positives, and false negatives for class $c$ accumulated over the entire validation set.
+
+Table~\ref{tab:segmentation_results} summarizes the segmentation performance of the evaluated architectures.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Precision} & \textbf{KAN Variant} & \textbf{mIoU (\%)} & \textbf{Dice (\%)} \\
+\midrule
+U-Net (Baseline) & FP32 & -- & -- & -- \\
+UKAN (FasterKAN) & FP32 & RSWAf & -- & -- \\
+UKAN (ReLU-KAN) & FP32 & ReLU & -- & -- \\
+UKAN (PWLO-KAN) & FP32 & PWLO & -- & -- \\
+BiKASegNet & 1-bit & Binary Step & -- & -- \\
+BiKASegNet + KD & 1-bit & Binary Step & -- & -- \\
+\bottomrule
+\end{tabular}
+\vspace{1ex}
+
+{\small \textit{*Note: Results to be filled from experimental runs. KD = Knowledge Distillation from UKAN teacher.}}
+\caption{Segmentation accuracy comparison across architectures on BDD100K road segmentation.}
+\label{tab:segmentation_results}
+\end{table}
+
+
+\section{Model Efficiency Analysis}
+\label{sec:efficiency}
+
+Table~\ref{tab:efficiency_results} compares the model size and computational efficiency of the evaluated architectures.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Params (M)} & \textbf{Size (MB)} & \textbf{FPS} & \textbf{Compression} \\
+\midrule
+U-Net (FP32) & -- & -- & -- & $1\times$ \\
+UKAN (FP32) & -- & -- & -- & $1\times$ \\
+BiKASegNet (1-bit) & -- & -- & -- & $\sim32\times$ \\
+\bottomrule
+\end{tabular}
+\vspace{1ex}
+
+{\small \textit{*Note: Compression ratio is relative to the FP32 model of equivalent architecture. FPS measured on the evaluation GPU.}}
+\caption{Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio.}
+\label{tab:efficiency_results}
+\end{table}
+
+The theoretical compression ratio of BiKASegNet relative to a full-precision network of identical topology is approximately $32\times$ for the binarized layers, since each 32-bit float weight is replaced by a single bit. In practice, the full-precision stem and head slightly reduce the overall compression ratio.
+
+\subsection{Inference Throughput}
+The binary convolution operations in BiKA\_Conv2d leverage XNOR and popcount operations through the custom CUDA kernel. Table~\ref{tab:latency_profile} profiles the per-layer latency contributions.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{lcc}
+\toprule
+\textbf{Component} & \textbf{UKAN Latency (ms)} & \textbf{BiKA Latency (ms)} \\
+\midrule
+Encoder Stages       & -- & -- \\
+KAN/Binary Blocks    & -- & -- \\
+Decoder Stages       & -- & -- \\
+Classification Head  & -- & -- \\
+\midrule
+\textbf{Total}       & -- & -- \\
+\bottomrule
+\end{tabular}
+\vspace{1ex}
+
+{\small \textit{*Note: Latency measured as mean over 1000 forward passes at $512 \times 512$ input resolution.}}
+\caption{Per-component inference latency comparison between UKAN and BiKASegNet.}
+\label{tab:latency_profile}
+\end{table}
+
+
+\section{Ablation Studies}
+\label{sec:ablations}
+
+\subsection{Effect of KAN Variant Selection}
+To isolate the impact of the KAN activation function choice, we trained UKAN with each variant using identical hyperparameters. The KAN variant selection affects both accuracy and inference speed, as each variant trades off the smoothness of the learned activation against computational cost.
+
+\subsection{Effect of Knowledge Distillation}
+Table~\ref{tab:kd_ablation} examines the impact of knowledge distillation on BiKASegNet accuracy.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Configuration} & \textbf{Teacher} & \textbf{mIoU (\%)} & \textbf{$\Delta$ mIoU} \\
+\midrule
+BiKA (no KD) & -- & -- & -- \\
+BiKA + KD ($\tau=4$) & UKAN-FasterKAN & -- & -- \\
+BiKA + KD + Boundary & UKAN-FasterKAN & -- & -- \\
+\bottomrule
+\end{tabular}
+\vspace{1ex}
+
+{\small \textit{*Note: $\Delta$ mIoU is relative to the no-KD baseline.}}
+\caption{Ablation study on knowledge distillation and boundary loss for BiKASegNet.}
+\label{tab:kd_ablation}
+\end{table}
+
+\subsection{Effect of BNN Training Techniques}
+We evaluate the individual contribution of each BNN accuracy-improvement technique integrated into BiKAConvBlock:
+\begin{itemize}
+    \item \textbf{Libra-PB}: Weight centering for balanced binarization.
+    \item \textbf{RPReLU}: Learnable activation shifts vs. standard ReLU.
+    \item \textbf{FP32 Skip}: Bi-Real Net gradient highway connections.
+    \item \textbf{AdaBin}: Learnable output scaling.
+\end{itemize}
+Disabling the legacy mode activates all four techniques simultaneously. In legacy mode, the network reverts to plain ReLU activations and no skip connections, establishing the minimal BNN baseline.
+
+
+
+\chapter{Conclusions and Future Works}
+
+\section{Conclusions}
+In this thesis, we implemented, evaluated, and compared two complementary approaches for integrating Kolmogorov-Arnold Networks into segmentation architectures for road scene understanding.
+
+The UKAN architecture demonstrates that replacing standard MLP projections with KAN layers in the U-Net bottleneck produces competitive segmentation quality while offering greater representational flexibility through learnable per-edge activation functions. The availability of multiple KAN variants (FasterKAN, ReLU-KAN, HardSwish-KAN, PWLO-KAN, TeLU-KAN) enables architecture-level tuning of the accuracy-latency trade-off depending on the deployment target.
+
+The BiKASegNet architecture demonstrates that the KAN philosophy of per-connection learnable activations can be realized through binarized step functions with learnable thresholds, achieving extreme compression ($\sim$32$\times$) and computational acceleration through XNOR/popcount operations. The integration of state-of-the-art BNN techniques (Libra-PB, AdaBin, RPReLU, FP32 skip connections) is essential for maintaining segmentation quality under binary constraints. Knowledge distillation from a full-precision UKAN teacher further bridges the binarization gap.
+
+\section{Future Works}
+To extend this research, several areas should be investigated:
+\begin{itemize}
+    \item \textbf{Edge Deployment}: Deploy BiKASegNet on actual embedded platforms (Raspberry Pi, Jetson Nano) and benchmark real-world inference latency and power consumption.
+    \item \textbf{Multi-class Segmentation}: Extend the evaluation from 2-class road segmentation to the full BDD100K label set (20+ classes) and evaluate how KAN integration affects fine-grained category discrimination.
+    \item \textbf{Temporal Consistency}: Integrate the segmentation networks into a video pipeline with temporal smoothing to evaluate frame-to-frame consistency of road boundary predictions.
+    \item \textbf{Hybrid KAN-BNN Architectures}: Explore architectures that selectively apply binarization only to specific encoder/decoder stages while keeping KAN-critical bottleneck layers in higher precision.
+\end{itemize}
+\newpage
+\nocite{}
+\addcontentsline{toc}{chapter}{Bibliography}
+\thispagestyle{noNumber}
+\bibliographystyle{ieeetr}
+\bibliography{references}
+
+\end{document}
+

@@ -1,0 +1,56 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{array}
+\usepackage{subfigure}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage[acronym]{glossaries}
+\usepackage{xcolor}
+\usetikzlibrary{shapes.geometric,arrows,positioning,calc,fit}
+
+\begin{document}
+\pagecolor{white}
+\begin{tikzpicture}[>=stealth, thick]
+    \tikzset{
+        processstep/.style={draw, fill=blue!5, rectangle, minimum height=2.5em, minimum width=6.5em, rounded corners, align=center, font=\small},
+        decision/.style={draw, fill=yellow!10, diamond, aspect=2, minimum width=6.5em, align=center, font=\small},
+        line/.style={draw, ->, >=stealth, thick}
+    }
+    \node [processstep] (det) {New Frame Detections\\$(u, v, s, r, c)$};
+    \node [processstep, right=1.0cm of det] (predict) {Kalman Filter\\State Prediction};
+    \node [processstep, right=1.0cm of predict] (cost) {Compute IoU Cost\\Matrix $C_{i,j} = 1 - \text{IoU}$};
+    \node [processstep, below=1cm of cost] (hungarian) {Hungarian Association\\Bipartite Matching};
+    
+    \node [processstep, left=1.0cm of hungarian] (matched) {Matched Tracks\\Update KF State};
+    \node [processstep, below=1cm of matched] (unmatched_det) {Unmatched Detections\\Initialize New Tracks};
+    \node [processstep, right=1.0cm of hungarian] (unmatched_track) {Unmatched Tracks\\Age $\Delta t$};
+    \node [decision, below=0.8cm of unmatched_track] (age_check) {Age $>$ max\_age?};
+    \node [processstep, left=1cm of age_check] (delete) {Delete Track};
+    \node [processstep, below=0.8cm of age_check] (keep) {Keep Track};
+
+    \path [line] (det) -- (predict);
+    \path [line] (predict) -- (cost);
+    \path [line] (cost) -- (hungarian);
+    \path [line] (hungarian) -- (matched);
+    \path [line] (hungarian) -- (unmatched_track);
+    \path [line] (matched) -- (unmatched_det);
+    \path [line] (unmatched_track) -- (age_check);
+    
+    \draw [line] (age_check.west) -- node[above, font=\small] {Yes} (delete.east);
+    \draw [line] (age_check.south) -- node[right, font=\small] {No} (keep.north);
+\end{tikzpicture}
+\end{document}
