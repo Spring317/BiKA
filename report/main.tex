@@ -96,7 +96,7 @@
 \thispagestyle{empty}
 To whom it may concern,
 
-I, Tran Giang Son, certify that the internship report of Mr. Dao Xuan Quy is qualified to be presented in the Internship Jury 2025-2026.
+I, Nghiem Thi Phuong, certify that the internship report of Mr. Dao Xuan Quy is qualified to be presented in the Internship Jury 2025-2026.
 
 Hanoi, August 2026
 
@@ -106,7 +106,7 @@ Supervisor's signature\\
 \\
 \\
 
-Tran Giang Son
+Nghiem Thi Phuong
 
 
 
@@ -157,12 +157,12 @@ Dao Xuan  Quy
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Semantic segmentation is a critical component of autonomous driving perception, requiring both high accuracy and low latency for real-time deployment on both ARM and x86/CUDA hardwares. Traditional segmentation networks based on U-Net and Transformer architectures rely on Multi-Layer Perceptrons (MLPs) with fixed activation functions, limiting their representational flexibility. 
-
+Semantic segmentation is a critical component of autonomous driving perception, requiring both high accuracy and low latency for real-time deployment on both ARM and x86/CUDA hardwares. Traditional segmentation networks based on U-Net and Transformer architectures rely on Multi-Layer Perceptrons (MLPs) with fixed activation functions, limiting their representational flexibility. On the other hand, lightweight models often suffer from accuracy loss when handling more complicated classes.
 In this thesis, we study and implement two novel approaches that integrate Kolmogorov-Arnold Networks (KANs) into segmentation architectures for road segmentation. The main contributions of this thesis include:
 \begin{itemize}
-    \item Optimizing and Evaluating U-KAN (UKAN), a U-Net style segmentation network that replaces standard MLP layers with KAN layers using learnable activation functions on edges, including multiple KAN variants: FasterKAN (RSWAf basis), ReLU-KAN, HardSwish-KAN, PWLO-KAN, and TeLU-KAN.
-    \item Implementing and evaluating BiKA (Binarized KAN), a novel architecture that combines the KAN philosophy of per-connection learnable activations with Binary Neural Network (BNN) techniques, achieving extreme compression through 1-bit binarized weights and activations with custom CUDA kernels.
+    \item Optimizing and Evaluating U-KAN (UKAN), a U-Net style segmentation network that replaces standard MLP layers with KAN layers using learnable activation functions, including multiple KAN variants: FasterKAN (RSWAf basis), ReLU-KAN, HardSwish-KAN, PWLO-KAN, and TeLU-KAN.
+    \item Implementing and evaluating BiKA (Binarized KAN), a novel architecture that combines the KAN philosophy of per-connection learnable activations with Binary Neural Network (BNN) techniques, achieving extreme compression through 1-bit binarized weights and activations.
+    \item Improving BiKA /cite() GPU performance by apply GPU optimization methods to the official implementation
     \item Benchmarking both architectures against standard baselines in terms of segmentation accuracy (mIoU, Dice), model size, and inference throughput with two distinct problems: Segment Everything (20 classes) and Segment the drivable area only (2 classes)
   \end{itemize}
 
@@ -680,35 +680,6 @@ Key architectural decisions:
 \end{itemize}
 
 
-\section{Knowledge Distillation: UKAN to BiKA}
-\label{sec:distillation}
-To recover accuracy lost through binarization, we employ a knowledge distillation (KD) framework where a pre-trained full-precision UKAN model serves as the teacher and BiKASegNet serves as the student.
-
-\subsection{Distillation Loss}
-The total training loss for the student combines the standard task loss with a distillation loss:
-\begin{equation}
-    \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}} + \lambda_{\text{KD}} \cdot \mathcal{L}_{\text{KD}}
-\end{equation}
-
-The task loss is the CrossEntropyDice loss applied to the student's predictions. The distillation loss computes the KL-divergence between softened probability distributions of the teacher and student:
-\begin{equation}
-    \mathcal{L}_{\text{KD}} = \frac{\tau^2}{B \cdot H \cdot W} \sum_{i \in \Omega} \text{KL}\left(\sigma\left(\frac{\mathbf{z}_t^{(i)}}{\tau}\right) \,\middle\|\, \sigma\left(\frac{\mathbf{z}_s^{(i)}}{\tau}\right)\right)
-\end{equation}
-where $\mathbf{z}_t^{(i)}$ and $\mathbf{z}_s^{(i)}$ are the teacher and student logits at pixel $i$, $\tau$ is the temperature parameter, and $\sigma(\cdot)$ denotes softmax. The normalization by $B \cdot H \cdot W$ ensures that the KD gradient magnitude is comparable to the per-pixel CE loss, preventing gradient scale mismatch.
-
-\subsection{Auxiliary Boundary Loss}
-An optional boundary loss is applied to improve the model's sensitivity to thin road boundaries and edges:
-\begin{equation}
-    \mathcal{L}_{\text{boundary}} = \text{BCE}\left(\Delta_{\text{logit}} \cdot M_{\text{boundary}}\right)
-\end{equation}
-where $\Delta_{\text{logit}}$ is the difference between the maximum and second-maximum class logits, $M_{\text{boundary}}$ is a binary boundary mask obtained by morphological erosion and dilation of the ground-truth segmentation, and BCE is the binary cross-entropy loss. This focuses learning on the topologically critical boundary pixels.
-
-\subsection{Bipolar Regularisation}
-To tighten the binarization gap between the latent FP32 weights and their binary projections, an optional bipolar regularisation term is added:
-\begin{equation}
-    \mathcal{L}_{\text{bipolar}} = \lambda_{\text{bp}} \sum_{\ell} \frac{1}{|\mathbf{w}_\ell|} \sum_{i} (1 - w_{\ell,i}^2)
-\end{equation}
-This penalty pushes the continuous latent weights toward $\pm 1$, reducing the quantization error of the sign function.
 
 
 \section{Training Methodology}
