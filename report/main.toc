@@ -47,20 +47,20 @@
 \contentsline {subsubsection}{Custom CUDA Implementation}{16}{section*.19}%
 \contentsline {subsection}{\numberline {3.2.2}BiKAConvBlock: Enhanced Binary Block}{16}{subsection.3.2.2}%
 \contentsline {subsection}{\numberline {3.2.3}BiKASegNet Architecture}{16}{subsection.3.2.3}%
-\contentsline {section}{\numberline {3.3}Training Methodology}{17}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Optimisation for BNN Stability}{17}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Data Augmentation}{17}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Training Infrastructure}{17}{subsection.3.3.3}%
-\contentsline {chapter}{\numberline {4}Experimental Evaluation and Results}{18}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Experimental Setup}{18}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Segmentation Quality Benchmarks}{18}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Model Efficiency Analysis}{18}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Inference Throughput}{19}{subsection.4.3.1}%
-\contentsline {section}{\numberline {4.4}Ablation Studies}{19}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Effect of KAN Variant Selection}{19}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}Effect of Knowledge Distillation}{20}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Effect of BNN Training Techniques}{20}{subsection.4.4.3}%
-\contentsline {chapter}{\numberline {5}Conclusions and Future Works}{21}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Conclusions}{21}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Future Works}{21}{section.5.2}%
-\contentsline {chapter}{Bibliography}{22}{section.5.2}%
+\contentsline {section}{\numberline {3.3}Training Methodology}{16}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Optimisation for BNN Stability}{16}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Data Augmentation}{18}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Training Infrastructure}{18}{subsection.3.3.3}%
+\contentsline {chapter}{\numberline {4}Experimental Evaluation and Results}{19}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Experimental Setup}{19}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Segmentation Quality Benchmarks}{19}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Model Efficiency Analysis}{19}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Inference Throughput}{20}{subsection.4.3.1}%
+\contentsline {section}{\numberline {4.4}Ablation Studies}{20}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Effect of KAN Variant Selection}{20}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Effect of Knowledge Distillation}{21}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Effect of BNN Training Techniques}{21}{subsection.4.4.3}%
+\contentsline {chapter}{\numberline {5}Conclusions and Future Works}{22}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Conclusions}{22}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Future Works}{22}{section.5.2}%
+\contentsline {chapter}{Bibliography}{23}{section.5.2}%

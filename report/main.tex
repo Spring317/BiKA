@@ -693,44 +693,55 @@ The shortcut is a $1\times1$ FP32 convolution with BatchNorm when the channel di
 \subsection{BiKASegNet Architecture}
 The full BiKASegNet follows a standard U-Net topology with BiKAConvBlocks replacing standard convolution blocks, as shown in Figure~\ref{fig:bika_arch}.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[>=stealth, thick, scale=0.85, transform shape]
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[>=stealth, thick]
     \tikzset{
-        fp/.style={draw, fill=blue!8, rectangle, minimum height=2.5em, minimum width=8em, rounded corners, align=center, font=\small},
-        bin/.style={draw=red!60!black, fill=red!5, rectangle, minimum height=2.5em, minimum width=8em, rounded corners, align=center, font=\small, line width=1.2pt},
-        line/.style={draw, ->, >=stealth, thick}
+        fp/.style={draw=blue!80!black, fill=blue!8, rectangle, minimum height=2.8em, minimum width=10.5em, rounded corners, align=center, font=\small, line width=1pt},
+        bin/.style={draw=red!70!black, fill=red!8, rectangle, minimum height=2.8em, minimum width=10.5em, rounded corners, align=center, font=\small, line width=1.2pt},
+        bottleneck/.style={draw=purple!80!black, fill=purple!8, rectangle, minimum height=3.2em, minimum width=13.5em, rounded corners, align=center, font=\small, line width=1.5pt},
+        io/.style={font=\scriptsize, align=center, fill=white, inner sep=2pt},
+        line/.style={draw, ->, >=stealth, thick, rounded corners=3pt},
+        skipline/.style={draw, ->, >=stealth, dashed, blue!70!black, line width=1.2pt}
     }
     
-    % Encoder
-    \node[fp] (stem) at (0, 0) {FP32 Stem\\Conv + BiKA\_Conv2d};
-    \node[bin] (e2) at (0, -2.2) {BiKAConvBlock\\$2C$};
-    \node[bin] (e3) at (0, -4.4) {BiKAConvBlock\\$4C$};
-    \node[bin] (bn) at (0, -6.6) {BiKAConvBlock\\$8C$ (Bottleneck)};
+    % Left Side (Encoder - Downsampling Path)
+    \node[fp] (stem) at (0, 0) {FP32 Stem\\Conv $+$ BiKA\_Conv2d ($C$)};
+    \node[bin] (e2) at (0, -2.2) {BiKAConvBlock 1\\$2C \quad (\frac{H}{2} \times \frac{W}{2})$};
+    \node[bin] (e3) at (0, -4.4) {BiKAConvBlock 2\\$4C \quad (\frac{H}{4} \times \frac{W}{4})$};
     
-    % Decoder
-    \node[bin] (d3) at (7, -4.4) {BiKAConvBlock\\$4C$};
-    \node[bin] (d2) at (7, -2.2) {BiKAConvBlock\\$2C$};
-    \node[bin] (d1) at (7, 0) {BiKAConvBlock\\$C$};
-    \node[fp] (head) at (7, 1.8) {FP32 Head\\$1\times1$ Conv};
+    % Bottom Center (Bottleneck)
+    \node[bottleneck] (b) at (5.5, -6.6) {BiKAConvBlock (Bottleneck)\\$8C \quad (\frac{H}{8} \times \frac{W}{8})$};
     
-    % Encoder flow
-    \path[line] (stem) -- node[right, font=\scriptsize] {Pool} (e2);
-    \path[line] (e2) -- node[right, font=\scriptsize] {Pool} (e3);
-    \path[line] (e3) -- node[right, font=\scriptsize] {Pool} (bn);
+    % Right Side (Decoder - Upsampling Path)
+    \node[bin] (d3) at (11, -4.4) {Decoder BiKAConvBlock 2\\$4C \quad (\frac{H}{4} \times \frac{W}{4})$};
+    \node[bin] (d2) at (11, -2.2) {Decoder BiKAConvBlock 1\\$2C \quad (\frac{H}{2} \times \frac{W}{2})$};
+    \node[bin] (d1) at (11, 0) {Decoder BiKAConvBlock 0\\$C \quad (H \times W)$};
+    \node[fp] (head) at (11, 2.2) {FP32 Head\\$1\times1$ Conv ($N_{\text{classes}}$)};
     
-    % Decoder flow
-    \path[line] (bn.east) -- +(1,0) |- node[above, font=\scriptsize, near end] {Upsample + Cat} (d3.west);
-    \path[line] (d3) -- node[right, font=\scriptsize] {Upsample + Cat} (d2);
-    \path[line] (d2) -- node[right, font=\scriptsize] {Upsample + Cat} (d1);
-    \path[line] (d1) -- (head);
+    % Downsampling Connections (Encoder)
+    \path[line] (stem) -- node[right, io] {Pool $2\times2$} (e2);
+    \path[line] (e2) -- node[right, io] {Pool $2\times2$} (e3);
+    \path[line] (e3) |- node[below left, io] {Pool $2\times2$} (b.west);
     
-    % Skip connections
-    \draw[line, dashed, blue] (e3.east) -- (d3.west);
-    \draw[line, dashed, blue] (e2.east) -- (d2.west);
-    \draw[line, dashed, blue] (stem.east) -- (d1.west);
+    % Upsampling Connections (Decoder)
+    \path[line] (b.east) -| node[below right, io] {Upsample $\times 2$} (d3);
+    \path[line] (d3) -- node[left, io] {Upsample $\times 2$} (d2);
+    \path[line] (d2) -- node[left, io] {Upsample $\times 2$} (d1);
+    \path[line] (d1) -- node[left, io] {Final Projection} (head);
+    
+    % Horizontal Concatenation Skip Connections across the U-Shape
+    \path[skipline] (stem) -- node[above, io] {Skip (Concat)} (d1);
+    \path[skipline] (e2) -- node[above, io] {Skip (Concat)} (d2);
+    \path[skipline] (e3) -- node[above, io] {Skip (Concat)} (d3);
+    
 \end{tikzpicture}
-\caption{BiKASegNet Architecture: red blocks use binarized BiKA\_Conv2d layers. The stem and classification head remain in full precision for gradient stability.}
+}
+\vspace{1ex}
+
+{\small \textit{*Note: Red blocks indicate binarized BiKA\_Conv2d layers. Blue blocks indicate full-precision FP32 stem and head. Purple block indicates the binary bottleneck. Dashed lines indicate horizontal feature concatenation skip connections across the U-shape.}}
+\caption{BiKASegNet Architecture: Symmetric U-shaped binarized encoder-decoder network using BiKAConvBlocks, connected by feature concatenation skip connections.}
 \label{fig:bika_arch}
 \end{figure}
 
