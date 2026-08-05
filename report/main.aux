@@ -162,41 +162,42 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}Custom CUDA Kernel Optimisations for BiKA}{18}{subsection.3.3.1}\protected@file@percent }
 \newlabel{sec:cuda_kernels}{{3.3.1}{18}{Custom CUDA Kernel Optimisations for BiKA}{subsection.3.3.1}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Bit-Packing \& 32-bit Word Quantization}{18}{section*.25}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Half-Precision (FP16) Shared Memory Bias Caching}{18}{section*.26}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Output-Channel Tiling \& Thread-Level Register Reuse}{18}{section*.27}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Bitwise XNOR and Popcount Convolution Execution}{18}{section*.28}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{STE Hard-Tanh Backpropagation Kernels}{19}{section*.29}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{32-Bit Word Alignment and Channel-32 Hardware Optimisation}{18}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Half-Precision (FP16) Shared Memory Bias Caching}{18}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Output-Channel Tiling \& Thread-Level Register Reuse}{18}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Bitwise XNOR and Popcount Convolution Execution}{19}{section*.29}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{STE Hard-Tanh Backpropagation Kernels}{19}{section*.30}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}Optimisation for BNN Stability}{19}{subsection.3.3.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3.3}Data Augmentation}{19}{subsection.3.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.4}Training Infrastructure}{19}{subsection.3.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.4}Training Infrastructure}{20}{subsection.3.3.4}\protected@file@percent }
 \citation{bdd100k2020}
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}Experimental Evaluation and Results}{20}{chapter.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Experimental Evaluation and Results}{21}{chapter.4}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}Experimental Setup}{20}{section.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Segmentation Quality Benchmarks}{20}{section.4.2}\protected@file@percent }
-\newlabel{sec:seg_benchmarks}{{4.2}{20}{Segmentation Quality Benchmarks}{section.4.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Model Efficiency Analysis}{20}{section.4.3}\protected@file@percent }
-\newlabel{sec:efficiency}{{4.3}{20}{Model Efficiency Analysis}{section.4.3}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Segmentation accuracy comparison across architectures on BDD100K road segmentation.}}{21}{table.caption.30}\protected@file@percent }
-\newlabel{tab:segmentation_results}{{4.1}{21}{Segmentation accuracy comparison across architectures on BDD100K road segmentation}{table.caption.30}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio.}}{21}{table.caption.31}\protected@file@percent }
-\newlabel{tab:efficiency_results}{{4.2}{21}{Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio}{table.caption.31}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}Inference Throughput}{21}{subsection.4.3.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4.3}{\ignorespaces Per-component inference latency comparison between UKAN and BiKASegNet.}}{21}{table.caption.32}\protected@file@percent }
-\newlabel{tab:latency_profile}{{4.3}{21}{Per-component inference latency comparison between UKAN and BiKASegNet}{table.caption.32}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}Ablation Studies}{21}{section.4.4}\protected@file@percent }
-\newlabel{sec:ablations}{{4.4}{21}{Ablation Studies}{section.4.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}Effect of KAN Variant Selection}{21}{subsection.4.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}Effect of Knowledge Distillation}{22}{subsection.4.4.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4.4}{\ignorespaces Ablation study on knowledge distillation and boundary loss for BiKASegNet.}}{22}{table.caption.33}\protected@file@percent }
-\newlabel{tab:kd_ablation}{{4.4}{22}{Ablation study on knowledge distillation and boundary loss for BiKASegNet}{table.caption.33}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.3}Effect of BNN Training Techniques}{22}{subsection.4.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {chapter}{\numberline {5}Conclusions and Future Works}{23}{chapter.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Experimental Setup}{21}{section.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Segmentation Quality Benchmarks}{21}{section.4.2}\protected@file@percent }
+\newlabel{sec:seg_benchmarks}{{4.2}{21}{Segmentation Quality Benchmarks}{section.4.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Model Efficiency Analysis}{21}{section.4.3}\protected@file@percent }
+\newlabel{sec:efficiency}{{4.3}{21}{Model Efficiency Analysis}{section.4.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Segmentation accuracy comparison across architectures on BDD100K road segmentation.}}{22}{table.caption.31}\protected@file@percent }
+\newlabel{tab:segmentation_results}{{4.1}{22}{Segmentation accuracy comparison across architectures on BDD100K road segmentation}{table.caption.31}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio.}}{22}{table.caption.32}\protected@file@percent }
+\newlabel{tab:efficiency_results}{{4.2}{22}{Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio}{table.caption.32}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}Inference Throughput}{22}{subsection.4.3.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.3}{\ignorespaces Per-component inference latency comparison between UKAN and BiKASegNet.}}{22}{table.caption.33}\protected@file@percent }
+\newlabel{tab:latency_profile}{{4.3}{22}{Per-component inference latency comparison between UKAN and BiKASegNet}{table.caption.33}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}Ablation Studies}{22}{section.4.4}\protected@file@percent }
+\newlabel{sec:ablations}{{4.4}{22}{Ablation Studies}{section.4.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}Effect of KAN Variant Selection}{22}{subsection.4.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}Effect of Knowledge Distillation}{23}{subsection.4.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.4}{\ignorespaces Ablation study on knowledge distillation and boundary loss for BiKASegNet.}}{23}{table.caption.34}\protected@file@percent }
+\newlabel{tab:kd_ablation}{{4.4}{23}{Ablation study on knowledge distillation and boundary loss for BiKASegNet}{table.caption.34}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.3}Effect of BNN Training Techniques}{23}{subsection.4.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {5}Conclusions and Future Works}{24}{chapter.5}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {5.1}Conclusions}{23}{section.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5.2}Future Works}{23}{section.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.1}Conclusions}{24}{section.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}Future Works}{24}{section.5.2}\protected@file@percent }
 \bibstyle{ieeetr}
 \bibdata{references}
 \bibcite{liu2024kan}{1}
@@ -212,7 +213,7 @@
 \bibcite{li2024ukan}{11}
 \bibcite{qin2020bireal}{12}
 \bibcite{liu2020reactnet}{13}
-\@writefile{toc}{\contentsline {chapter}{Bibliography}{24}{section.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{Bibliography}{25}{section.5.2}\protected@file@percent }
 \bibcite{chen2018deeplabv3plus}{14}
 \bibcite{fasterkan2024}{15}
 \bibcite{hubara2016binarized}{16}
@@ -227,4 +228,4 @@
 \bibcite{fernandez2024telu}{25}
 \bibcite{schoots2025relating}{26}
 \bibcite{bengio2013ste}{27}
-\gdef \@abspage@last{34}
+\gdef \@abspage@last{35}

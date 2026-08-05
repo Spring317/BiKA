@@ -53,23 +53,24 @@
 \contentsline {section}{\numberline {3.3}Optimisation and Training Strategies}{18}{section.3.3}%
 \contentsline {subsection}{\numberline {3.3.1}Custom CUDA Kernel Optimisations for BiKA}{18}{subsection.3.3.1}%
 \contentsline {subsubsection}{Bit-Packing \& 32-bit Word Quantization}{18}{section*.25}%
-\contentsline {subsubsection}{Half-Precision (FP16) Shared Memory Bias Caching}{18}{section*.26}%
-\contentsline {subsubsection}{Output-Channel Tiling \& Thread-Level Register Reuse}{18}{section*.27}%
-\contentsline {subsubsection}{Bitwise XNOR and Popcount Convolution Execution}{18}{section*.28}%
-\contentsline {subsubsection}{STE Hard-Tanh Backpropagation Kernels}{19}{section*.29}%
+\contentsline {subsubsection}{32-Bit Word Alignment and Channel-32 Hardware Optimisation}{18}{section*.26}%
+\contentsline {subsubsection}{Half-Precision (FP16) Shared Memory Bias Caching}{18}{section*.27}%
+\contentsline {subsubsection}{Output-Channel Tiling \& Thread-Level Register Reuse}{18}{section*.28}%
+\contentsline {subsubsection}{Bitwise XNOR and Popcount Convolution Execution}{19}{section*.29}%
+\contentsline {subsubsection}{STE Hard-Tanh Backpropagation Kernels}{19}{section*.30}%
 \contentsline {subsection}{\numberline {3.3.2}Optimisation for BNN Stability}{19}{subsection.3.3.2}%
 \contentsline {subsection}{\numberline {3.3.3}Data Augmentation}{19}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}Training Infrastructure}{19}{subsection.3.3.4}%
-\contentsline {chapter}{\numberline {4}Experimental Evaluation and Results}{20}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Experimental Setup}{20}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Segmentation Quality Benchmarks}{20}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Model Efficiency Analysis}{20}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Inference Throughput}{21}{subsection.4.3.1}%
-\contentsline {section}{\numberline {4.4}Ablation Studies}{21}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Effect of KAN Variant Selection}{21}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}Effect of Knowledge Distillation}{22}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Effect of BNN Training Techniques}{22}{subsection.4.4.3}%
-\contentsline {chapter}{\numberline {5}Conclusions and Future Works}{23}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Conclusions}{23}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Future Works}{23}{section.5.2}%
-\contentsline {chapter}{Bibliography}{24}{section.5.2}%
+\contentsline {subsection}{\numberline {3.3.4}Training Infrastructure}{20}{subsection.3.3.4}%
+\contentsline {chapter}{\numberline {4}Experimental Evaluation and Results}{21}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Experimental Setup}{21}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Segmentation Quality Benchmarks}{21}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Model Efficiency Analysis}{21}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Inference Throughput}{22}{subsection.4.3.1}%
+\contentsline {section}{\numberline {4.4}Ablation Studies}{22}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Effect of KAN Variant Selection}{22}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Effect of Knowledge Distillation}{23}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Effect of BNN Training Techniques}{23}{subsection.4.4.3}%
+\contentsline {chapter}{\numberline {5}Conclusions and Future Works}{24}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Conclusions}{24}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Future Works}{24}{section.5.2}%
+\contentsline {chapter}{Bibliography}{25}{section.5.2}%
