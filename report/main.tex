@@ -157,12 +157,12 @@ Dao Xuan  Quy
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Semantic segmentation is a critical component of autonomous driving perception, requiring both high accuracy and low latency for real-time deployment on both ARM and x86/CUDA hardwares. Traditional segmentation networks based on U-Net and Transformer architectures rely on Multi-Layer Perceptrons (MLPs) with fixed activation functions, limiting their representational flexibility. On the other hand, lightweight models often suffer from accuracy loss when handling more complicated classes.
+Semantic segmentation is a critical component of autonomous driving perception, requiring both high accuracy and low latency for real-time deployment. Traditional segmentation networks based on U-Net \cite{ronneberger2015unet},  and Transformer architectures rely on Multi-Layer Perceptrons (MLPs) with fixed activation functions, limiting their representational flexibility. On the other hand, lightweight models often suffer from accuracy loss when handling more complicated classes.
 In this thesis, we study and implement two novel approaches that integrate Kolmogorov-Arnold Networks (KANs) into segmentation architectures for road segmentation. The main contributions of this thesis include:
 \begin{itemize}
-    \item Optimizing and Evaluating U-KAN (UKAN), a U-Net style segmentation network that replaces standard MLP layers with KAN layers using learnable activation functions, including multiple KAN variants: FasterKAN (RSWAf basis), ReLU-KAN, HardSwish-KAN, PWLO-KAN, and TeLU-KAN.
+    \item Optimizing and Evaluating U-KAN (UKAN), a U-Net style segmentation network that replaces standard MLP layers with KAN layers using learnable activation functions, including multiple KAN variants: FasterKAN (RSWAf basis) , ReLU-KAN, HardSwish-KAN, PWLO-KAN, and TeLU-KAN.
     \item Implementing and evaluating BiKA (Binarized KAN), a novel architecture that combines the KAN philosophy of per-connection learnable activations with Binary Neural Network (BNN) techniques, achieving extreme compression through 1-bit binarized weights and activations.
-    \item Improving BiKA /cite() GPU performance by apply GPU optimization methods to the official implementation
+    \item Improving BiKA \cite{liu2026bika} GPU performance by apply GPU optimization methods to the official implementation
     \item Benchmarking both architectures against standard baselines in terms of segmentation accuracy (mIoU, Dice), model size, and inference throughput with two distinct problems: Segment Everything (20 classes) and Segment the drivable area only (2 classes)
   \end{itemize}
 
@@ -319,7 +319,7 @@ Each basis function $r_k$ produces a smooth, localized bump centred at grid poin
 where $\mathbf{W}_s \in \mathbb{R}^{d_{\text{out}} \times (d_{\text{in}} \cdot G)}$ is a learnable spline projection matrix, and $\text{vec}(\cdot)$ concatenates all basis evaluations into a single vector. The input is first normalised via LayerNorm. A custom CUDA kernel computes the forward and backward passes of the RSWAf function, achieving significant speedups over the B-spline implementation.
 
 \subsection{ReLU-KAN}
-ReLU-KAN replaces the smooth basis with a piecewise-linear function using ReLU:
+ReLU-KAN~\cite{qiu2024relukan} replaces the smooth basis with a piecewise-linear function using ReLU:
 \begin{equation}
     \psi_k(x) = \text{ReLU}(x - g_k) = \max(0, x - g_k)
 \end{equation}
@@ -330,21 +330,21 @@ This produces a basis of shifted ramp functions. The output is computed as:
 ReLU-KAN achieves maximal inference speed due to the trivial cost of ReLU evaluation, but trades off smoothness for speed.
 
 \subsection{HardSwish-KAN}
-HardSwish-KAN uses the HardSwish activation as its basis function:
+HardSwish-KAN adapts the HardSwish activation~\cite{howard2019searching} as its basis function:
 \begin{equation}
     \psi_k(x) = \text{HardSwish}(x - g_k) = (x - g_k) \cdot \frac{\text{ReLU6}(x - g_k + 3)}{6}
 \end{equation}
 This provides a smooth, differentiable basis that avoids the dying neuron problem of ReLU-KAN while maintaining computational efficiency since HardSwish requires no transcendental functions.
 
 \subsection{TeLU-KAN}
-TeLU-KAN employs the Hyperbolic Tangent Exponential Linear Unit:
+TeLU-KAN employs the Hyperbolic Tangent Exponential Linear Unit (TeLU) activation~\cite{fernandez2024telu}:
 \begin{equation}
     \psi_k(x) = (x - g_k) \cdot \tanh(\exp(x - g_k))
 \end{equation}
 The TeLU activation provides stable gradients across a wide input range, offering a compromise between the smoothness of FasterKAN and the simplicity of ReLU-KAN.
 
 \subsection{PWLO-KAN (Piecewise Linear Optimisation)}
-PWLO-KAN implements a lookup-table-based approach where each segment of the input domain is associated with a learned affine transformation:
+PWLO-KAN draws upon piecewise linear network representations~\cite{schoots2025relating} and implements a lookup-table-based approach where each segment of the input domain is associated with a learned affine transformation:
 \begin{equation}
     \phi_k(x) = a_k \cdot x + b_k, \quad x \in [g_k, g_{k+1})
 \end{equation}

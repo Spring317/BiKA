@@ -11,6 +11,11 @@ O.~Ronneberger, P.~Fischer, and T.~Brox, ``{U-Net}: Convolutional networks for
   Image Computing and Computer-Assisted Intervention (MICCAI)}, pp.~234--241,
   2015.
 
+\bibitem{liu2026bika}
+Y.~Liu, S.~Ullah, and A.~Kumar, ``{BiKA}:
+  Kolmogorov-{Arnold}-{Network}-inspired ultra lightweight neural network
+  hardware accelerator,'' {\em arXiv preprint arXiv:2602.23455}, 2026.
+
 \bibitem{long2015fcn}
 J.~Long, E.~Shelhamer, and T.~Darrell, ``Fully convolutional networks for
   semantic segmentation,'' in {\em Proceedings of the IEEE Conference on
@@ -20,7 +25,7 @@ J.~Long, E.~Shelhamer, and T.~Darrell, ``Fully convolutional networks for
 E.~Xie, W.~Wang, Z.~Yu, A.~Anandkumar, J.~M. Alvarez, and P.~Luo,
   ``{SegFormer}: Simple and efficient design for semantic segmentation with
   transformers,'' in {\em Advances in Neural Information Processing Systems
-  (NeurIPS)}, 2021.
+  (NeurIPS)}, vol.~34, pp.~12077--12090, 2021.
 
 \bibitem{cao2022swinunet}
 H.~Cao, Y.~Wang, J.~Chen, D.~Jiang, X.~Zhang, Q.~Tian, and M.~Wang,
@@ -50,49 +55,74 @@ C.~Li, X.~Liu, W.~Li, C.~Wang, H.~Liu, and Y.~Yuan, ``{U-KAN} makes strong
 \bibitem{qin2020bireal}
 Z.~Liu, B.~Wu, W.~Luo, X.~Yang, W.~Liu, and K.-T. Cheng, ``{Bi-Real Net}:
   Enhancing the performance of 1-bit {CNNs} with improved representational
-  capability and advanced training algorithm,'' in {\em European Conference on
-  Computer Vision (ECCV)}, 2018.
+  capability and advanced training algorithm,'' in {\em Proceedings of the
+  European Conference on Computer Vision (ECCV)}, pp.~722--737, 2018.
 
 \bibitem{liu2020reactnet}
 Z.~Liu, Z.~Shen, M.~Savvides, and K.-T. Cheng, ``{ReActNet}: Towards precise
   binary neural network with generalized activation functions,'' in {\em
-  European Conference on Computer Vision (ECCV)}, 2020.
+  Proceedings of the European Conference on Computer Vision (ECCV)},
+  pp.~143--159, 2020.
 
 \bibitem{chen2018deeplabv3plus}
 L.-C. Chen, Y.~Zhu, G.~Papandreou, F.~Schroff, and H.~Adam, ``Encoder-decoder
   with atrous separable convolution for semantic image segmentation,'' in {\em
-  European Conference on Computer Vision (ECCV)}, 2018.
+  Proceedings of the European Conference on Computer Vision (ECCV)},
+  pp.~801--818, 2018.
 
 \bibitem{fasterkan2024}
-T.~Athanasios, ``{FasterKAN}: Accelerating kolmogorov-arnold networks with
-  rswaf basis functions,'' {\em GitHub Repository}, 2024.
+A.~Tsiamis, ``{FasterKAN}: Accelerating kolmogorov-arnold networks with {RSWAf}
+  basis functions.'' \url{https://github.com/AthanasiosDelis/faster-kan}, 2024.
 
 \bibitem{hubara2016binarized}
 I.~Hubara, M.~Courbariaux, D.~Soudry, R.~El-Yaniv, and Y.~Bengio, ``Binarized
   neural networks: Training deep neural networks with weights and activations
   constrained to +1 or -1,'' in {\em Advances in Neural Information Processing
-  Systems}, vol.~29, 2016.
+  Systems (NeurIPS)}, vol.~29, pp.~4107--4115, 2016.
 
 \bibitem{rastegari2016xnor}
 M.~Rastegari, V.~Ordonez, J.~Redmon, and A.~Farhadi, ``{XNOR-Net}: Imagenet
-  classification using binary convolutional neural networks,'' in {\em European
-  Conference on Computer Vision (ECCV)}, pp.~525--542, 2016.
+  classification using binary convolutional neural networks,'' in {\em
+  Proceedings of the European Conference on Computer Vision (ECCV)},
+  pp.~525--542, 2016.
 
 \bibitem{qin2020irnet}
 H.~Qin, R.~Gong, X.~Liu, M.~Shen, Z.~Wei, F.~Yu, and J.~Song, ``Forward and
   backward information retention for accurate binary neural networks,'' in {\em
-  IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, 2020.
+  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition (CVPR)}, pp.~2250--2259, 2020.
 
 \bibitem{tu2022adabin}
 Z.~Tu, X.~Chen, P.~Ren, and Y.~Wang, ``{AdaBin}: Improving binary neural
-  networks with adaptive binary sets,'' in {\em European Conference on Computer
-  Vision (ECCV)}, 2022.
+  networks with adaptive binary sets,'' in {\em Proceedings of the European
+  Conference on Computer Vision (ECCV)}, pp.~262--278, 2022.
 
 \bibitem{zhuang2019structured}
 B.~Zhuang, C.~Shen, M.~Tan, L.~Liu, and I.~Reid, ``Structured binary neural
   networks for accurate image classification and semantic segmentation,'' in
   {\em Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
   Recognition (CVPR)}, pp.~413--422, 2019.
+
+\bibitem{qiu2024relukan}
+Q.~Qiu, G.~Xu, {\em et~al.}, ``{ReLU-KAN}: New kolmogorov-arnold networks that
+  only need matrix addition, dot multiplication, and {ReLU},'' {\em arXiv
+  preprint arXiv:2406.02075}, 2024.
+
+\bibitem{howard2019searching}
+A.~Howard, M.~Sandler, G.~Chu, L.-C. Chen, B.~Chen, M.~Tan, W.~Wang, Y.~Zhu,
+  R.~Pang, V.~Vasudevan, Q.~V. Le, and H.~Adam, ``Searching for
+  {MobileNetV3},'' in {\em Proceedings of the IEEE/CVF International Conference
+  on Computer Vision (ICCV)}, pp.~1314--1324, 2019.
+
+\bibitem{fernandez2024telu}
+A.~Fernandez and A.~Mali, ``{TeLU} activation function for fast and stable deep
+  learning,'' {\em arXiv preprint arXiv:2412.20269}, 2024.
+
+\bibitem{schoots2025relating}
+N.~Schoots, M.~J. Villani, and N.~uit~de Bos, ``Relating piecewise linear
+  kolmogorov arnold networks to {ReLU} networks,'' in {\em Proceedings of the
+  28th International Conference on Artificial Intelligence and Statistics
+  (AISTATS)}, vol.~258, pp.~199--207, 2025.
 
 \bibitem{bengio2013ste}
 Y.~Bengio, N.~L{\'e}onard, and A.~Courville, ``Estimating or propagating
@@ -118,16 +148,10 @@ P.~Ramachandran, B.~Zoph, and Q.~V. Le, ``Searching for activation functions,''
   in {\em International Conference on Learning Representations (ICLR)
   Workshop}, 2018.
 
-\bibitem{howard2019searching}
-A.~Howard, M.~Sandler, G.~Chu, L.-C. Chen, B.~Chen, M.~Tan, W.~Wang, Y.~Zhu,
-  R.~Pang, V.~Vasudevan, Q.~V. Le, and H.~Adam, ``Searching for mobilenetv3,''
-  in {\em Proceedings of the IEEE/CVF International Conference on Computer
-  Vision (ICCV)}, pp.~1314--1324, 2019.
-
 \bibitem{bdd100k2020}
 F.~Yu, H.~Chen, X.~Wang, W.~Xian, Y.~Chen, F.~Liu, V.~Madhavan, and T.~Darrell,
   ``{BDD100K}: A diverse driving dataset for heterogeneous multitask
-  learning,'' in {\em IEEE/CVF Conference on Computer Vision and Pattern
-  Recognition (CVPR)}, 2020.
+  learning,'' in {\em Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition (CVPR)}, pp.~2636--2645, 2020.
 
 \end{thebibliography}
