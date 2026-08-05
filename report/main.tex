@@ -177,64 +177,70 @@ The experimental results demonstrate that KAN-based architectures successfully a
 \section{Context and motivation}
 \label{sec:context}
 \subsection{Context}
-Semantic segmentation, the task of assigning a class label to every pixel in an image, is a foundational capability for autonomous driving perception systems. Accurate road segmentation enables autonomous vehicles to identify drivable surfaces, lane boundaries, sidewalks, and other critical scene elements in real time. The evolution of segmentation architectures has progressed from early fully convolutional networks (FCN)~\cite{long2015fcn} to the U-Net encoder-decoder paradigm~\cite{ronneberger2015unet}, and more recently to Transformer-based models such as SegFormer~\cite{xie2021segformer} and Swin-UNet~\cite{cao2022swinunet}.
+Semantic segmentation, the task of assigning a class label to every pixel in an image, is a foundational capability for autonomous driving perception systems. Accurate road segmentation enables autonomous vehicles to identify drivable surfaces, lane boundaries, sidewalks, and other critical scene elements in real time. The evolution of segmentation architectures has progressed from early fully convolutional networks (FCN)~\cite{long2015fcn} to the U-Net encoder-decoder architecture~\cite{ronneberger2015unet}, and more recently to Transformer-based models such as SegFormer~\cite{xie2021segformer}, Swin-UNet~\cite{cao2022swinunet} and Segment Anything~\cite{kirillov2023segment}.
 
-However, all of these architectures share a fundamental design choice inherited from Multi-Layer Perceptrons (MLPs): they place fixed, predetermined activation functions (e.g., ReLU, GELU) at the \emph{nodes} of the network, while the \emph{edges} (connections) carry only learnable linear weights. The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} suggests an alternative: placing learnable, potentially non-linear activation functions on the \emph{edges} themselves, allowing the network to learn both the weights and the optimal activation shape for each connection. This principle forms the foundation of Kolmogorov-Arnold Networks (KANs)~\cite{liu2024kan}.
+However, all of these architectures share a fundamental design choice inherited from Multi-Layer Perceptrons (MLPs): they place fixed, pre-defined activation functions (e.g., ReLU, GELU) at the \emph{nodes} of the network, while the \emph{edges} (connections) carry only learnable linear weights,. The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} suggests an alternative: replace every linear weight with a non-linear activation functions on the \emph{edges} themselves, allowing the network to learn both the weights and the optimal activation shape for each connection, which as a results, achieve better accuracy and interpretability. This principle forms the foundation of Kolmogorov-Arnold Networks (KANs)~\cite{liu2024kan}.
 
-Recent work has demonstrated the potential of KAN-based architectures in medical image segmentation~\cite{li2024ukan}, but their application to road scene segmentation and their compatibility with extreme model compression techniques such as Binary Neural Networks (BNNs)~\cite{qin2020bireal, liu2020reactnet} remain largely unexplored.
+In the Sematic Segmentation contenxt, recent work has demonstrated the potential of KAN-based architectures in medical image segmentation~\cite{li2024ukan}. On the other hand,  KAN application to road scene segmentation and their compatibility with extreme model compression techniques such as Binary Neural Networks (BNNs)~\cite{qin2020bireal, liu2020reactnet} remain largely unexplored.
 
 \subsection{Problem Statement}
-Deploying segmentation models on autonomous vehicles poses two competing requirements. First, the model must achieve high segmentation accuracy to ensure safe navigation—missed road boundaries or misclassified obstacles can lead to catastrophic failures. Second, the model must operate within strict computational budgets imposed by edge hardware (e.g., embedded GPUs, FPGAs, or even microcontrollers), demanding low latency, small model size, and minimal memory bandwidth.
+Deploying segmentation models on autonomous vehicles poses two competing requirements. First, the model must achieve high segmentation accuracy to to ensures safeness to vehicles and the passengers. Second, since the car \textbf{sees} the environment throught a camera, the model itself have to be capable of processing a large amount of frames per second; therefore, require low latency, small model size, and minimal memory bandwidth.
 
-Standard full-precision segmentation networks (32-bit floating point) achieve high accuracy but require significant computational resources. Binary Neural Networks (BNNs) offer extreme compression by quantizing both weights and activations to 1-bit representations, but they suffer from severe accuracy degradation due to the limited expressiveness of the sign function used for binarization. The central challenge addressed in this thesis is: \emph{Can the KAN paradigm of learnable per-connection activations mitigate the accuracy loss inherent in binarized networks, while preserving their computational efficiency advantages?}
+Standard full-precision segmentation networks (32-bit floating point) achieve high accuracy but require significant computational resources. Binary Neural Networks (BNNs) offer extreme compression by quantizing both weights and activations to 1-bit representations, but they suffer from severe accuracy degradation due to the limited expressiveness of the sign function used for binarization. The central challenge addressed in this thesis is: \emph{Can the KAN solve the accuracy loss in efficient, binarized networks, while preserving their computational efficiency advantages?}
 
 \subsection{Motivation}
-This research is motivated by the need to bridge the gap between expressive, high-accuracy segmentation models and the extreme efficiency demands of real-time edge deployment. By investigating two complementary approaches—UKAN for full-precision KAN-augmented segmentation and BiKA for binarized KAN convolutions—we aim to establish a comprehensive understanding of how KAN integration affects the accuracy-efficiency Pareto frontier for road segmentation. Furthermore, by implementing knowledge distillation from UKAN to BiKA, we explore whether the rich representations learned by full-precision KAN layers can be effectively transferred to their binarized counterparts.
+This research is motivated by the need to bridge the gap between expressive, high-accuracy segmentation models and the efficient model real-time performance. We perform two approaches: UKAN for full-precision KAN-augmented segmentation and BiKA for binarized KAN convolutions—we aim to observe how KAN integration affects the accuracy-efficiency for road segmentation. 
 
 \section{Related Work}
 \label{sec:related_work}
-The development of semantic segmentation architectures has progressed through several paradigm shifts. Long et al.~\cite{long2015fcn} introduced Fully Convolutional Networks (FCN), demonstrating that classification CNNs could be adapted for dense prediction. Ronneberger et al.~\cite{ronneberger2015unet} proposed U-Net, whose symmetric encoder-decoder architecture with skip connections became the dominant paradigm for biomedical and subsequently autonomous driving segmentation.
+The development of semantic segmentation architectures has grown significant for the last decade. In 2015, Long et al.~\cite{long2015fcn} introduced Fully Convolutional Networks (FCN), demonstrating that classification CNNs could be adapted for dense prediction. Ronneberger et al.~\cite{ronneberger2015unet} proposed U-Net, whose symmetric encoder-decoder architecture with skip connections became the dominant standard for biomedical and subsequently autonomous driving segmentation.
 
-Modern segmentation architectures have increasingly incorporated attention mechanisms. SegFormer~\cite{xie2021segformer} introduced a hierarchical Transformer encoder with efficient self-attention, while Swin-UNet~\cite{cao2022swinunet} adapted the shifted-window Transformer for U-shaped segmentation. DeepLabV3+~\cite{chen2018deeplabv3plus} combined atrous spatial pyramid pooling with encoder-decoder structures to capture multi-scale context.
+Modern segmentation architectures have increasingly adopt attention mechanisms. SegFormer~\cite{xie2021segformer} introduced a hierarchical Transformer encoder with efficient self-attention, while Swin-UNet~\cite{cao2022swinunet} adapted the shifted-window Transformer for U-shaped segmentation. DeepLabV3+~\cite{chen2018deeplabv3plus} combined atrous spatial pyramid pooling with encoder-decoder structures to capture multi-scale context.
 
 In parallel, the Kolmogorov-Arnold Network (KAN) was proposed by Liu et al.~\cite{liu2024kan} as an alternative to MLPs, placing learnable activation functions on edges rather than nodes. Li et al.~\cite{li2024ukan} subsequently demonstrated U-KAN, integrating KAN layers into the U-Net bottleneck for medical image segmentation. FasterKAN~\cite{fasterkan2024} addressed the computational overhead of the original B-spline KAN implementation by replacing B-splines with Reflectional Switch Activation Functions (RSWAf).
 
-On the model compression front, XNOR-Net~\cite{rastegari2016xnor} and Bi-Real Net~\cite{qin2020bireal} established foundations for BNNs by introducing real-valued skip connections to stabilize binary training. ReActNet~\cite{liu2020reactnet} further improved BNN accuracy through learnable activation shifts (RPReLU). IR-Net~\cite{qin2020irnet} proposed Libra-PB for balanced weight binarization, and AdaBin~\cite{tu2022adabin} introduced learnable per-channel output scaling.
+On the model compression side, Binary Neural Networks (BNNs) were first formalized by Hubara et al.~\cite{hubara2016binarized}, who demonstrated the feasibility of training deep networks with weights and activations constrained to $+1$ and $-1$. Subsequent works like XNOR-Net~\cite{rastegari2016xnor} and Bi-Real Net~\cite{qin2020bireal} advanced BNNs by introducing real-valued skip connections to stabilize binary training. ReActNet~\cite{liu2020reactnet} further improved BNN accuracy through learnable activation shifts (RPReLU), while IR-Net~\cite{qin2020irnet} proposed Libra-PB for balanced weight binarization, and AdaBin~\cite{tu2022adabin} introduced learnable per-channel output scaling. Extending these principles to dense prediction tasks, Group-Net~\cite{zhuang2019structured} demonstrated that structured binary networks, which dvide operations into multiple homogeneous binary branches, can successfully maintain the rich contextual information required for accurate semantic segmentation.
 
-Our work builds upon these foundations by: (1) adapting U-KAN for road segmentation with multiple efficient KAN variants, and (2) proposing BiKA, which fuses the KAN per-connection activation philosophy with state-of-the-art BNN techniques for extreme edge deployment.
+Our work builds upon these foundations by: (1) adapting U-KAN for road segmentation with multiple efficient KAN variants, and (2) proposing BiKA, which combines the KAN per-connection activation idea with state-of-the-art BNN techniques for extreme efficiency.
 
 \section{Thesis Objective} 
 \label{sec: obj}
-The primary objective of this thesis is to implement, evaluate, and compare two KAN-based segmentation architectures for road scene understanding. Specifically, we aim to: (1) adapt the UKAN architecture with multiple KAN linear variants for road segmentation on the BDD100K dataset, (2) design and implement BiKASegNet, a binarized segmentation network that realizes the KAN philosophy through per-connection binary thresholds, (3) establish a knowledge distillation pipeline from full-precision UKAN to binarized BiKA, and (4) benchmark both architectures against standard U-Net and Transformer baselines in terms of segmentation quality, model size, and inference speed.
+The primary objective of this thesis is to implement, evaluate, and compare two KAN-based segmentation architectures for road segmentation problem. Specifically, we aim to: 
 
+\begin{itemize}
+    \item Adapt the U-KAN architecture for road segmentation on the BDD100K dataset, exploring multiple KAN linear variants (FasterKAN, ReLU-KAN, HardSwish-KAN, PWLO-KAN, TeLU-KAN) to assess their impact on segmentation accuracy and inference speed.
+    \item Design and implement BiKASegNet, a binarized segmentation network that applies the KAN algorithm through per-connection binary thresholds to achieve extreme model compression while retaining acceptable accuracy.
+    \item Benchmark both architectures against standard baseline models in terms of segmentation quality (mIoU, Dice), model size, and inference speed on CUDA platforms.
+      
+\end{itemize}
+      
 \section{Thesis Structure}
 \label{sec: structure}
 The remainder of this thesis is structured as follows:
 \begin{itemize}
     \item \textbf{Chapter 1} introduces the context, problem statement, related work, and objectives of this research.
-    \item \textbf{Chapter 2} discusses the technical background of Kolmogorov-Arnold Networks, the U-Net segmentation paradigm, Binary Neural Networks, and the KAN variant implementations.
-    \item \textbf{Chapter 3} details the methodology, including the UKAN architecture, KAN layer integration, the BiKA binarized convolution design, and the knowledge distillation framework.
+    \item \textbf{Chapter 2} discusses the technical background of Kolmogorov-Arnold Networks, the U-Net segmentation, Binary Neural Networks, and the KAN variant implementations.
+    \item \textbf{Chapter 3} explains the methodology, including the UKAN architecture, KAN layer integration, the BiKA binarized segmentation network design.
     \item \textbf{Chapter 4} describes the experimental setup, dataset preparation, training procedures, and performance evaluation of both architectures.
-    \item \textbf{Chapter 5} summarizes the findings of this thesis and outlines future avenues of research.
+    \item \textbf{Chapter 5} summarizes the content of this thesis and proposes future developments of research.
+
 \end{itemize}
 
 
 
 \chapter{Background}
 
-This chapter introduces the foundational concepts underlying KAN-based segmentation networks. We begin by providing a high-level overview of Kolmogorov-Arnold Networks (KANs) and Binary Neural Networks (BNNs), and then explain how Binarized Kolmogorov-Arnold Networks (BiKA) bridge these two domains. Following this overview, we detail the mathematical formulations of these architectures.
+This chapter introduces the foundational knowledge that are used to implement KAN-based segmentation networks. These include Kolmogorov-Arnold Networks (KANs), Binary Neural Networks (BNNs), and Binarized Kolmogorov-Arnold Networks (BiKA) concept which sucessfully combine the two architectures. 
 
-\section{Overview of Core Concepts}
-
-Kolmogorov-Arnold Networks (KANs) have recently emerged as a compelling alternative to traditional Multi-Layer Perceptrons (MLPs), inspired by the Kolmogorov-Arnold representation theorem. In a standard MLP, the network learns fixed scalar weights on its connections (edges) and applies predetermined, fixed non-linear activation functions (such as ReLU or sigmoid) at its neurons (nodes). KANs invert this paradigm by placing learnable, non-linear activation functions directly on the network edges, while the nodes simply sum the incoming signals. In the original KAN implementation, these edge-centric activation functions are parameterized using flexible, continuous basis functions like B-splines. This architecture grants KANs exceptional representational flexibility and potential interpretability, as each connection can adapt to model complex univariate relationships. However, evaluating these continuous spline functions requires significant floating-point operations, introducing a computational overhead that heavily constrains the deployment of standard KANs on resource-limited hardware.
-
-Binary Neural Networks (BNNs) address the hardware constraints of deep learning by pushing model quantization to its absolute theoretical limit. In a BNN, both the network weights and the intermediate feature activations are constrained to 1-bit representations, typically $\{-1, +1\}$, utilizing the sign function. This severe quantization completely eliminates the need for expensive floating-point multiply-accumulate (MAC) operations. Instead, convolutions and dense layers can be executed using highly efficient bitwise XNOR and popcount operations, drastically reducing memory bandwidth and latency on edge devices like FPGAs and embedded GPUs. Despite these immense computational advantages, the extreme information loss induced by binarizing continuous variables natively limits the expressiveness of BNNs. They often suffer from degraded predictive accuracy compared to full-precision networks and require specialized training methodologies, such as the Straight-Through Estimator (STE) and dense skip connections, to maintain stable gradient flow during backpropagation.
+Binary Neural Networks (BNNs) address the hardware constraints of deep learning by pushing model quantization to its absolute theoretical limit. In a BNN, both the network weights and the intermediate feature activations are constrained to 1-bit representations, typically $\{-1, +1\}$, utilizing the sign function. This severe quantization completely eliminates the need for expensive floating-point multiply-accumulate (MAC) operations. Instead, convolutions and dense layers can be executed using highly efficient bitwise XNOR and popcount operations, drastically reducing memory bandwidth and latency on edge devices like FPGAs and embedded GPUs. Despite these immense computational advantages, the extreme information loss induced by binarizing continuous variables natively limits the expressiveness of BNNs. They often suffer from accuracy compared to full-precision networks and require specialized training methodologies, such as the Straight-Through Estimator (STE) and dense skip connections, to maintain stable gradient flow during backpropagation.
 
 Bridging the gap between the high representational capacity of KANs and the extreme hardware efficiency of BNNs, the Binarized Kolmogorov-Arnold Network (BiKA) introduces a novel paradigm for edge-deployed neural networks. While traditional KANs employ computationally expensive continuous splines and standard BNNs rely on uniform binarization, BiKA replaces the continuous edge functions of KANs with learnable, binary step functions parameterized by individualized connection thresholds. By assigning a unique, learnable bias threshold to every single synapse before binarization, BiKA faithfully implements the KAN philosophy of per-connection activations without requiring floating-point arithmetic during inference. Compared to KANs, BiKA sacrifices the smooth continuity of spline functions to achieve a completely multiply-free computational graph. Compared to traditional BNNs, BiKA achieves significantly higher expressiveness without adding computational complexity by shifting the learning capacity from continuous weight magnitudes to highly localized spatial thresholds. This synthesis provides a highly effective balance, delivering KAN-inspired accuracy within the strict power and resource budgets of binary architectures.
 
 
 \section{Kolmogorov-Arnold Networks}
 \label{sec:kan_background}
+
+Kolmogorov-Arnold Networks (KANs) \cite{liu2024kan} have been proposed as a novel approach to improve traditional Multi-Layer Perceptrons (MLPs) accuracy, inspired by the Kolmogorov-Arnold representation theorem. In a standard MLP, the network learns fixed scalar weights on its connections (edges) and applies pre-defined, fixed non-linear activation functions (such as ReLU or sigmoid) at its neurons (nodes). KANs invert this principle by placing learnable, non-linear activation functions directly on the network edges, while the nodes simply sum the incoming signals. 
 The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} states that any multivariate continuous function $f: [0,1]^n \rightarrow \mathbb{R}$ can be represented as a finite composition of continuous functions of a single variable and the binary operation of addition:
 \begin{equation}
     f(x_1, \dots, x_n) = \sum_{q=0}^{2n} \Phi_q \left( \sum_{p=1}^{n} \phi_{q,p}(x_p) \right)
@@ -242,7 +248,7 @@ The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} s
 where $\phi_{q,p}: [0,1] \rightarrow \mathbb{R}$ are univariate inner functions and $\Phi_q: \mathbb{R} \rightarrow \mathbb{R}$ are outer functions. This theorem guarantees the existence of such a representation but does not prescribe how to learn it.
 
 \subsection{KAN vs MLP Architecture}
-Liu et al.~\cite{liu2024kan} proposed Kolmogorov-Arnold Networks as a practical neural network architecture inspired by this theorem. The key distinction between KANs and traditional MLPs is illustrated in Figure~\ref{fig:kan_vs_mlp}.
+Liu et al.~\cite{liu2024kan} proposed Kolmogorov-Arnold Networks as a practical neural network architecture inspired by this theorem. The key different between KANs and traditional MLPs is illustrated in Figure~\ref{fig:kan_vs_mlp}.
 
 \begin{figure}[H]
 \centering
@@ -351,7 +357,7 @@ PWLO-KAN is particularly suited for integer-arithmetic inference engines since t
 
 \section{U-Net Segmentation Architecture}
 \label{sec:unet}
-U-Net~\cite{ronneberger2015unet} established the symmetric encoder-decoder architecture with skip connections as the standard paradigm for dense prediction tasks. The encoder progressively downsamples the input through convolutional blocks and pooling operations, extracting increasingly abstract feature representations. The decoder upsamples these features back to the original resolution, with skip connections from corresponding encoder stages providing fine-grained spatial detail.
+U-Net~\cite{ronneberger2015unet} established the symmetric encoder-decoder architecture with skip connections as the standard for dense prediction tasks. The encoder progressively downsamples the input through convolutional blocks and pooling operations, extracting increasingly abstract feature representations. The decoder upsamples these features back to the original resolution, with skip connections from corresponding encoder stages providing fine-grained spatial detail.
 
 Each encoder stage consists of a double convolution block:
 \begin{equation}
@@ -476,6 +482,16 @@ The default loss function used in both UKAN and BiKA training combines both obje
 \end{equation}
 This jointly optimizes for per-pixel classification accuracy and region-level overlap, with the Dice component ensuring that small classes (e.g., lane markings) are not overwhelmed by the dominant background class.
 
+
+\section{Optimization and Activation Functions}
+\label{sec:optim_activations}
+The successful training of both full-precision and binarized networks relies heavily on the choice of optimization algorithms and activation functions. In our implementations across the UKAN and BiKA architectures, we employ several standard and specialized techniques.
+
+\subsection{Optimization Methods}
+For model optimization, we utilize variations of stochastic gradient descent. The Adam optimizer~\cite{kingma2015adam} computes adaptive learning rates for each parameter using estimates of first and second moments of the gradients, making it highly effective for complex architectures like KANs. To improve generalization, we also employ AdamW~\cite{LoshchilovH19}, which decouples weight decay from the gradient update, providing better regularization. During training, learning rates are dynamically adjusted using the OneCycleLR scheduler~\cite{smith2019superconvergence}, a super-convergence technique that anneals the learning rate from an initial value to a high maximum value and then down to a minimum, preventing the model from settling into sharp, suboptimal local minima.
+
+\subsection{Activation Functions}
+Activation functions inject the necessary non-linearity into the network. Beyond the standard Rectified Linear Unit (ReLU), our KAN variants utilize more advanced smooth activations. The Sigmoid Linear Unit (SiLU or Swish)~\cite{ramachandran2018searching}, defined as $x \cdot \sigma(x)$, is used extensively as a base activation function across the KAN linear layers due to its smooth, non-monotonic properties that improve gradient flow. Additionally, Hardswish~\cite{howard2019searching} is employed in specific KAN variants (HardSwish-KAN) to approximate the smooth SiLU activation with piecewise linear functions, significantly reducing computational overhead on edge devices while maintaining accuracy.
 
 
 \chapter{Methodology and Architecture Design}

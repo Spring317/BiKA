@@ -27,6 +27,11 @@ H.~Cao, Y.~Wang, J.~Chen, D.~Jiang, X.~Zhang, Q.~Tian, and M.~Wang,
   ``{Swin-Unet}: Unet-like pure transformer for medical image segmentation,''
   {\em arXiv preprint arXiv:2105.05537}, 2022.
 
+\bibitem{kirillov2023segment}
+A.~Kirillov, E.~Mintun, N.~Ravi, H.~Mao, C.~Rolland, L.~Gustafson, T.~Xiao,
+  S.~Whitehead, A.~C. Berg, W.-Y. Lo, P.~Doll{\'a}r, and R.~Girshick, ``Segment
+  anything,'' {\em arXiv preprint arXiv:2304.02643}, 2023.
+
 \bibitem{kolmogorov1957}
 A.~N. Kolmogorov, ``On the representation of continuous functions of several
   variables by superposition of continuous functions of one variable and
@@ -62,6 +67,12 @@ L.-C. Chen, Y.~Zhu, G.~Papandreou, F.~Schroff, and H.~Adam, ``Encoder-decoder
 T.~Athanasios, ``{FasterKAN}: Accelerating kolmogorov-arnold networks with
   rswaf basis functions,'' {\em GitHub Repository}, 2024.
 
+\bibitem{hubara2016binarized}
+I.~Hubara, M.~Courbariaux, D.~Soudry, R.~El-Yaniv, and Y.~Bengio, ``Binarized
+  neural networks: Training deep neural networks with weights and activations
+  constrained to +1 or -1,'' in {\em Advances in Neural Information Processing
+  Systems}, vol.~29, 2016.
+
 \bibitem{rastegari2016xnor}
 M.~Rastegari, V.~Ordonez, J.~Redmon, and A.~Farhadi, ``{XNOR-Net}: Imagenet
   classification using binary convolutional neural networks,'' in {\em European
@@ -77,10 +88,41 @@ Z.~Tu, X.~Chen, P.~Ren, and Y.~Wang, ``{AdaBin}: Improving binary neural
   networks with adaptive binary sets,'' in {\em European Conference on Computer
   Vision (ECCV)}, 2022.
 
+\bibitem{zhuang2019structured}
+B.~Zhuang, C.~Shen, M.~Tan, L.~Liu, and I.~Reid, ``Structured binary neural
+  networks for accurate image classification and semantic segmentation,'' in
+  {\em Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition (CVPR)}, pp.~413--422, 2019.
+
 \bibitem{bengio2013ste}
 Y.~Bengio, N.~L{\'e}onard, and A.~Courville, ``Estimating or propagating
   gradients through stochastic neurons for conditional computation,'' in {\em
   arXiv preprint arXiv:1308.3432}, 2013.
+
+\bibitem{kingma2015adam}
+D.~P. Kingma and J.~Ba, ``Adam: A method for stochastic optimization,'' in {\em
+  International Conference on Learning Representations (ICLR)}, 2015.
+
+\bibitem{LoshchilovH19}
+I.~Loshchilov and F.~Hutter, ``Decoupled weight decay regularization,'' in {\em
+  International Conference on Learning Representations (ICLR)}, 2019.
+
+\bibitem{smith2019superconvergence}
+L.~N. Smith and N.~Topin, ``Super-convergence: Very fast training of neural
+  networks using large learning rates,'' in {\em Artificial Intelligence and
+  Machine Learning for Multi-Domain Operations Applications}, vol.~11006,
+  p.~1100612, SPIE, 2019.
+
+\bibitem{ramachandran2018searching}
+P.~Ramachandran, B.~Zoph, and Q.~V. Le, ``Searching for activation functions,''
+  in {\em International Conference on Learning Representations (ICLR)
+  Workshop}, 2018.
+
+\bibitem{howard2019searching}
+A.~Howard, M.~Sandler, G.~Chu, L.-C. Chen, B.~Chen, M.~Tan, W.~Wang, Y.~Zhu,
+  R.~Pang, V.~Vasudevan, Q.~V. Le, and H.~Adam, ``Searching for mobilenetv3,''
+  in {\em Proceedings of the IEEE/CVF International Conference on Computer
+  Vision (ICCV)}, pp.~1314--1324, 2019.
 
 \bibitem{bdd100k2020}
 F.~Yu, H.~Chen, X.~Wang, W.~Xian, Y.~Chen, F.~Liu, V.~Madhavan, and T.~Darrell,

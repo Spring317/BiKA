@@ -26,6 +26,7 @@
 \citation{ronneberger2015unet}
 \citation{xie2021segformer}
 \citation{cao2022swinunet}
+\citation{kirillov2023segment}
 \citation{kolmogorov1957}
 \citation{arnold2009}
 \citation{liu2024kan}
@@ -47,11 +48,13 @@
 \citation{liu2024kan}
 \citation{li2024ukan}
 \citation{fasterkan2024}
+\citation{hubara2016binarized}
 \citation{rastegari2016xnor}
 \citation{qin2020bireal}
 \citation{liu2020reactnet}
 \citation{qin2020irnet}
 \citation{tu2022adabin}
+\citation{zhuang2019structured}
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.1.3}Motivation}{2}{subsection.1.1.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {1.2}Related Work}{2}{section.1.2}\protected@file@percent }
 \newlabel{sec:related_work}{{1.2}{2}{Related Work}{section.1.2}{}}
@@ -59,57 +62,66 @@
 \newlabel{sec: obj}{{1.3}{2}{Thesis Objective}{section.1.3}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {1.4}Thesis Structure}{3}{section.1.4}\protected@file@percent }
 \newlabel{sec: structure}{{1.4}{3}{Thesis Structure}{section.1.4}{}}
+\citation{liu2024kan}
+\citation{kolmogorov1957}
+\citation{arnold2009}
 \@writefile{toc}{\contentsline {chapter}{\numberline {2}Background}{4}{chapter.2}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {2.1}Overview of Core Concepts}{4}{section.2.1}\protected@file@percent }
-\citation{kolmogorov1957}
-\citation{arnold2009}
+\@writefile{toc}{\contentsline {section}{\numberline {2.1}Kolmogorov-Arnold Networks}{4}{section.2.1}\protected@file@percent }
+\newlabel{sec:kan_background}{{2.1}{4}{Kolmogorov-Arnold Networks}{section.2.1}{}}
 \citation{liu2024kan}
 \citation{liu2024kan}
 \citation{liu2024kan}
-\@writefile{toc}{\contentsline {section}{\numberline {2.2}Kolmogorov-Arnold Networks}{5}{section.2.2}\protected@file@percent }
-\newlabel{sec:kan_background}{{2.2}{5}{Kolmogorov-Arnold Networks}{section.2.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.1}KAN vs MLP Architecture}{5}{subsection.2.2.1}\protected@file@percent }
+\citation{liu2024kan}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.1}KAN vs MLP Architecture}{5}{subsection.2.1.1}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces Comparison of MLP (fixed activations on nodes, learnable weights on edges) vs KAN (learnable activation functions on edges, summation on nodes)~\cite  {liu2024kan}.}}{5}{figure.caption.7}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{fig:kan_vs_mlp}{{2.1}{5}{Comparison of MLP (fixed activations on nodes, learnable weights on edges) vs KAN (learnable activation functions on edges, summation on nodes)~\cite {liu2024kan}}{figure.caption.7}{}}
-\citation{liu2024kan}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.2}Original KAN Implementation with B-Splines}{5}{subsection.2.1.2}\protected@file@percent }
 \citation{fasterkan2024}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}Original KAN Implementation with B-Splines}{6}{subsection.2.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2.3}Efficient KAN Variants}{6}{section.2.3}\protected@file@percent }
-\newlabel{sec:kan_variants}{{2.3}{6}{Efficient KAN Variants}{section.2.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}FasterKAN (RSWAf Basis)}{6}{subsection.2.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}ReLU-KAN}{6}{subsection.2.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.2}Efficient KAN Variants}{6}{section.2.2}\protected@file@percent }
+\newlabel{sec:kan_variants}{{2.2}{6}{Efficient KAN Variants}{section.2.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.1}FasterKAN (RSWAf Basis)}{6}{subsection.2.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}ReLU-KAN}{6}{subsection.2.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.3}HardSwish-KAN}{6}{subsection.2.2.3}\protected@file@percent }
 \citation{ronneberger2015unet}
 \citation{ronneberger2015unet}
 \citation{ronneberger2015unet}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.3}HardSwish-KAN}{7}{subsection.2.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.4}TeLU-KAN}{7}{subsection.2.3.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.5}PWLO-KAN (Piecewise Linear Optimisation)}{7}{subsection.2.3.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2.4}U-Net Segmentation Architecture}{7}{section.2.4}\protected@file@percent }
-\newlabel{sec:unet}{{2.4}{7}{U-Net Segmentation Architecture}{section.2.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.4}TeLU-KAN}{7}{subsection.2.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.5}PWLO-KAN (Piecewise Linear Optimisation)}{7}{subsection.2.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.3}U-Net Segmentation Architecture}{7}{section.2.3}\protected@file@percent }
+\newlabel{sec:unet}{{2.3}{7}{U-Net Segmentation Architecture}{section.2.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces Standard U-Net encoder-decoder architecture with skip connections~\cite  {ronneberger2015unet}.}}{7}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:unet_arch}{{2.2}{7}{Standard U-Net encoder-decoder architecture with skip connections~\cite {ronneberger2015unet}}{figure.caption.8}{}}
 \citation{rastegari2016xnor}
 \citation{bengio2013ste}
 \citation{qin2020bireal}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces Standard U-Net encoder-decoder architecture with skip connections~\cite  {ronneberger2015unet}.}}{8}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:unet_arch}{{2.2}{8}{Standard U-Net encoder-decoder architecture with skip connections~\cite {ronneberger2015unet}}{figure.caption.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.5}Binary Neural Networks}{8}{section.2.5}\protected@file@percent }
-\newlabel{sec:bnn}{{2.5}{8}{Binary Neural Networks}{section.2.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.5.1}Straight-Through Estimator (STE)}{8}{subsection.2.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.5.2}Key BNN Techniques}{8}{subsection.2.5.2}\protected@file@percent }
 \citation{liu2020reactnet}
 \citation{qin2020irnet}
+\@writefile{toc}{\contentsline {section}{\numberline {2.4}Binary Neural Networks}{8}{section.2.4}\protected@file@percent }
+\newlabel{sec:bnn}{{2.4}{8}{Binary Neural Networks}{section.2.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.1}Straight-Through Estimator (STE)}{8}{subsection.2.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.2}Key BNN Techniques}{8}{subsection.2.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Bi-Real Net Skip Connections}{8}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{RPReLU (ReActNet)}{8}{section*.10}\protected@file@percent }
 \citation{tu2022adabin}
-\@writefile{toc}{\contentsline {subsubsection}{Bi-Real Net Skip Connections}{9}{section*.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{RPReLU (ReActNet)}{9}{section*.10}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Libra-PB (Balanced Binarization)}{9}{section*.11}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{AdaBin (Adaptive Binary Scaling)}{9}{section*.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2.6}Loss Functions for Segmentation}{9}{section.2.6}\protected@file@percent }
-\newlabel{sec:losses}{{2.6}{9}{Loss Functions for Segmentation}{section.2.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.1}Cross-Entropy Loss}{10}{subsection.2.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.2}Dice Loss}{10}{subsection.2.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.3}Combined Cross-Entropy Dice Loss}{10}{subsection.2.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.5}Loss Functions for Segmentation}{9}{section.2.5}\protected@file@percent }
+\newlabel{sec:losses}{{2.5}{9}{Loss Functions for Segmentation}{section.2.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5.1}Cross-Entropy Loss}{9}{subsection.2.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5.2}Dice Loss}{9}{subsection.2.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5.3}Combined Cross-Entropy Dice Loss}{9}{subsection.2.5.3}\protected@file@percent }
+\citation{kingma2015adam}
+\citation{LoshchilovH19}
+\citation{smith2019superconvergence}
+\citation{ramachandran2018searching}
+\citation{howard2019searching}
+\@writefile{toc}{\contentsline {section}{\numberline {2.6}Optimization and Activation Functions}{10}{section.2.6}\protected@file@percent }
+\newlabel{sec:optim_activations}{{2.6}{10}{Optimization and Activation Functions}{section.2.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.1}Optimization Methods}{10}{subsection.2.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6.2}Activation Functions}{10}{subsection.2.6.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {chapter}{\numberline {3}Methodology and Architecture Design}{11}{chapter.3}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
@@ -170,17 +182,25 @@
 \bibcite{long2015fcn}{3}
 \bibcite{xie2021segformer}{4}
 \bibcite{cao2022swinunet}{5}
-\bibcite{kolmogorov1957}{6}
-\bibcite{arnold2009}{7}
-\bibcite{li2024ukan}{8}
-\bibcite{qin2020bireal}{9}
-\bibcite{liu2020reactnet}{10}
-\bibcite{chen2018deeplabv3plus}{11}
-\bibcite{fasterkan2024}{12}
-\bibcite{rastegari2016xnor}{13}
+\bibcite{kirillov2023segment}{6}
+\bibcite{kolmogorov1957}{7}
+\bibcite{arnold2009}{8}
+\bibcite{li2024ukan}{9}
+\bibcite{qin2020bireal}{10}
+\bibcite{liu2020reactnet}{11}
+\bibcite{chen2018deeplabv3plus}{12}
+\bibcite{fasterkan2024}{13}
 \@writefile{toc}{\contentsline {chapter}{Bibliography}{21}{section.5.2}\protected@file@percent }
-\bibcite{qin2020irnet}{14}
-\bibcite{tu2022adabin}{15}
-\bibcite{bengio2013ste}{16}
-\bibcite{bdd100k2020}{17}
+\bibcite{hubara2016binarized}{14}
+\bibcite{rastegari2016xnor}{15}
+\bibcite{qin2020irnet}{16}
+\bibcite{tu2022adabin}{17}
+\bibcite{zhuang2019structured}{18}
+\bibcite{bengio2013ste}{19}
+\bibcite{kingma2015adam}{20}
+\bibcite{LoshchilovH19}{21}
+\bibcite{smith2019superconvergence}{22}
+\bibcite{ramachandran2018searching}{23}
+\bibcite{howard2019searching}{24}
+\bibcite{bdd100k2020}{25}
 \gdef \@abspage@last{32}
