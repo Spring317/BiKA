@@ -240,7 +240,6 @@ Bridging the gap between the high representational capacity of KANs and the extr
 \section{Kolmogorov-Arnold Networks}
 \label{sec:kan_background}
 
-Kolmogorov-Arnold Networks (KANs) \cite{liu2024kan} have been proposed as a novel approach to improve traditional Multi-Layer Perceptrons (MLPs) accuracy, inspired by the Kolmogorov-Arnold representation theorem. In a standard MLP, the network learns fixed scalar weights on its connections (edges) and applies pre-defined, fixed non-linear activation functions (such as ReLU or sigmoid) at its neurons (nodes). KANs invert this principle by placing learnable, non-linear activation functions directly on the network edges, while the nodes simply sum the incoming signals. 
 The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} states that any multivariate continuous function $f: [0,1]^n \rightarrow \mathbb{R}$ can be represented as a finite composition of continuous functions of a single variable and the binary operation of addition:
 \begin{equation}
     f(x_1, \dots, x_n) = \sum_{q=0}^{2n} \Phi_q \left( \sum_{p=1}^{n} \phi_{q,p}(x_p) \right)
@@ -248,7 +247,7 @@ The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} s
 where $\phi_{q,p}: [0,1] \rightarrow \mathbb{R}$ are univariate inner functions and $\Phi_q: \mathbb{R} \rightarrow \mathbb{R}$ are outer functions. This theorem guarantees the existence of such a representation but does not prescribe how to learn it.
 
 \subsection{KAN vs MLP Architecture}
-Liu et al.~\cite{liu2024kan} proposed Kolmogorov-Arnold Networks as a practical neural network architecture inspired by this theorem. The key different between KANs and traditional MLPs is illustrated in Figure~\ref{fig:kan_vs_mlp}.
+Kolmogorov-Arnold Networks (KANs) \cite{liu2024kan} have been proposed as a novel approach to improve traditional Multi-Layer Perceptrons (MLPs) accuracy, inspired by the Kolmogorov-Arnold representation theorem. In a standard MLP, the network learns fixed scalar weights on its connections (edges) and applies pre-defined, fixed non-linear activation functions (such as ReLU or sigmoid) at its neurons (nodes). KANs invert this principle by placing learnable, non-linear activation functions directly on the network edges, while the nodes simply sum the incoming signals. The key different between KANs and traditional MLPs is illustrated in Figure~\ref{fig:kan_vs_mlp}.
 
 \begin{figure}[H]
 \centering
@@ -279,7 +278,7 @@ Liu et al.~\cite{liu2024kan} proposed Kolmogorov-Arnold Networks as a practical 
     \draw[->, thick, green!60!black] (k3) -- node[right, font=\scriptsize] {$\phi_2(\cdot)$} (k2);
     \node[font=\scriptsize, below=0.3cm of k3] {Learnable $\phi$ on edges};
 \end{tikzpicture}
-\caption{Comparison of MLP (fixed activations on nodes, learnable weights on edges) vs KAN (learnable activation functions on edges, summation on nodes)~\cite{liu2024kan}.}
+\caption{MLP vs KAN~\cite{liu2024kan}.}
 \label{fig:kan_vs_mlp}
 \end{figure}
 
@@ -300,7 +299,7 @@ In the original KAN~\cite{liu2024kan}, each edge activation $\phi_{ij}$ is param
 \end{equation}
 where $\text{SiLU}(x) = x \cdot \sigma(x)$ is a base activation, and $\text{spline}(x) = \sum_k c_k B_k(x)$ is a linear combination of B-spline basis functions $B_k$ with learnable coefficients $c_k$. The B-spline is defined over a grid of knot points $\{t_0, t_1, \dots, t_G\}$ spanning the input domain.
 
-While mathematically elegant, B-spline evaluation requires iterative recursion over the grid, resulting in $\mathcal{O}(G \cdot k)$ operations per activation (where $G$ is the grid size and $k$ is the spline order), making the original KAN impractical for high-throughput vision tasks.
+As a trade-off to the extra information captured, B-spline evaluation requires iterative recursion over the grid, resulting in $\mathcal{O}(G \cdot k)$ operations per activation (where $G$ is the grid size and $k$ is the spline order), making the original KAN impractical for high-throughput vision tasks. This is the main problem that we address in this thesis.
 
 
 \section{Efficient KAN Variants}
@@ -408,6 +407,7 @@ followed by $2\times2$ max pooling for spatial downsampling. The decoder mirrors
 
 \section{Binary Neural Networks}
 \label{sec:bnn}
+Binary Neural Networks (BNNs) address the hardware constraints of deep learning by pushing model quantization to its absolute theoretical limit. In a BNN, both the network weights and the intermediate feature activations are constrained to 1-bit representations, typically $\{-1, +1\}$, utilizing the sign function. This severe quantization completely eliminates the need for expensive floating-point multiply-accumulate (MAC) operations. Instead, convolutions and dense layers can be executed using highly efficient bitwise XNOR and popcount operations, drastically reducing memory bandwidth and latency on edge devices like FPGAs and embedded GPUs. Despite these immense computational advantages, the extreme information loss induced by binarizing continuous variables natively limits the expressiveness of BNNs. They often suffer from accuracy compared to full-precision networks and require specialized training methodologies, such as the Straight-Through Estimator (STE) and dense skip connections, to maintain stable gradient flow during backpropagation.
 Binary Neural Networks (BNNs) represent the extreme end of model quantization, constraining both weights and activations to $\{+1, -1\}$. The binarization function for weights is:
 \begin{equation}
     w_b = \text{sign}(w) = \begin{cases} +1 & \text{if } w \geq 0 \\ -1 & \text{otherwise} \end{cases}
@@ -485,10 +485,10 @@ This jointly optimizes for per-pixel classification accuracy and region-level ov
 
 \section{Optimization and Activation Functions}
 \label{sec:optim_activations}
-The successful training of both full-precision and binarized networks relies heavily on the choice of optimization algorithms and activation functions. In our implementations across the UKAN and BiKA architectures, we employ several standard and specialized techniques.
+The successful training and efficient deployment of KAN-based architectures rely on specialized optimization techniques and functional approximations designed to mitigate the computational overhead of edge-centric activations.
 
-\subsection{Optimization Methods}
-For model optimization, we utilize variations of stochastic gradient descent. The Adam optimizer~\cite{kingma2015adam} computes adaptive learning rates for each parameter using estimates of first and second moments of the gradients, making it highly effective for complex architectures like KANs. To improve generalization, we also employ AdamW~\cite{LoshchilovH19}, which decouples weight decay from the gradient update, providing better regularization. During training, learning rates are dynamically adjusted using the OneCycleLR scheduler~\cite{smith2019superconvergence}, a super-convergence technique that anneals the learning rate from an initial value to a high maximum value and then down to a minimum, preventing the model from settling into sharp, suboptimal local minima.
+\subsection{KAN Optimization and Acceleration}
+While original KAN implementations suffer from slow training speeds due to iterative B-spline evaluations, several structural optimization methods have been proposed to accelerate computation. FastKAN~\cite{li2024fastkan} demonstrates that 3rd-order B-splines can be effectively approximated using Gaussian Radial Basis Functions (RBFs), reformulating KANs into RBF networks to eliminate grid iteration overhead and drastically accelerate forward and backward passes. In parallel, PowerMLP~\cite{qiu2024powermlp} addresses the training latency bottleneck by introducing non-iterative power-basis expansions, offering MLP-like execution speeds (achieving up to $40\times$ faster training than standard KANs) while preserving higher representational expressiveness. In our training pipelines, parameter optimization is further supported by adaptive gradient methods including Adam~\cite{kingma2015adam} and AdamW~\cite{LoshchilovH19}, alongside the OneCycleLR scheduler~\cite{smith2019superconvergence} for super-convergence.
 
 \subsection{Activation Functions}
 Activation functions inject the necessary non-linearity into the network. Beyond the standard Rectified Linear Unit (ReLU), our KAN variants utilize more advanced smooth activations. The Sigmoid Linear Unit (SiLU or Swish)~\cite{ramachandran2018searching}, defined as $x \cdot \sigma(x)$, is used extensively as a base activation function across the KAN linear layers due to its smooth, non-monotonic properties that improve gradient flow. Additionally, Hardswish~\cite{howard2019searching} is employed in specific KAN variants (HardSwish-KAN) to approximate the smooth SiLU activation with piecewise linear functions, significantly reducing computational overhead on edge devices while maintaining accuracy.

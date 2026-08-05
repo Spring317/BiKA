@@ -29,17 +29,17 @@
 \contentsline {subsection}{\numberline {2.4.1}Straight-Through Estimator (STE)}{8}{subsection.2.4.1}%
 \contentsline {subsection}{\numberline {2.4.2}Key BNN Techniques}{8}{subsection.2.4.2}%
 \contentsline {subsubsection}{Bi-Real Net Skip Connections}{8}{section*.9}%
-\contentsline {subsubsection}{RPReLU (ReActNet)}{8}{section*.10}%
+\contentsline {subsubsection}{RPReLU (ReActNet)}{9}{section*.10}%
 \contentsline {subsubsection}{Libra-PB (Balanced Binarization)}{9}{section*.11}%
 \contentsline {subsubsection}{AdaBin (Adaptive Binary Scaling)}{9}{section*.12}%
 \contentsline {section}{\numberline {2.5}Loss Functions for Segmentation}{9}{section.2.5}%
 \contentsline {subsection}{\numberline {2.5.1}Cross-Entropy Loss}{9}{subsection.2.5.1}%
-\contentsline {subsection}{\numberline {2.5.2}Dice Loss}{9}{subsection.2.5.2}%
-\contentsline {subsection}{\numberline {2.5.3}Combined Cross-Entropy Dice Loss}{9}{subsection.2.5.3}%
+\contentsline {subsection}{\numberline {2.5.2}Dice Loss}{10}{subsection.2.5.2}%
+\contentsline {subsection}{\numberline {2.5.3}Combined Cross-Entropy Dice Loss}{10}{subsection.2.5.3}%
 \contentsline {section}{\numberline {2.6}Optimization and Activation Functions}{10}{section.2.6}%
-\contentsline {subsection}{\numberline {2.6.1}Optimization Methods}{10}{subsection.2.6.1}%
+\contentsline {subsection}{\numberline {2.6.1}KAN Optimization and Acceleration}{10}{subsection.2.6.1}%
 \contentsline {subsection}{\numberline {2.6.2}Activation Functions}{10}{subsection.2.6.2}%
-\contentsline {section}{\numberline {2.7}BDD100K Dataset}{10}{section.2.7}%
+\contentsline {section}{\numberline {2.7}BDD100K Dataset}{11}{section.2.7}%
 \contentsline {chapter}{\numberline {3}Methodology and Architecture Design}{12}{chapter.3}%
 \contentsline {section}{\numberline {3.1}UKAN: U-Shaped KAN Segmentation Network}{12}{section.3.1}%
 \contentsline {subsection}{\numberline {3.1.1}Overall Architecture}{12}{subsection.3.1.1}%

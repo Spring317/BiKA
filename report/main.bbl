@@ -1,10 +1,5 @@
 \begin{thebibliography}{10}
 
-\bibitem{liu2024kan}
-Z.~Liu, Y.~Wang, S.~Vaidya, F.~Ruehle, J.~Halverson, M.~Solja{\v{c}}i{\'c},
-  T.~Y. Hou, and M.~Tegmark, ``{KAN}: Kolmogorov-arnold networks,'' {\em arXiv
-  preprint arXiv:2404.19756}, 2024.
-
 \bibitem{ronneberger2015unet}
 O.~Ronneberger, P.~Fischer, and T.~Brox, ``{U-Net}: Convolutional networks for
   biomedical image segmentation,'' in {\em International Conference on Medical
@@ -46,6 +41,11 @@ A.~N. Kolmogorov, ``On the representation of continuous functions of several
 V.~I. Arnold, ``On the representation of functions of several variables as a
   superposition of functions of a smaller number of variables,'' {\em Selected
   Works}, 2009.
+
+\bibitem{liu2024kan}
+Z.~Liu, Y.~Wang, S.~Vaidya, F.~Ruehle, J.~Halverson, M.~Solja{\v{c}}i{\'c},
+  T.~Y. Hou, and M.~Tegmark, ``{KAN}: Kolmogorov-arnold networks,'' {\em arXiv
+  preprint arXiv:2404.19756}, 2024.
 
 \bibitem{li2024ukan}
 C.~Li, X.~Liu, W.~Li, C.~Wang, H.~Liu, and Y.~Yuan, ``{U-KAN} makes strong
@@ -128,6 +128,14 @@ N.~Schoots, M.~J. Villani, and N.~uit~de Bos, ``Relating piecewise linear
 Y.~Bengio, N.~L{\'e}onard, and A.~Courville, ``Estimating or propagating
   gradients through stochastic neurons for conditional computation,'' in {\em
   arXiv preprint arXiv:1308.3432}, 2013.
+
+\bibitem{li2024fastkan}
+Z.~Li, ``Kolmogorov-arnold networks are radial basis function networks,'' {\em
+  arXiv preprint arXiv:2405.06721}, 2024.
+
+\bibitem{qiu2024powermlp}
+R.~Qiu, Y.~Miao, S.~Wang, L.~Yu, Y.~Zhu, and X.-S. Gao, ``{PowerMLP}: An
+  efficient version of {KAN},'' {\em arXiv preprint arXiv:2412.13571}, 2024.
 
 \bibitem{kingma2015adam}
 D.~P. Kingma and J.~Ba, ``Adam: A method for stochastic optimization,'' in {\em

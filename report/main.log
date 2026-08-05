@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.14)  5 AUG 2026 10:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.14)  5 AUG 2026 11:16
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1359,37 +1359,45 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [9]
-<images/bdd100k_samples/img1.jpg, id=570, 1284.8pt x 722.7pt>
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[10]
+<images/bdd100k_samples/img1.jpg, id=580, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/img1.jpg Graphic file (type jpg)
 <use images/bdd100k_samples/img1.jpg>
 Package pdftex.def Info: images/bdd100k_samples/img1.jpg  used on input line 50
 7.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/img2.jpg, id=571, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/img2.jpg, id=581, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/img2.jpg Graphic file (type jpg)
 <use images/bdd100k_samples/img2.jpg>
 Package pdftex.def Info: images/bdd100k_samples/img2.jpg  used on input line 50
 8.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/img3.jpg, id=572, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/img3.jpg, id=582, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/img3.jpg Graphic file (type jpg)
 <use images/bdd100k_samples/img3.jpg>
 Package pdftex.def Info: images/bdd100k_samples/img3.jpg  used on input line 50
 9.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/mask1.png, id=573, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/mask1.png, id=583, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/mask1.png Graphic file (type png)
 <use images/bdd100k_samples/mask1.png>
 Package pdftex.def Info: images/bdd100k_samples/mask1.png  used on input line 5
 11.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/mask2.png, id=574, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/mask2.png, id=584, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/mask2.png Graphic file (type png)
 <use images/bdd100k_samples/mask2.png>
 Package pdftex.def Info: images/bdd100k_samples/mask2.png  used on input line 5
 12.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/mask3.png, id=575, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/mask3.png, id=585, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/mask3.png Graphic file (type png)
 <use images/bdd100k_samples/mask3.png>
 Package pdftex.def Info: images/bdd100k_samples/mask3.png  used on input line 5
@@ -1400,14 +1408,6 @@ Overfull \hbox (4.28894pt too wide) in paragraph at lines 506--516
  [][] 
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[10]
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1551,13 +1551,13 @@ LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 63B0F425124169314813C377532B737A;10857.
+(rerunfilecheck)             Checksum: 87746AD3EDCE9C285EBFDD2C241441C0;10928.
  ) 
 Here is how much of TeX's memory you used:
- 34937 strings out of 469515
- 676208 string characters out of 5470807
- 1189845 words of memory out of 5000000
- 62881 multiletter control sequences out of 15000+600000
+ 34941 strings out of 469515
+ 676278 string characters out of 5470807
+ 1190845 words of memory out of 5000000
+ 62883 multiletter control sequences out of 15000+600000
  651833 words of font info for 98 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  84i,12n,104p,2489b,1044s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1585,10 +1585,10 @@ public/cm-super/sfrm1095.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super
 /sfrm1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb><
 /usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1095.pfb></usr/share/texm
 f-dist/fonts/type1/public/cm-super/sftt1095.pfb>
-Output written on main.pdf (34 pages, 871223 bytes).
+Output written on main.pdf (34 pages, 872581 bytes).
 PDF statistics:
- 846 PDF objects out of 1000 (max. 8388607)
- 730 compressed objects within 8 object streams
- 180 named destinations out of 1000 (max. 500000)
+ 850 PDF objects out of 1000 (max. 8388607)
+ 734 compressed objects within 8 object streams
+ 182 named destinations out of 1000 (max. 500000)
  560 words of extra memory for PDF output out of 10000 (max. 10000000)
 

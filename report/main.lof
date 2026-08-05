@@ -1,7 +1,7 @@
 \babel@toc {english}{}\relax 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Comparison of MLP (fixed activations on nodes, learnable weights on edges) vs KAN (learnable activation functions on edges, summation on nodes)~\cite {liu2024kan}.}}{5}{figure.caption.7}%
+\contentsline {figure}{\numberline {2.1}{\ignorespaces MLP vs KAN~\cite {liu2024kan}.}}{5}{figure.caption.7}%
 \contentsline {figure}{\numberline {2.2}{\ignorespaces Standard U-Net encoder-decoder architecture with skip connections~\cite {ronneberger2015unet}.}}{7}{figure.caption.8}%
 \contentsline {figure}{\numberline {2.3}{\ignorespaces Sample $2 \times 3$ grid from the BDD100K dataset: top row shows RGB driving scene images, bottom row shows the corresponding pixel-level ground truth semantic segmentation color labels~\cite {bdd100k2020}.}}{11}{figure.caption.13}%
 \addvspace {10\p@ }
