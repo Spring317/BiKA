@@ -432,6 +432,7 @@ and similarly for activations: $x_b = \text{sign}(x)$. This allows the multiply-
 achieving up to $\sim$58$\times$ theoretical speedup and $\sim$32$\times$ memory reduction compared to full-precision networks~\cite{rastegari2016xnor}.
 In a BNN, both the network weights and the intermediate feature activations are constrained to 1-bit representations, typically $\{-1, +1\}$, utilizing the sign function. This mehod completely eliminates the need for expensive floating-point multiply-accumulate (MAC) operations. Instead, convolutions and dense layers can be executed using highly efficient bitwise XNOR and popcount operations, drastically reducing memory bandwidth and latency on edge devices. Despite these immense computational advantages, the extreme information loss induced by binarizing continuous variables natively limits the expressiveness of BNNs. They often suffer from accuracy compared to full-precision networks and require specialized training methodologies, such as the Straight-Through Estimator (STE) and dense skip connections, to maintain stable gradient flow during backpropagation.
 
+
 \subsection{Straight-Through Estimator (STE)}
 The sign function has zero gradient almost everywhere, making direct backpropagation impossible. Bengio et al.~\cite{bengio2013ste} proposed the Straight-Through Estimator (STE), which approximates the gradient of the sign function as:
 \begin{equation}
@@ -470,8 +471,8 @@ AdaBin~\cite{tu2022adabin} introduces a learnable per-channel output scaling fac
 \end{equation}
 At inference, $\alpha_c$ is fused into the subsequent BatchNorm layer's affine parameters, incurring zero additional computational cost.
 
-\subsection{BiKA\_Conv2d: Mathematical Formulation and Tensor Dimensions}
-\label{sec:bika_conv2d_math}
+\subsection{Binarized Kolmogorov-Arnold Networks Convolutional layer (BiKA\_Conv2d)}
+\label{sec:bika_conv2d}
 The foundational building block of the Binarized Kolmogorov-Arnold Network is the \texttt{BiKA\_Conv2d} layer. In a conventional 2D convolution, the learnable weight tensor has shape $(C_{\text{out}}, C_{\text{in}}, K_H, K_W)$ while the bias is a 1D vector of shape $(C_{\text{out}},)$—assigning a single scalar offset per output channel. 
 
 In contrast, \texttt{BiKA\_Conv2d} constructs a 4D per-connection bias tensor matching the exact spatial and channel dimensions of the weight tensor:
@@ -670,7 +671,19 @@ The decoder combines KAN blocks with standard convolutional upsampling (D\_ConvL
 BiKASegNet implements the KAN philosophy of learnable per-connection activations in a radically different way: instead of smooth spline functions, it uses binarized step functions with learnable per-connection thresholds. This produces a network where both weights and activations are binary ($\{+1, -1\}$), enabling extreme computational efficiency.
 
 \subsection{Adapting BiKA Layers for Semantic Road Segmentation}
-While Section~\ref{sec:bika_conv2d_math} defined the theoretical formulation of the \texttt{BiKA\_Conv2d} binarized layer, adapting 1-bit per-connection activation layers for dense semantic road segmentation requires specific structural modifications to overcome severe quantization loss and maintain stable gradient propagation. Based on the implementation in the \texttt{BiKA} repository (\texttt{src/bika/segmentation.py}), the key segmentation-oriented adaptations are:
+\label{sec:bika_adapting_layers}
+While Section~\ref{sec:bika_conv2d} defined the theoretical formulation of the \texttt{BiKA\_Conv2d} binarized layer, adapting 1-bit per-connection activation layers for dense semantic road segmentation requires structural and channel-capacity modifications to overcome severe quantization loss and maintain stable gradient propagation across deep networks.
+
+\subsubsection{Overall Architectural Adaptation \& Channel Width Scaling}
+To transition BiKA from classification tasks to dense pixel-wise segmentation on high-resolution driving datasets (e.g., BDD100K), an overall architectural adaptation was developed by constructing a U-Net style encoder-decoder network around binarized blocks. In this framework, channel capacity plays a critical role in balancing model expressiveness with hardware efficiency. Two primary channel width scaling configurations were developed and evaluated in the \texttt{BiKA} repository:
+
+\begin{itemize}
+    \item \textbf{16-Channel Baseline Configuration (\texttt{base\_channels = 16})}:
+    In this ultra-lightweight setup, channel dimensions progress across encoder stages as $C \rightarrow 2C \rightarrow 4C \rightarrow 8C$, corresponding to $16 \rightarrow 32 \rightarrow 64 \rightarrow 128$ channels. This model contains only $\sim$0.35M parameters with an extremely small memory footprint ($\sim$1.4\,MB). It is specifically engineered for sub-watt microcontrollers and embedded FPGAs where memory bandwidth and cache capacities are severely constrained.
+    
+    \item \textbf{32-Channel Capacity Update (\texttt{base\_channels = 32})}:
+    To match the parameter capacity ($\sim$4.1M parameters) and representational bandwidth of full-precision baseline networks (such as UKAN), the network architecture was updated to use a base channel count of $C = 32$. Here, stage channels expand as $32 \rightarrow 64 \rightarrow 128 \rightarrow 256$. Doubling the base channel width quadruples the binary feature interaction capacity across layers, enabling the network to resolve subtle spatial boundaries, thin lane markings, and distant road obstacles with significantly higher segmentation mIoU, while retaining 100\% multiply-free bitwise XNOR and popcount acceleration during inference.
+\end{itemize}
 
 \subsubsection{Full-Precision FP32 Stem (\texttt{full\_precision\_stem})}
 The initial input stage (\texttt{self.enc1}) processes raw RGB images ($3 \times H \times W$) using a full-precision $3\times3$ FP32 convolution projection ($3 \rightarrow C$), followed by BatchNorm and RPReLU, before passing features to \texttt{BiKA\_Conv2d}. Direct binarization of continuous 8-bit RGB pixel values at the input layer severely degrades spatial details and accuracy, as raw pixel intensities lack the high-dimensional channel representation required for effective 1-bit thresholding.

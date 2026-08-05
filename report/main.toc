@@ -26,7 +26,7 @@
 \contentsline {subsubsection}{RPReLU (ReActNet)}{9}{section*.10}%
 \contentsline {subsubsection}{Libra-PB (Balanced Binarization)}{9}{section*.11}%
 \contentsline {subsubsection}{AdaBin (Adaptive Binary Scaling)}{10}{section*.12}%
-\contentsline {subsection}{\numberline {2.3.3}BiKA\_Conv2d: Mathematical Formulation and Tensor Dimensions}{10}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.3}Binarized Kolmogorov-Arnold Networks Convolutional layer (BiKA\_Conv2d)}{10}{subsection.2.3.3}%
 \contentsline {section}{\numberline {2.4}Loss Functions for Segmentation}{10}{section.2.4}%
 \contentsline {subsection}{\numberline {2.4.1}Cross-Entropy Loss}{10}{subsection.2.4.1}%
 \contentsline {subsection}{\numberline {2.4.2}Dice Loss}{11}{subsection.2.4.2}%
@@ -44,12 +44,13 @@
 \contentsline {subsection}{\numberline {3.1.5}Decoder}{16}{subsection.3.1.5}%
 \contentsline {section}{\numberline {3.2}BiKASegNet: Binarized KAN Segmentation Network}{16}{section.3.2}%
 \contentsline {subsection}{\numberline {3.2.1}Adapting BiKA Layers for Semantic Road Segmentation}{16}{subsection.3.2.1}%
-\contentsline {subsubsection}{Full-Precision FP32 Stem (\texttt {full\_precision\_stem})}{16}{section*.18}%
-\contentsline {subsubsection}{ReActNet-Inspired RPReLU Activations}{16}{section*.19}%
-\contentsline {subsubsection}{Full-Precision FP32 Classification Head (\texttt {full\_precision\_head})}{17}{section*.20}%
-\contentsline {subsubsection}{Feature Concatenation in U-Net Decoder}{17}{section*.21}%
+\contentsline {subsubsection}{Overall Architectural Adaptation \& Channel Width Scaling}{16}{section*.18}%
+\contentsline {subsubsection}{Full-Precision FP32 Stem (\texttt {full\_precision\_stem})}{17}{section*.19}%
+\contentsline {subsubsection}{ReActNet-Inspired RPReLU Activations}{17}{section*.20}%
+\contentsline {subsubsection}{Full-Precision FP32 Classification Head (\texttt {full\_precision\_head})}{17}{section*.21}%
+\contentsline {subsubsection}{Feature Concatenation in U-Net Decoder}{17}{section*.22}%
 \contentsline {subsection}{\numberline {3.2.2}BiKAConvBlock Design}{17}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}BiKASegNet Architecture}{17}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.3}BiKASegNet Architecture}{18}{subsection.3.2.3}%
 \contentsline {section}{\numberline {3.3}Training Methodology}{19}{section.3.3}%
 \contentsline {subsection}{\numberline {3.3.1}Optimisation for BNN Stability}{19}{subsection.3.3.1}%
 \contentsline {subsection}{\numberline {3.3.2}Data Augmentation}{19}{subsection.3.3.2}%
