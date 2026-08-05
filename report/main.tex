@@ -229,6 +229,7 @@ The remainder of this thesis is structured as follows:
 
 
 \chapter{Background}
+\label{ch:background}
 
 This chapter introduces the foundational knowledge that are used to implement KAN-based segmentation networks. These include Kolmogorov-Arnold Networks (KANs), Binary Neural Networks (BNNs), and Binarized Kolmogorov-Arnold Networks (BiKA) concept which sucessfully combine the two architectures. 
 
@@ -350,31 +351,28 @@ This produces a basis of shifted ramp functions. The output is computed as:
 \end{equation}
 ReLU-KAN achieves maximal inference speed due to the trivial cost of ReLU evaluation, but trades off smoothness for speed.
 
-\subsection{HardSwish-KAN}
-HardSwish-KAN adapts the HardSwish activation~\cite{howard2019searching} as its basis function:
-\begin{equation}
-    \psi_k(x) = \text{HardSwish}(x - g_k) = (x - g_k) \cdot \frac{\text{ReLU6}(x - g_k + 3)}{6}
-\end{equation}
-This provides a smooth, differentiable basis that avoids the dying neuron problem of ReLU-KAN while maintaining computational efficiency since HardSwish requires no transcendental functions.
+With the same policy proposed by FasterKAN \cite{fasterkan2024} and ReLU-KAN \cite{qiu2024relukan}, we decide to perform evaluation with more activation functions which have a lower computational complexity compared original KAN to find out the optimal point between efficiency and accuracy.
 
-\subsection{TeLU-KAN}
-TeLU-KAN employs the Hyperbolic Tangent Exponential Linear Unit (TeLU) activation~\cite{fernandez2024telu}:
+\subsection{HardSwish Activation}
+HardSwish~\cite{howard2019searching} is defined mathematically as:
 \begin{equation}
-    \psi_k(x) = (x - g_k) \cdot \tanh(\exp(x - g_k))
+    \text{HardSwish}(x) = x \cdot \frac{\text{ReLU6}(x + 3)}{6}
 \end{equation}
-The TeLU activation provides stable gradients across a wide input range, offering a compromise between the smoothness of FasterKAN and the simplicity of ReLU-KAN.
+It serves as a computationally efficient, piecewise-linear approximation of the smooth Swish activation function ($x \cdot \sigma(x)$). By replacing the continuous exponential function in Sigmoid with a bounded linear ramp ($\text{ReLU6}(x) = \min(\max(0, x), 6)$), HardSwish enforces piecewise linearity across the input domain. For $x \le -3$, the output is identically 0; for $x \ge 3$, the function becomes purely linear ($f(x) = x$). In the intermediate region $[-3, 3]$, it forms a quadratic-like piecewise linear transition. This piecewise linear structure eliminates expensive transcendental operations while maintaining gradient stability for deep networks.
 
-\subsection{PWLO-KAN (Piecewise Linear Optimisation)}
-PWLO-KAN draws upon piecewise linear network representations~\cite{schoots2025relating} and implements a lookup-table-based approach where each segment of the input domain is associated with a learned affine transformation:
+\subsection{TeLU Activation}
+The Hyperbolic Tangent Exponential Linear Unit (TeLU)~\cite{fernandez2024telu} is formulated as:
 \begin{equation}
-    \phi_k(x) = a_k \cdot x + b_k, \quad x \in [g_k, g_{k+1})
+    \text{TeLU}(x) = x \cdot \tanh(\exp(x))
 \end{equation}
-where $a_k, b_k$ are learnable parameters stored as embedding tables. The segment index is computed as:
-\begin{equation}
-    k = \text{clamp}\left(\left\lfloor \frac{x - g_{\min}}{g_{\max} - g_{\min}} \cdot G \right\rfloor, 0, G-1\right)
-\end{equation}
-PWLO-KAN is particularly suited for integer-arithmetic inference engines since the lookup and multiply-accumulate operations can be implemented with shift-and-add primitives.
+TeLU is designed to combine the fast convergence of linear activations with the smooth non-linear saturation of exponential units. In the active positive domain ($x > 0$), $\exp(x)$ increases rapidly, driving $\tanh(\exp(x)) \approx 1$. Consequently, $\text{TeLU}(x) \approx x$, displaying strong positive-region linearity (identity mapping) that allows gradients to flow unattenuated. In the negative domain ($x < 0$), the smooth decay of $\tanh(\exp(x))$ prevents dying activations while bounding negative values, maintaining a seamless transition between linear and non-linear regimes.
 
+\subsection{PWLO (Piecewise Linear Optimisation)}
+Piecewise Linear Optimisation (PWLO)~\cite{schoots2025relating} approximates non-linear continuous functions by partitioning the input domain $[g_{\min}, g_{\max}]$ into $G$ sub-intervals $[g_k, g_{k+1})$ and assigning a localized linear affine transformation to each segment:
+\begin{equation}
+    f(x) = a_k \cdot x + b_k, \quad x \in [g_k, g_{k+1})
+\end{equation}
+where $a_k$ and $b_k$ denote the slope and offset of the $k$-th segment. PWLO explicitly enforces local linearity within each interval. By converting complex non-linear functions into a composition of linear segments, PWLO enables high-throughput execution using simple linear primitives (multiply-accumulate or shift-and-add) on edge acceleration hardware.
 
 \section{U-Net Segmentation Architecture}
 \label{sec:unet}
@@ -429,8 +427,7 @@ followed by $2\times2$ max pooling for spatial downsampling. The decoder mirrors
 
 \section{Binary Neural Networks}
 \label{sec:bnn}
-Binary Neural Networks (BNNs) address the hardware constraints of deep learning by pushing model quantization to its absolute theoretical limit. In a BNN, both the network weights and the intermediate feature activations are constrained to 1-bit representations, typically $\{-1, +1\}$, utilizing the sign function. This severe quantization completely eliminates the need for expensive floating-point multiply-accumulate (MAC) operations. Instead, convolutions and dense layers can be executed using highly efficient bitwise XNOR and popcount operations, drastically reducing memory bandwidth and latency on edge devices like FPGAs and embedded GPUs. Despite these immense computational advantages, the extreme information loss induced by binarizing continuous variables natively limits the expressiveness of BNNs. They often suffer from accuracy compared to full-precision networks and require specialized training methodologies, such as the Straight-Through Estimator (STE) and dense skip connections, to maintain stable gradient flow during backpropagation.
-Binary Neural Networks (BNNs) represent the extreme end of model quantization, constraining both weights and activations to $\{+1, -1\}$. The binarization function for weights is:
+Binary Neural Networks (BNNs) address the hardware constraints of deep learning models by simplify the mathematics back to Binary operations. The binarization function for weights is:
 \begin{equation}
     w_b = \text{sign}(w) = \begin{cases} +1 & \text{if } w \geq 0 \\ -1 & \text{otherwise} \end{cases}
 \end{equation}
@@ -439,6 +436,7 @@ and similarly for activations: $x_b = \text{sign}(x)$. This allows the multiply-
     w_b \cdot x_b = \text{XNOR}(w_b, x_b), \quad \sum_i w_{b,i} \cdot x_{b,i} = \text{popcount}(\text{XNOR}(\mathbf{w}_b, \mathbf{x}_b))
 \end{equation}
 achieving up to $\sim$58$\times$ theoretical speedup and $\sim$32$\times$ memory reduction compared to full-precision networks~\cite{rastegari2016xnor}.
+In a BNN, both the network weights and the intermediate feature activations are constrained to 1-bit representations, typically $\{-1, +1\}$, utilizing the sign function. This mehod completely eliminates the need for expensive floating-point multiply-accumulate (MAC) operations. Instead, convolutions and dense layers can be executed using highly efficient bitwise XNOR and popcount operations, drastically reducing memory bandwidth and latency on edge devices. Despite these immense computational advantages, the extreme information loss induced by binarizing continuous variables natively limits the expressiveness of BNNs. They often suffer from accuracy compared to full-precision networks and require specialized training methodologies, such as the Straight-Through Estimator (STE) and dense skip connections, to maintain stable gradient flow during backpropagation.
 
 \subsection{Straight-Through Estimator (STE)}
 The sign function has zero gradient almost everywhere, making direct backpropagation impossible. Bengio et al.~\cite{bengio2013ste} proposed the Straight-Through Estimator (STE), which approximates the gradient of the sign function as:
@@ -643,6 +641,31 @@ Each KAN\_fc is an instance of the selected KAN linear variant (FasterKAN, ReLU-
 \begin{equation}
     \text{DW\_bn\_relu}(\mathbf{T}, H, W) = \text{ReLU}\left(\text{BN}\left(\text{DWConv}_{3\times3}(\text{reshape}(\mathbf{T}, H, W))\right)\right)
 \end{equation}
+
+\subsection{KAN Variant Layer Integration in UKAN}
+\label{sec:kan_variant_integration}
+While Chapter~\ref{ch:background} described the mathematical definitions and linearity properties of the individual activation functions, this section details how HardSwish-KAN, TeLU-KAN, and PWLO-KAN are parameterized as edge-centric linear projection layers within the UKAN architecture.
+
+\subsubsection{HardSwish-KAN Linear Layer}
+HardSwish-KAN integrates the piecewise-linear HardSwish activation into the KAN grid expansion. For an input vector $\mathbf{x} \in \mathbb{R}^{d_{\text{in}}}$, LayerNorm is first applied. A uniform grid of knot points $\{g_0, \dots, g_{G-1}\}$ is constructed across $[g_{\min}, g_{\max}]$. Each feature $x_i$ is evaluated against all grid offsets:
+\begin{equation}
+    \psi_k(x_i) = \text{HardSwish}(x_i - g_k) = (x_i - g_k) \cdot \frac{\text{ReLU6}(x_i - g_k + 3)}{6}
+\end{equation}
+The evaluations from all $G$ knot points across $d_{\text{in}}$ dimensions are concatenated into $\text{vec}\left(\{\psi_k(x_i)\}\right) \in \mathbb{R}^{d_{\text{in}} \cdot G}$ and projected via a learnable weight matrix $\mathbf{W} \in \mathbb{R}^{d_{\text{out}} \times (d_{\text{in}} \cdot G)}$.
+
+\subsubsection{TeLU-KAN Linear Layer}
+TeLU-KAN constructs edge-centric transformations by applying the TeLU function over grid-shifted inputs:
+\begin{equation}
+    \psi_k(x_i) = \text{TeLU}(x_i - g_k) = (x_i - g_k) \cdot \tanh(\exp(x_i - g_k))
+\end{equation}
+The resulting basis evaluations are concatenated and linearly projected via $\mathbf{W} \in \mathbb{R}^{d_{\text{out}} \times (d_{\text{in}} \cdot G)}$. This leverages TeLU's identity-like positive region linearity to provide unattenuated gradient propagation across deep KAN blocks.
+
+\subsubsection{PWLO-KAN Linear Layer}
+PWLO-KAN implements an explicit lookup-table (LUT) structure for high-efficiency integer and edge inference. Given domain bounds $[g_{\min}, g_{\max}]$ and segment count $G$, the interval step size is $\Delta = \frac{g_{\max} - g_{\min}}{G}$. For each input feature $x_i$, the active segment index $k$ is determined via clamped index quantization:
+\begin{equation}
+    k = \text{clamp}\left(\left\lfloor \frac{x_i - g_{\min}}{\Delta} \right\rfloor, 0, G-1\right)
+\end{equation}
+Rather than evaluating continuous functions, PWLO-KAN retrieves learned affine parameters $a_{i,k}$ and $b_{i,k}$ from embedding tables $\mathbf{A}, \mathbf{B} \in \mathbb{R}^{(d_{\text{in}} \cdot G) \times d_{\text{out}}}$ to evaluate localized affine transformations $\phi_k(x_i) = a_{i,k} \cdot x_i + b_{i,k}$. This enables the entire layer to execute via fast table lookups and linear shift-and-add operations.
 
 \subsection{Decoder}
 The decoder combines KAN blocks with standard convolutional upsampling (D\_ConvLayer). Each decoder stage: (1) applies a D\_ConvLayer convolution to reduce channels, (2) bilinearly upsamples by factor 2, (3) adds the skip connection from the corresponding encoder stage, (4) processes with a decoder KANBlock. The final three stages use only D\_ConvLayers to restore the original spatial resolution, followed by a $1\times1$ convolution head producing per-class logits.
