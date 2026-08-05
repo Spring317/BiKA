@@ -317,6 +317,28 @@ Each basis function $r_k$ produces a smooth, localized bump centred at grid poin
 \end{equation}
 where $\mathbf{W}_s \in \mathbb{R}^{d_{\text{out}} \times (d_{\text{in}} \cdot G)}$ is a learnable spline projection matrix, and $\text{vec}(\cdot)$ concatenates all basis evaluations into a single vector. The input is first normalised via LayerNorm. A custom CUDA kernel computes the forward and backward passes of the RSWAf function, achieving significant speedups over the B-spline implementation.
 
+\subsection{FastKAN (Gaussian RBF Basis)}
+FastKAN~\cite{li2024fastkan} reframes Kolmogorov-Arnold Networks through the lens of Radial Basis Function (RBF) networks. It replaces the computationally intensive 3rd-order B-splines with Gaussian RBF basis functions defined over a uniform grid of center points $\{g_0, g_1, \dots, g_{G-1}\}$:
+\begin{equation}
+    \psi_k(x) = \exp\left( -\left(\frac{x - g_k}{\gamma}\right)^2 \right)
+\end{equation}
+where $\gamma > 0$ controls the bandwidth of the Gaussian basis functions. Each univariate activation function on edge $(i, j)$ is constructed as a linear combination of these Gaussian RBFs alongside a base linear projection:
+\begin{equation}
+    \phi_{ij}(x) = w_{\text{base}} \cdot \text{SiLU}(x) + \sum_{k=0}^{G-1} c_{k,ij} \cdot \psi_k(x)
+\end{equation}
+where $c_{k,ij}$ are learnable expansion coefficients. By avoiding the iterative grid recursion required by B-splines, FastKAN computes basis evaluations in parallel via matrix multiplication, enabling execution speed comparable to standard MLPs while retaining KAN's edge-centric non-linear expressiveness.
+
+\subsection{PowerMLP}
+PowerMLP~\cite{qiu2024powermlp} addresses KAN's training latency bottleneck by reformulating the edge-centric spline activation functions into non-iterative power-basis expansions. Instead of evaluating localized grid splines or RBFs, PowerMLP approximates each non-linear univariate edge function $\phi(x)$ using a polynomial power-series expansion of order $K$:
+\begin{equation}
+    \phi(x) = \sum_{k=1}^{K} w_k \cdot \sigma(x)^k
+\end{equation}
+where $\sigma(x)$ is a base non-linear activation function (such as SiLU or GELU), and $w_k$ are learnable scalar weights associated with each power $k$. The layer output for an input vector $\mathbf{x} \in \mathbb{R}^{d_{\text{in}}}$ is computed via vectorized elementwise powers and linear projections:
+\begin{equation}
+    y = \sum_{k=1}^{K} \mathbf{W}_k \left( \sigma(\mathbf{x})^k \right)
+\end{equation}
+where $\mathbf{W}_k \in \mathbb{R}^{d_{\text{out}} \times d_{\text{in}}}$ are standard weight matrices. Because power calculations ($\mathbf{x}^k$) are fully parallelizable and require no grid lookups or localized indexing, PowerMLP drastically reduces FLOPs and achieves up to $40\times$ faster training speed than standard B-spline KANs, combining MLP-like execution throughput with KAN-level non-linear representational power.
+
 \subsection{ReLU-KAN}
 ReLU-KAN~\cite{qiu2024relukan} replaces the smooth basis with a piecewise-linear function using ReLU:
 \begin{equation}

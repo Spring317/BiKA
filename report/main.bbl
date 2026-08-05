@@ -1,10 +1,21 @@
 \begin{thebibliography}{10}
 
+\bibitem{liu2024kan}
+Z.~Liu, Y.~Wang, S.~Vaidya, F.~Ruehle, J.~Halverson, M.~Solja{\v{c}}i{\'c},
+  T.~Y. Hou, and M.~Tegmark, ``{KAN}: Kolmogorov-arnold networks,'' {\em arXiv
+  preprint arXiv:2404.19756}, 2024.
+
 \bibitem{ronneberger2015unet}
 O.~Ronneberger, P.~Fischer, and T.~Brox, ``{U-Net}: Convolutional networks for
   biomedical image segmentation,'' in {\em International Conference on Medical
   Image Computing and Computer-Assisted Intervention (MICCAI)}, pp.~234--241,
   2015.
+
+\bibitem{bdd100k2020}
+F.~Yu, H.~Chen, X.~Wang, W.~Xian, Y.~Chen, F.~Liu, V.~Madhavan, and T.~Darrell,
+  ``{BDD100K}: A diverse driving dataset for heterogeneous multitask
+  learning,'' in {\em Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition (CVPR)}, pp.~2636--2645, 2020.
 
 \bibitem{liu2026bika}
 Y.~Liu, S.~Ullah, and A.~Kumar, ``{BiKA}:
@@ -41,11 +52,6 @@ A.~N. Kolmogorov, ``On the representation of continuous functions of several
 V.~I. Arnold, ``On the representation of functions of several variables as a
   superposition of functions of a smaller number of variables,'' {\em Selected
   Works}, 2009.
-
-\bibitem{liu2024kan}
-Z.~Liu, Y.~Wang, S.~Vaidya, F.~Ruehle, J.~Halverson, M.~Solja{\v{c}}i{\'c},
-  T.~Y. Hou, and M.~Tegmark, ``{KAN}: Kolmogorov-arnold networks,'' {\em arXiv
-  preprint arXiv:2404.19756}, 2024.
 
 \bibitem{li2024ukan}
 C.~Li, X.~Liu, W.~Li, C.~Wang, H.~Liu, and Y.~Yuan, ``{U-KAN} makes strong
@@ -103,6 +109,14 @@ B.~Zhuang, C.~Shen, M.~Tan, L.~Liu, and I.~Reid, ``Structured binary neural
   {\em Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
   Recognition (CVPR)}, pp.~413--422, 2019.
 
+\bibitem{li2024fastkan}
+Z.~Li, ``Kolmogorov-arnold networks are radial basis function networks,'' {\em
+  arXiv preprint arXiv:2405.06721}, 2024.
+
+\bibitem{qiu2024powermlp}
+R.~Qiu, Y.~Miao, S.~Wang, L.~Yu, Y.~Zhu, and X.-S. Gao, ``{PowerMLP}: An
+  efficient version of {KAN},'' {\em arXiv preprint arXiv:2412.13571}, 2024.
+
 \bibitem{qiu2024relukan}
 Q.~Qiu, G.~Xu, {\em et~al.}, ``{ReLU-KAN}: New kolmogorov-arnold networks that
   only need matrix addition, dot multiplication, and {ReLU},'' {\em arXiv
@@ -129,14 +143,6 @@ Y.~Bengio, N.~L{\'e}onard, and A.~Courville, ``Estimating or propagating
   gradients through stochastic neurons for conditional computation,'' in {\em
   arXiv preprint arXiv:1308.3432}, 2013.
 
-\bibitem{li2024fastkan}
-Z.~Li, ``Kolmogorov-arnold networks are radial basis function networks,'' {\em
-  arXiv preprint arXiv:2405.06721}, 2024.
-
-\bibitem{qiu2024powermlp}
-R.~Qiu, Y.~Miao, S.~Wang, L.~Yu, Y.~Zhu, and X.-S. Gao, ``{PowerMLP}: An
-  efficient version of {KAN},'' {\em arXiv preprint arXiv:2412.13571}, 2024.
-
 \bibitem{kingma2015adam}
 D.~P. Kingma and J.~Ba, ``Adam: A method for stochastic optimization,'' in {\em
   International Conference on Learning Representations (ICLR)}, 2015.
@@ -155,11 +161,5 @@ L.~N. Smith and N.~Topin, ``Super-convergence: Very fast training of neural
 P.~Ramachandran, B.~Zoph, and Q.~V. Le, ``Searching for activation functions,''
   in {\em International Conference on Learning Representations (ICLR)
   Workshop}, 2018.
-
-\bibitem{bdd100k2020}
-F.~Yu, H.~Chen, X.~Wang, W.~Xian, Y.~Chen, F.~Liu, V.~Madhavan, and T.~Darrell,
-  ``{BDD100K}: A diverse driving dataset for heterogeneous multitask
-  learning,'' in {\em Proceedings of the IEEE/CVF Conference on Computer Vision
-  and Pattern Recognition (CVPR)}, pp.~2636--2645, 2020.
 
 \end{thebibliography}
