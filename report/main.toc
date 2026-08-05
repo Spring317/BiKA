@@ -45,19 +45,18 @@
 \contentsline {section}{\numberline {3.2}BiKASegNet: Binarized KAN Segmentation Network}{15}{section.3.2}%
 \contentsline {subsection}{\numberline {3.2.1}Adapting BiKA Layers for Semantic Road Segmentation}{16}{subsection.3.2.1}%
 \contentsline {subsubsection}{Overall Architectural Adaptation \& Channel Width Scaling}{16}{section*.19}%
-\contentsline {subsubsection}{Full-Precision FP32 Stem (\texttt {full\_precision\_stem})}{16}{section*.21}%
+\contentsline {subsubsection}{Full-Precision Input Stem (\texttt {full\_precision\_stem})}{16}{section*.21}%
 \contentsline {subsubsection}{ReActNet-Inspired RPReLU Activations}{17}{section*.22}%
-\contentsline {subsubsection}{Full-Precision FP32 Classification Head (\texttt {full\_precision\_head})}{17}{section*.23}%
+\contentsline {subsubsection}{Full-Precision Classification Head (\texttt {full\_precision\_head})}{17}{section*.23}%
 \contentsline {subsubsection}{Feature Concatenation in U-Net Decoder}{17}{section*.24}%
 \contentsline {subsection}{\numberline {3.2.2}BiKAConvBlock Design}{17}{subsection.3.2.2}%
-\contentsline {section}{\numberline {3.3}Optimisation and Training Strategies}{17}{section.3.3}%
+\contentsline {section}{\numberline {3.3}Optimisation and Training Strategies}{18}{section.3.3}%
 \contentsline {subsection}{\numberline {3.3.1}Custom CUDA Kernel Optimisations for BiKA}{18}{subsection.3.3.1}%
 \contentsline {subsubsection}{Bit-Packing \& 32-bit Word Quantization}{18}{section*.25}%
-\contentsline {subsubsection}{32-Bit Word Alignment and Channel-32 Hardware Optimisation}{18}{section*.26}%
-\contentsline {subsubsection}{Half-Precision (FP16) Shared Memory Bias Caching}{18}{section*.27}%
-\contentsline {subsubsection}{Output-Channel Tiling \& Thread-Level Register Reuse}{18}{section*.28}%
-\contentsline {subsubsection}{Bitwise XNOR and Popcount Convolution Execution}{18}{section*.29}%
-\contentsline {subsubsection}{STE Hard-Tanh Backpropagation Kernels}{19}{section*.30}%
+\contentsline {subsubsection}{Half-Precision (FP16) Shared Memory Bias Caching}{18}{section*.26}%
+\contentsline {subsubsection}{Output-Channel Tiling \& Thread-Level Register Reuse}{18}{section*.27}%
+\contentsline {subsubsection}{Bitwise XNOR and Popcount Convolution Execution}{18}{section*.28}%
+\contentsline {subsubsection}{STE Hard-Tanh Backpropagation Kernels}{19}{section*.29}%
 \contentsline {subsection}{\numberline {3.3.2}Optimisation for BNN Stability}{19}{subsection.3.3.2}%
 \contentsline {subsection}{\numberline {3.3.3}Data Augmentation}{19}{subsection.3.3.3}%
 \contentsline {subsection}{\numberline {3.3.4}Training Infrastructure}{19}{subsection.3.3.4}%

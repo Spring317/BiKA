@@ -737,39 +737,37 @@ A detailed side-by-side comparison of the 16-channel baseline and the 32-channel
 
 \begin{table}[htbp]
 \centering
-\caption{Side-by-side structural and computational comparison between 16-channel and 32-channel BiKASegNet configurations.}
+\caption{Side-by-side comparison between 16-channel baseline and 32-channel BiKASegNet configurations.}
 \label{tab:bika_channel_comparison}
-\resizebox{\textwidth}{!}{%
+\small
 \begin{tabular}{lcc}
 \hline
-\textbf{Architectural / Hardware Parameter} & \textbf{16-Channel Configuration (\texttt{base\_channels = 16})} & \textbf{32-Channel Configuration (\texttt{base\_channels = 32})} \\ \hline
-Encoder Stage Channels & $C \rightarrow 2C \rightarrow 4C \rightarrow 8C \quad (16 \rightarrow 32 \rightarrow 64 \rightarrow 128)$ & $C \rightarrow 2C \rightarrow 4C \rightarrow 8C \quad (32 \rightarrow 64 \rightarrow 128 \rightarrow 256)$ \\
-Decoder Stage Channels & $12C \rightarrow 4C \rightarrow 6C \rightarrow 2C \rightarrow 3C \rightarrow C \quad (192 \rightarrow 64 \dots)$ & $12C \rightarrow 4C \rightarrow 6C \rightarrow 2C \rightarrow 3C \rightarrow C \quad (384 \rightarrow 128 \dots)$ \\
-Total Model Parameters & $\sim 0.35\text{M}$ parameters & $\sim 4.1\text{M}$ parameters (matches UKAN capacity) \\
-Binary Layer Memory Footprint & $\sim 1.4\text{ MB}$ (ultra-lightweight) & $\sim 4.8\text{ MB}$ ($\sim 32\times$ smaller than FP32 equivalent) \\
-32-Bit Word Alignment & Partial ($16 \times 3 \times 3 = 144$ elements = 4 words $+$ 16-bit remainder) & Exact ($32 \times 3 \times 3 = 288$ elements = 9 full 32-bit words) \\
-CUDA XNOR/Popcount Execution & Requires bit-masking \texttt{(\textasciitilde(x \^{} w)) \& mask} for tail remainder & Pure 32-bit full-word \texttt{\_\_popc()} execution across all layers \\
-Representational Expressiveness & Ultra-compact for basic road masks & High capacity for fine lane boundaries and distant obstacles \\
-Target Deployment Platform & Sub-watt microcontrollers \& ultra-low VRAM FPGAs & Edge GPUs (Jetson Nano/Orin) \& embedded accelerators \\ \hline
+\textbf{Architectural Parameter} & \textbf{16-Channel Model ($C = 16$)} & \textbf{32-Channel Model ($C = 32$)} \\ \hline
+Base Channel Width ($C$) & 16 channels & 32 channels \\
+Encoder Feature Maps & $16 \rightarrow 32 \rightarrow 64 \rightarrow 128$ & $32 \rightarrow 64 \rightarrow 128 \rightarrow 256$ \\
+Decoder Feature Maps & $192 \rightarrow 64 \rightarrow 32 \rightarrow 16$ & $384 \rightarrow 128 \rightarrow 64 \rightarrow 32$ \\
+Total Model Parameters & $\sim 0.35\text{M}$ parameters & $\sim 4.1\text{M}$ parameters \\
+Memory Footprint & $\sim 1.4\text{ MB}$ (ultra-lightweight) & $\sim 4.8\text{ MB}$ ($\sim 32\times$ smaller than FP32) \\
+Segmentation Detail & Basic road surface masks & Fine lane boundaries \& small objects \\
+Target Deployment & Sub-watt microcontrollers / FPGAs & Edge GPUs (Jetson Nano/Orin) \\ \hline
 \end{tabular}
-}
 \end{table}
 
-\subsubsection{Full-Precision FP32 Stem (\texttt{full\_precision\_stem})}
-The initial input stage (\texttt{self.enc1}) processes raw RGB images ($3 \times H \times W$) using a full-precision $3\times3$ FP32 convolution projection ($3 \rightarrow C$), followed by BatchNorm and RPReLU, before passing features to \texttt{BiKA\_Conv2d}. Direct binarization of continuous 8-bit RGB pixel values at the input layer severely degrades spatial details and accuracy, as raw pixel intensities lack the high-dimensional channel representation required for effective 1-bit thresholding.
+\subsubsection{Full-Precision Input Stem (\texttt{full\_precision\_stem})}
+Across both 16-channel and 32-channel configurations, the initial input stage (\texttt{self.enc1}) processes raw RGB images ($3 \times H \times W$) using a full-precision $3\times3$ convolution ($3 \rightarrow C$), followed by BatchNorm and RPReLU, before passing features to binarized \texttt{BiKA\_Conv2d} layers. Direct binarization of continuous 8-bit RGB pixel values at the input layer severely degrades spatial details and segmentation accuracy, as raw pixel intensities lack the high-dimensional channel representation required for effective 1-bit thresholding.
 
 \subsubsection{ReActNet-Inspired RPReLU Activations}
-Standard ReLU activations set all negative values to zero ($\max(0, x)$), which leads to severe information loss and dead neurons in binary networks. BiKASegNet replaces standard ReLU with ReActNet-style RPReLU (Re-Activation PReLU):
+Standard ReLU activations set all negative values to zero ($\max(0, x)$), leading to severe information loss and dead neurons in 1-bit binary networks. BiKASegNet replaces standard ReLU with ReActNet-style RPReLU (Re-Activation PReLU) across all binary blocks in both 16-channel and 32-channel variants:
 \begin{equation}
     \text{RPReLU}(x) = \text{PReLU}(x + \gamma) + \beta
 \end{equation}
 where $\gamma, \beta \in \mathbb{R}^{1 \times C \times 1 \times 1}$ are learnable per-channel pre-shift and post-shift parameters. RPReLU dynamically shifts binary activation distributions before and after non-linearities, allowing asymmetric activation ranges necessary for fine-grained pixel-wise road classification.
 
-\subsubsection{Full-Precision FP32 Classification Head (\texttt{full\_precision\_head})}
-The final segmentation output layer (\texttt{self.final}) uses a $1\times1$ FP32 convolution projection ($C \rightarrow N_{\text{classes}}$) rather than a binary convolution. Retaining full-precision weights and biases at the final layer ensures smooth, continuous logit distributions, which are essential for computing precise pixel-wise Cross-Entropy and Dice loss gradients during backpropagation.
+\subsubsection{Full-Precision Classification Head (\texttt{full\_precision\_head})}
+For both channel configurations, the final segmentation output layer (\texttt{self.final}) uses a $1\times1$ full-precision convolution projection ($C \rightarrow N_{\text{classes}}$) rather than a binary convolution. Retaining full-precision weights and biases at the final classification head preserves smooth, continuous logit distributions, which are essential for computing precise pixel-wise Cross-Entropy and Dice loss gradients during backpropagation.
 
 \subsubsection{Feature Concatenation in U-Net Decoder}
-Unlike additive skip connections, the BiKASegNet decoder concatenates encoder skip features with upsampled decoder features ($\text{dec3}$ takes $8C + 4C = 12C$ channels to $4C$, $\text{dec2}$ takes $4C + 2C = 6C$ channels to $2C$, and $\text{dec1}$ takes $2C + C = 3C$ channels to $C$). Feature concatenation preserves independent binary feature channels across spatial resolutions, providing richer representation recombination for multi-scale road and lane boundary segmentations.
+In both 16-channel and 32-channel decoders, encoder skip features are concatenated with upsampled decoder features ($\text{dec3}$ takes $8C + 4C = 12C$ channels to $4C$, $\text{dec2}$ takes $4C + 2C = 6C$ channels to $2C$, and $\text{dec1}$ takes $2C + C = 3C$ channels to $C$). Feature concatenation preserves independent binary feature channels across spatial resolutions, providing richer representation recombination for multi-scale road and lane boundary segmentations.
 
 \subsection{BiKAConvBlock Design}
 Each \texttt{BiKAConvBlock} integrates two \texttt{BiKA\_Conv2d} layers with BatchNorm, RPReLU activations, and an FP32 shortcut connection (Bi-Real Net style):
@@ -779,8 +777,6 @@ Each \texttt{BiKAConvBlock} integrates two \texttt{BiKA\_Conv2d} layers with Bat
     \mathbf{y} &= \text{RPReLU}\left(\text{BN}\left(\text{BiKA\_Conv2d}_2(\mathbf{h})\right) + \mathbf{s}\right)
 \end{align}
 The shortcut $\text{Shortcut}(\mathbf{x})$ is a $1\times1$ FP32 convolution with BatchNorm when channel dimensions change, and an identity mapping otherwise. To manage memory consumption during training, activation checkpointing (\texttt{torch.utils.checkpoint}) is applied to \texttt{BiKAConvBlock}, reducing peak GPU VRAM usage by approximately 60\%.
-
-
 
 \section{Optimisation and Training Strategies}
 \label{sec:training}
@@ -792,9 +788,6 @@ The custom CUDA kernel pipeline optimizes binary convolution and linear operatio
 
 \subsubsection{Bit-Packing \& 32-bit Word Quantization}
 To overcome global memory bandwidth limitations during weight transfers, 32 continuous binary weights along kernel and input channel dimensions are bit-packed into single 32-bit unsigned integers (\texttt{unsigned int packed\_weight}). Bit-packing compresses the weight memory footprint by $32\times$, allowing 32 binary synapses to be fetched from GPU VRAM in a single 32-bit memory transaction.
-
-\subsubsection{32-Bit Word Alignment and Channel-32 Hardware Optimisation}
-Because CUDA warp execution processes 32 threads concurrently and hardware popcount (\texttt{\_\_popc}) operates on 32-bit unsigned integers, filter weight dimensions that are exact multiples of 32 eliminate tail remainder masking (\texttt{bit < 32}). When \texttt{base\_channels = 32}, each $3\times3$ binary convolution kernel processes $32 \times 3 \times 3 = 288$ elements, which packs into exactly $9$ full 32-bit words ($288 / 32 = 9$). This eliminates partial bit-masking in thread registers, executing pure full-word bitwise XNOR and \texttt{\_\_popc} across every single convolutional stage in the network.
 
 \subsubsection{Half-Precision (FP16) Shared Memory Bias Caching}
 The 4D per-connection bias tensor $\mathbf{b} \in \mathbb{R}^{C_{\text{out}} \times C_{\text{in}} \times K_H \times K_W}$ requires storing an individual threshold per synapse. To prevent VRAM fetch latency, the bias tensor is pre-negated and converted to 16-bit half-precision (\texttt{\_\_half neg\_bias\_half}). At kernel execution, CUDA thread blocks load FP16 bias values directly into fast GPU Shared Memory (\texttt{\_\_shared\_\_ \_\_half smem\_bias\_h}), halving shared memory bandwidth consumption compared to 32-bit float bias loading.
