@@ -63,14 +63,14 @@
 \contentsline {subsection}{\numberline {3.3.4}Training Infrastructure}{20}{subsection.3.3.4}%
 \contentsline {chapter}{\numberline {4}Experimental Evaluation and Results}{21}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Experimental Setup}{21}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Segmentation Quality Benchmarks}{21}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Model Efficiency Analysis}{21}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Inference Throughput}{22}{subsection.4.3.1}%
-\contentsline {section}{\numberline {4.4}Ablation Studies}{22}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Effect of KAN Variant Selection}{22}{subsection.4.4.1}%
+\contentsline {section}{\numberline {4.2}Segmentation Quality Benchmarks}{22}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Model Efficiency Analysis}{22}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Inference Throughput}{23}{subsection.4.3.1}%
+\contentsline {section}{\numberline {4.4}Ablation Studies}{23}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Effect of KAN Variant Selection}{23}{subsection.4.4.1}%
 \contentsline {subsection}{\numberline {4.4.2}Effect of Knowledge Distillation}{23}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Effect of BNN Training Techniques}{23}{subsection.4.4.3}%
-\contentsline {chapter}{\numberline {5}Conclusions and Future Works}{24}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Conclusions}{24}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Future Works}{24}{section.5.2}%
-\contentsline {chapter}{Bibliography}{25}{section.5.2}%
+\contentsline {subsection}{\numberline {4.4.3}Effect of BNN Training Techniques}{24}{subsection.4.4.3}%
+\contentsline {chapter}{\numberline {5}Conclusions and Future Works}{25}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Conclusions}{25}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Future Works}{25}{section.5.2}%
+\contentsline {chapter}{Bibliography}{26}{section.5.2}%

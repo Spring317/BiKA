@@ -839,7 +839,39 @@ Models are trained using PyTorch with Automatic Mixed Precision (AMP) for memory
 This chapter details the experimental setup, dataset preparation, and performance evaluation of UKAN and BiKASegNet on the BDD100K road segmentation benchmark.
 
 \section{Experimental Setup}
-All experiments were conducted on a Linux workstation equipped with NVIDIA GPUs. The software stack consists of Python 3.10, PyTorch 2.x, and the Albumentations augmentation library. Models were trained on the BDD100K dataset~\cite{bdd100k2020}, which provides densely annotated driving scene images with per-pixel semantic labels covering road surfaces, lane markings, vehicles, pedestrians, and background categories. We evaluate in both a 2-class configuration (road foreground vs. background) and the full multi-class configuration.
+\label{sec:exp_setup}
+To evaluate full-precision UKAN and binarized BiKASegNet under identical experimental conditions, all models were trained and benchmarked on the BDD100K road segmentation dataset~\cite{bdd100k2020}. The experimental pipeline is defined across four structured categories:
+
+\begin{itemize}
+    \item \textbf{Hardware Infrastructure Setup}:
+    \begin{itemize}
+        \item \textbf{Operating System}: Linux (Ubuntu 22.04 LTS).
+        \item \textbf{Training GPU}: NVIDIA Quadro RTX 4000 (8\,GB VRAM), dedicated to full-precision teacher training, binary student training, and knowledge distillation backpropagation.
+        \item \textbf{Testing / Evaluation GPU}: NVIDIA GeForce RTX 2080 Max-Q (8\,GB VRAM), used as the primary edge deployment target for measuring real-time inference latency, throughput (FPS), and memory footprint.
+    \end{itemize}
+    
+    \item \textbf{Software Environment Setup}:
+    \begin{itemize}
+        \item \textbf{Virtual Environment}: Conda environment (\texttt{bika-env}).
+        \item \textbf{Core Libraries}: Python 3.10+, PyTorch 2.1+ with CUDA 12.1 toolkit, ATen C++ API for custom kernel bindings, Albumentations 1.3+ for spatial/color augmentations, and OpenCV.
+    \end{itemize}
+    
+    \item \textbf{Training Hyperparameters \& Input Dimensions}:
+    \begin{itemize}
+        \item \textbf{Input Image Dimensions}: Input tensor shape of $3 \times 360 \times 640$ (and $3 \times 512 \times 512$ for high-resolution benchmark runs), preserving 16:9 driving camera aspect ratios while fitting within 8\,GB VRAM limits.
+        \item \textbf{Training Epochs}: 50 to 100 epochs trained with AdamW optimiser ($\beta_1=0.9, \beta_2=0.999$, weight decay $= 10^{-4}$ for FP32 layers and $0.0$ for BiKA binary parameters), initial learning rate $\eta_0 = 10^{-3}$, and CosineAnnealingLR scheduler.
+        \item \textbf{Batch Size}: Effective batch size of 16 (batch size 8 per GPU step with gradient accumulation).
+    \end{itemize}
+    
+    \item \textbf{Output Classes \& Segmentation Target Approaches}:
+    \begin{itemize}
+        \item \textbf{Approach 1: Binary Drivable Road/Lane Segmentation (\texttt{lane\_fg} / \texttt{lane2})}:
+        $N_{\text{classes}} = 2$ logits ($2 \times H \times W$). Class 0 represents drivable road surface and lane area, while Class 1 represents background. Designed for low-latency autonomous vehicle navigation, collision avoidance, and lane-keeping algorithms.
+        
+        \item \textbf{Approach 2: Multi-Class Full Semantic Segmentation (\texttt{bench19} / \texttt{drive5})}:
+        $N_{\text{classes}} = 19$ logits ($19 \times H \times W$) following the official BDD100K benchmark convention (and $N_{\text{classes}} = 5$ for the 5-class \texttt{drive5} collision taxonomy). Evaluates fine-grained multi-class scene understanding across 19 categories (Road, Sidewalk, Vehicle, Person, Traffic Light, Sign, Sky, etc.), mapping class index 19 ("unknown") to \texttt{ignore\_index = 255}.
+    \end{itemize}
+\end{itemize}
 
 \section{Segmentation Quality Benchmarks}
 \label{sec:seg_benchmarks}
