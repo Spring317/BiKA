@@ -668,50 +668,7 @@ The decoder combines KAN blocks with standard convolutional upsampling (D\_ConvL
 
 \section{BiKASegNet: Binarized KAN Segmentation Network}
 \label{sec:bika_arch}
-BiKASegNet implements the KAN philosophy of learnable per-connection activations in a radically different way: instead of smooth spline functions, it uses binarized step functions with learnable per-connection thresholds. This produces a network where both weights and activations are binary ($\{+1, -1\}$), enabling extreme computational efficiency.
-
-\subsection{Adapting BiKA Layers for Semantic Road Segmentation}
-\label{sec:bika_adapting_layers}
-While Section~\ref{sec:bika_conv2d} defined the theoretical formulation of the \texttt{BiKA\_Conv2d} binarized layer, adapting 1-bit per-connection activation layers for dense semantic road segmentation requires structural and channel-capacity modifications to overcome severe quantization loss and maintain stable gradient propagation across deep networks.
-
-\subsubsection{Overall Architectural Adaptation \& Channel Width Scaling}
-To transition BiKA from classification tasks to dense pixel-wise segmentation on high-resolution driving datasets (e.g., BDD100K), an overall architectural adaptation was developed by constructing a U-Net style encoder-decoder network around binarized blocks. In this framework, channel capacity plays a critical role in balancing model expressiveness with hardware efficiency. Two primary channel width scaling configurations were developed and evaluated in the \texttt{BiKA} repository:
-
-\begin{itemize}
-    \item \textbf{16-Channel Baseline Configuration (\texttt{base\_channels = 16})}:
-    In this ultra-lightweight setup, channel dimensions progress across encoder stages as $C \rightarrow 2C \rightarrow 4C \rightarrow 8C$, corresponding to $16 \rightarrow 32 \rightarrow 64 \rightarrow 128$ channels. This model contains only $\sim$0.35M parameters with an extremely small memory footprint ($\sim$1.4\,MB). It is specifically engineered for sub-watt microcontrollers and embedded FPGAs where memory bandwidth and cache capacities are severely constrained.
-    
-    \item \textbf{32-Channel Capacity Update (\texttt{base\_channels = 32})}:
-    To match the parameter capacity ($\sim$4.1M parameters) and representational bandwidth of full-precision baseline networks (such as UKAN), the network architecture was updated to use a base channel count of $C = 32$. Here, stage channels expand as $32 \rightarrow 64 \rightarrow 128 \rightarrow 256$. Doubling the base channel width quadruples the binary feature interaction capacity across layers, enabling the network to resolve subtle spatial boundaries, thin lane markings, and distant road obstacles with significantly higher segmentation mIoU, while retaining 100\% multiply-free bitwise XNOR and popcount acceleration during inference.
-\end{itemize}
-
-\subsubsection{Full-Precision FP32 Stem (\texttt{full\_precision\_stem})}
-The initial input stage (\texttt{self.enc1}) processes raw RGB images ($3 \times H \times W$) using a full-precision $3\times3$ FP32 convolution projection ($3 \rightarrow C$), followed by BatchNorm and RPReLU, before passing features to \texttt{BiKA\_Conv2d}. Direct binarization of continuous 8-bit RGB pixel values at the input layer severely degrades spatial details and accuracy, as raw pixel intensities lack the high-dimensional channel representation required for effective 1-bit thresholding.
-
-\subsubsection{ReActNet-Inspired RPReLU Activations}
-Standard ReLU activations set all negative values to zero ($\max(0, x)$), which leads to severe information loss and dead neurons in binary networks. BiKASegNet replaces standard ReLU with ReActNet-style RPReLU (Re-Activation PReLU):
-\begin{equation}
-    \text{RPReLU}(x) = \text{PReLU}(x + \gamma) + \beta
-\end{equation}
-where $\gamma, \beta \in \mathbb{R}^{1 \times C \times 1 \times 1}$ are learnable per-channel pre-shift and post-shift parameters. RPReLU dynamically shifts binary activation distributions before and after non-linearities, allowing asymmetric activation ranges necessary for fine-grained pixel-wise road classification.
-
-\subsubsection{Full-Precision FP32 Classification Head (\texttt{full\_precision\_head})}
-The final segmentation output layer (\texttt{self.final}) uses a $1\times1$ FP32 convolution projection ($C \rightarrow N_{\text{classes}}$) rather than a binary convolution. Retaining full-precision weights and biases at the final layer ensures smooth, continuous logit distributions, which are essential for computing precise pixel-wise Cross-Entropy and Dice loss gradients during backpropagation.
-
-\subsubsection{Feature Concatenation in U-Net Decoder}
-Unlike additive skip connections, the BiKASegNet decoder concatenates encoder skip features with upsampled decoder features ($\text{dec3}$ takes $8C + 4C = 12C$ channels to $4C$, $\text{dec2}$ takes $4C + 2C = 6C$ channels to $2C$, and $\text{dec1}$ takes $2C + C = 3C$ channels to $C$). Feature concatenation preserves independent binary feature channels across spatial resolutions, providing richer representation recombination for multi-scale road and lane boundary segmentations.
-
-\subsection{BiKAConvBlock Design}
-Each \texttt{BiKAConvBlock} integrates two \texttt{BiKA\_Conv2d} layers with BatchNorm, RPReLU activations, and an FP32 shortcut connection (Bi-Real Net style):
-\begin{align}
-    \mathbf{s} &= \text{Shortcut}(\mathbf{x}) \\
-    \mathbf{h} &= \text{RPReLU}\left(\text{BN}\left(\text{BiKA\_Conv2d}_1(\mathbf{x})\right)\right) \\
-    \mathbf{y} &= \text{RPReLU}\left(\text{BN}\left(\text{BiKA\_Conv2d}_2(\mathbf{h})\right) + \mathbf{s}\right)
-\end{align}
-The shortcut $\text{Shortcut}(\mathbf{x})$ is a $1\times1$ FP32 convolution with BatchNorm when channel dimensions change, and an identity mapping otherwise. To manage memory consumption during training, activation checkpointing (\texttt{torch.utils.checkpoint}) is applied to \texttt{BiKAConvBlock}, reducing peak GPU VRAM usage by approximately 60\%.
-
-\subsection{BiKASegNet Architecture}
-The full BiKASegNet follows a standard U-Net topology with BiKAConvBlocks replacing standard convolution blocks, as shown in Figure~\ref{fig:bika_arch}.
+The full BiKA Segmentation Network (we will call it BikaSegNet from now) follows a standard U-Net topology with BiKAConvBlocks replacing standard convolution blocks, as shown in Figure~\ref{fig:bika_arch}.
 
 \begin{figure}[htbp]
 \centering
@@ -759,13 +716,13 @@ The full BiKASegNet follows a standard U-Net topology with BiKAConvBlocks replac
 \end{tikzpicture}
 }
 \vspace{1ex}
-
 {\small \textit{*Note: Red blocks indicate binarized BiKA\_Conv2d layers. Blue blocks indicate full-precision FP32 stem and head. Purple block indicates the binary bottleneck. Dashed lines indicate horizontal feature concatenation skip connections across the U-shape.}}
-\caption{BiKASegNet Architecture: Symmetric U-shaped binarized encoder-decoder network using BiKAConvBlocks, connected by feature concatenation skip connections.}
+\caption{BiKASegNet Architecture}
 \label{fig:bika_arch}
 \end{figure}
 
-Key architectural decisions:
+BiKASegNet implements the KAN philosophy of learnable per-connection activations in a radically different way: instead of smooth spline functions, it uses binarized step functions with learnable per-connection thresholds. This produces a network where both weights and activations are binary ($\{+1, -1\}$), enabling extreme computational efficiency:
+
 \begin{itemize}
     \item \textbf{Full-precision stem}: The first encoder layer uses a standard FP32 convolution for the initial $3 \rightarrow C$ projection, followed by a BiKA\_Conv2d. Binarizing the very first layer severely degrades accuracy since it directly quantizes the raw 8-bit RGB pixel values.
     \item \textbf{Full-precision head}: The final $1\times1$ classification convolution remains in FP32 to preserve the fine-grained logit distributions needed for accurate per-pixel classification.
@@ -774,6 +731,44 @@ Key architectural decisions:
 \end{itemize}
 
 
+
+
+To transition BiKA from classification tasks to dense pixel-wise segmentation on high-resolution driving datasets (e.g., BDD100K), an overall architectural adaptation was developed by constructing a U-Net style encoder-decoder network around binarized blocks. In this framework, channel capacity plays a critical role in balancing model expressiveness with hardware efficiency. Two primary channel width scaling configurations were developed and evaluated in the \texttt{BiKA} repository:
+
+\begin{itemize}
+    \item \textbf{16-Channel Baseline Configuration (\texttt{base\_channels = 16})}:
+    In this ultra-lightweight setup, channel dimensions progress across encoder stages as $C \rightarrow 2C \rightarrow 4C \rightarrow 8C$, corresponding to $16 \rightarrow 32 \rightarrow 64 \rightarrow 128$ channels. This model contains only $\sim$0.35M parameters with an extremely small memory footprint ($\sim$1.4\,MB). It is specifically engineered for sub-watt microcontrollers and embedded FPGAs where memory bandwidth and cache capacities are severely constrained.
+    
+    \item \textbf{32-Channel Capacity Update (\texttt{base\_channels = 32})}:
+    To match the parameter capacity ($\sim$4.1M parameters) and representational bandwidth of full-precision baseline networks (such as UKAN), the network architecture was updated to use a base channel count of $C = 32$. Here, stage channels expand as $32 \rightarrow 64 \rightarrow 128 \rightarrow 256$. Doubling the base channel width quadruples the binary feature interaction capacity across layers, enabling the network to resolve subtle spatial boundaries, thin lane markings, and distant road obstacles with significantly higher segmentation mIoU, while retaining 100\% multiply-free bitwise XNOR and popcount acceleration during inference.
+\end{itemize}
+
+\subsubsection{Full-Precision FP32 Stem (\texttt{full\_precision\_stem})}
+The initial input stage (\texttt{self.enc1}) processes raw RGB images ($3 \times H \times W$) using a full-precision $3\times3$ FP32 convolution projection ($3 \rightarrow C$), followed by BatchNorm and RPReLU, before passing features to \texttt{BiKA\_Conv2d}. Direct binarization of continuous 8-bit RGB pixel values at the input layer severely degrades spatial details and accuracy, as raw pixel intensities lack the high-dimensional channel representation required for effective 1-bit thresholding.
+
+\subsubsection{ReActNet-Inspired RPReLU Activations}
+Standard ReLU activations set all negative values to zero ($\max(0, x)$), which leads to severe information loss and dead neurons in binary networks. BiKASegNet replaces standard ReLU with ReActNet-style RPReLU (Re-Activation PReLU):
+\begin{equation}
+    \text{RPReLU}(x) = \text{PReLU}(x + \gamma) + \beta
+\end{equation}
+where $\gamma, \beta \in \mathbb{R}^{1 \times C \times 1 \times 1}$ are learnable per-channel pre-shift and post-shift parameters. RPReLU dynamically shifts binary activation distributions before and after non-linearities, allowing asymmetric activation ranges necessary for fine-grained pixel-wise road classification.
+
+\subsubsection{Full-Precision FP32 Classification Head (\texttt{full\_precision\_head})}
+The final segmentation output layer (\texttt{self.final}) uses a $1\times1$ FP32 convolution projection ($C \rightarrow N_{\text{classes}}$) rather than a binary convolution. Retaining full-precision weights and biases at the final layer ensures smooth, continuous logit distributions, which are essential for computing precise pixel-wise Cross-Entropy and Dice loss gradients during backpropagation.
+
+\subsubsection{Feature Concatenation in U-Net Decoder}
+Unlike additive skip connections, the BiKASegNet decoder concatenates encoder skip features with upsampled decoder features ($\text{dec3}$ takes $8C + 4C = 12C$ channels to $4C$, $\text{dec2}$ takes $4C + 2C = 6C$ channels to $2C$, and $\text{dec1}$ takes $2C + C = 3C$ channels to $C$). Feature concatenation preserves independent binary feature channels across spatial resolutions, providing richer representation recombination for multi-scale road and lane boundary segmentations.
+
+\subsection{BiKAConvBlock Design}
+Each \texttt{BiKAConvBlock} integrates two \texttt{BiKA\_Conv2d} layers with BatchNorm, RPReLU activations, and an FP32 shortcut connection (Bi-Real Net style):
+\begin{align}
+    \mathbf{s} &= \text{Shortcut}(\mathbf{x}) \\
+    \mathbf{h} &= \text{RPReLU}\left(\text{BN}\left(\text{BiKA\_Conv2d}_1(\mathbf{x})\right)\right) \\
+    \mathbf{y} &= \text{RPReLU}\left(\text{BN}\left(\text{BiKA\_Conv2d}_2(\mathbf{h})\right) + \mathbf{s}\right)
+\end{align}
+The shortcut $\text{Shortcut}(\mathbf{x})$ is a $1\times1$ FP32 convolution with BatchNorm when channel dimensions change, and an identity mapping otherwise. To manage memory consumption during training, activation checkpointing (\texttt{torch.utils.checkpoint}) is applied to \texttt{BiKAConvBlock}, reducing peak GPU VRAM usage by approximately 60\%.
+
+\subsection{BiKASegNet Architecture}
 
 
 \section{Training Methodology}

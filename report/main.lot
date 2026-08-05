@@ -3,8 +3,8 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Segmentation accuracy comparison across architectures on BDD100K road segmentation.}}{21}{table.caption.24}%
-\contentsline {table}{\numberline {4.2}{\ignorespaces Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio.}}{21}{table.caption.25}%
-\contentsline {table}{\numberline {4.3}{\ignorespaces Per-component inference latency comparison between UKAN and BiKASegNet.}}{21}{table.caption.26}%
-\contentsline {table}{\numberline {4.4}{\ignorespaces Ablation study on knowledge distillation and boundary loss for BiKASegNet.}}{22}{table.caption.27}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Segmentation accuracy comparison across architectures on BDD100K road segmentation.}}{21}{table.caption.23}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio.}}{21}{table.caption.24}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Per-component inference latency comparison between UKAN and BiKASegNet.}}{21}{table.caption.25}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Ablation study on knowledge distillation and boundary loss for BiKASegNet.}}{22}{table.caption.26}%
 \addvspace {10\p@ }

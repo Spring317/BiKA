@@ -43,16 +43,14 @@
 \contentsline {subsubsection}{PWLO-KAN Linear Layer}{15}{section*.17}%
 \contentsline {subsection}{\numberline {3.1.5}Decoder}{16}{subsection.3.1.5}%
 \contentsline {section}{\numberline {3.2}BiKASegNet: Binarized KAN Segmentation Network}{16}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Adapting BiKA Layers for Semantic Road Segmentation}{16}{subsection.3.2.1}%
-\contentsline {subsubsection}{Overall Architectural Adaptation \& Channel Width Scaling}{16}{section*.18}%
 \contentsline {subsubsection}{Full-Precision FP32 Stem (\texttt {full\_precision\_stem})}{17}{section*.19}%
 \contentsline {subsubsection}{ReActNet-Inspired RPReLU Activations}{17}{section*.20}%
-\contentsline {subsubsection}{Full-Precision FP32 Classification Head (\texttt {full\_precision\_head})}{17}{section*.21}%
-\contentsline {subsubsection}{Feature Concatenation in U-Net Decoder}{17}{section*.22}%
-\contentsline {subsection}{\numberline {3.2.2}BiKAConvBlock Design}{17}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}BiKASegNet Architecture}{18}{subsection.3.2.3}%
-\contentsline {section}{\numberline {3.3}Training Methodology}{19}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Optimisation for BNN Stability}{19}{subsection.3.3.1}%
+\contentsline {subsubsection}{Full-Precision FP32 Classification Head (\texttt {full\_precision\_head})}{18}{section*.21}%
+\contentsline {subsubsection}{Feature Concatenation in U-Net Decoder}{18}{section*.22}%
+\contentsline {subsection}{\numberline {3.2.1}BiKAConvBlock Design}{18}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}BiKASegNet Architecture}{18}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Training Methodology}{18}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Optimisation for BNN Stability}{18}{subsection.3.3.1}%
 \contentsline {subsection}{\numberline {3.3.2}Data Augmentation}{19}{subsection.3.3.2}%
 \contentsline {subsection}{\numberline {3.3.3}Training Infrastructure}{19}{subsection.3.3.3}%
 \contentsline {chapter}{\numberline {4}Experimental Evaluation and Results}{20}{chapter.4}%

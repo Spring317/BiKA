@@ -6,6 +6,6 @@
 \contentsline {figure}{\numberline {2.3}{\ignorespaces Sample $2 \times 3$ grid from the BDD100K dataset: top row shows RGB driving scene images, bottom row shows the corresponding pixel-level ground truth semantic segmentation color labels~\cite {bdd100k2020}.}}{12}{figure.caption.13}%
 \addvspace {10\p@ }
 \contentsline {figure}{\numberline {3.1}{\ignorespaces UKAN Architecture: Symmetric U-shaped encoder-decoder network transitioning from CNN stages to KAN blocks at lower resolutions, connected by horizontal skip connections.}}{14}{figure.caption.14}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces BiKASegNet Architecture: Symmetric U-shaped binarized encoder-decoder network using BiKAConvBlocks, connected by feature concatenation skip connections.}}{18}{figure.caption.23}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces BiKASegNet Architecture}}{16}{figure.caption.18}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
