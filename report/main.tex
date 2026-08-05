@@ -493,6 +493,31 @@ For model optimization, we utilize variations of stochastic gradient descent. Th
 \subsection{Activation Functions}
 Activation functions inject the necessary non-linearity into the network. Beyond the standard Rectified Linear Unit (ReLU), our KAN variants utilize more advanced smooth activations. The Sigmoid Linear Unit (SiLU or Swish)~\cite{ramachandran2018searching}, defined as $x \cdot \sigma(x)$, is used extensively as a base activation function across the KAN linear layers due to its smooth, non-monotonic properties that improve gradient flow. Additionally, Hardswish~\cite{howard2019searching} is employed in specific KAN variants (HardSwish-KAN) to approximate the smooth SiLU activation with piecewise linear functions, significantly reducing computational overhead on edge devices while maintaining accuracy.
 
+\section{BDD100K Dataset}
+\label{sec:bdd100k}
+The Berkeley DeepDrive 100K (BDD100K) dataset~\cite{bdd100k2020} is one of the largest and most diverse driving scene benchmarks designed for multitask learning in autonomous driving perception. It contains 100,000 video clips captured across varied geographic locations, times of day (daytime, night, dawn/dusk), and weather conditions (clear, rainy, foggy, snowy).
+
+For semantic segmentation, BDD100K provides pixel-level ground truth annotations for 10,000 high-resolution images ($1280 \times 720$), partitioned into 7,000 training, 1,000 validation, and 2,000 test images. The annotations cover 19 evaluation semantic classes (plus background), including road, sidewalk, vehicle, pedestrian, rider, traffic sign, and sky. In this work, we utilize BDD100K to benchmark our segmentation networks under both multi-class and binary road segmentation setups.
+
+Figure~\ref{fig:bdd100k_grid} displays a $2 \times 3$ grid showcasing sample input driving images alongside their corresponding color-coded ground truth semantic segmentation masks.
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{ccc}
+\includegraphics[width=0.31\linewidth]{images/bdd100k_samples/img1.jpg} &
+\includegraphics[width=0.31\linewidth]{images/bdd100k_samples/img2.jpg} &
+\includegraphics[width=0.31\linewidth]{images/bdd100k_samples/img3.jpg} \\
+\small (a) Scene Image 1 & \small (b) Scene Image 2 & \small (c) Scene Image 3 \\[1ex]
+\includegraphics[width=0.31\linewidth]{images/bdd100k_samples/mask1.png} &
+\includegraphics[width=0.31\linewidth]{images/bdd100k_samples/mask2.png} &
+\includegraphics[width=0.31\linewidth]{images/bdd100k_samples/mask3.png} \\
+\small (d) Ground Truth 1 & \small (e) Ground Truth 2 & \small (f) Ground Truth 3 \\
+\end{tabular}
+\caption{Sample $2 \times 3$ grid from the BDD100K dataset: top row shows RGB driving scene images, bottom row shows the corresponding pixel-level ground truth semantic segmentation color labels~\cite{bdd100k2020}.}
+\label{fig:bdd100k_grid}
+\end{figure}
+
+
 
 \chapter{Methodology and Architecture Design}
 
