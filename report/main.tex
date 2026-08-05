@@ -316,7 +316,7 @@ where $\gamma > 0$ controls the bandwidth of the Gaussian basis functions. Each 
 \end{equation}
 where $c_{k,ij}$ are learnable expansion coefficients. By avoiding the iterative grid recursion required by B-splines, FastKAN computes basis evaluations in parallel via matrix multiplication, enabling execution speed comparable to standard MLPs while retaining KAN's edge-centric non-linear expressiveness.
 
-textbf{PowerMLP~\cite{qiu2024powermlp}} addresses KAN's training latency bottleneck by reformulating the edge-centric spline activation functions into non-iterative power-basis expansions. Instead of evaluating localized grid splines or RBFs, PowerMLP approximates each non-linear univariate edge function $\phi(x)$ using a polynomial power-series expansion of order $K$:
+\textbf{PowerMLP~\cite{qiu2024powermlp}} addresses KAN's training latency bottleneck by reformulating the edge-centric spline activation functions into non-iterative power-basis expansions. Instead of evaluating localized grid splines or RBFs, PowerMLP approximates each non-linear univariate edge function $\phi(x)$ using a polynomial power-series expansion of order $K$:
 \begin{equation}
     \phi(x) = \sum_{k=1}^{K} w_k \cdot \sigma(x)^k
 \end{equation}
@@ -537,68 +537,60 @@ The UKAN architecture follows a three-stage CNN encoder, a KAN encoder-bottlenec
 
 \begin{figure}[htbp]
     \centering
-    \resizebox{\textwidth}{!}{%
+    \resizebox{0.95\textwidth}{!}{%
     \begin{tikzpicture}[>=stealth, thick]
         \tikzset{
-            conv/.style={draw, fill=blue!8, rectangle, minimum height=3em, minimum width=8em, rounded corners, align=center, font=\small},
-            kan/.style={draw=green!60!black, fill=green!5, rectangle, minimum height=3em, minimum width=8em, rounded corners, align=center, font=\small, line width=1.2pt},
-            patch/.style={draw, fill=orange!10, rectangle, minimum height=2.5em, minimum width=7em, rounded corners, align=center, font=\small},
+            conv/.style={draw=blue!80!black, fill=blue!8, rectangle, minimum height=2.8em, minimum width=10.5em, rounded corners, align=center, font=\small, line width=1pt},
+            kan/.style={draw=green!60!black, fill=green!8, rectangle, minimum height=2.8em, minimum width=10.5em, rounded corners, align=center, font=\small, line width=1.2pt},
+            bottleneck/.style={draw=red!70!black, fill=red!8, rectangle, minimum height=3.2em, minimum width=14em, rounded corners, align=center, font=\small, line width=1.5pt},
             io/.style={font=\scriptsize, align=center, fill=white, inner sep=2pt},
-            line/.style={draw, ->, >=stealth, thick, rounded corners=3pt}
+            line/.style={draw, ->, >=stealth, thick, rounded corners=3pt},
+            skipline/.style={draw, ->, >=stealth, dashed, blue!70!black, line width=1.2pt}
         }
         
-        % Input
-        \node[conv] (input) at (0, 0) {Input\\$H \times W \times 3$};
+        % Left Side (Encoder - Downsampling Path)
+        \node[conv] (input) at (0, 0) {Input Image\\$H \times W \times 3$};
+        \node[conv] (e1) at (0, -2.2) {ConvLayer 1 ($t_1$)\\$\frac{H}{2} \times \frac{W}{2} \times \frac{C_0}{8}$};
+        \node[conv] (e2) at (0, -4.4) {ConvLayer 2 ($t_2$)\\$\frac{H}{4} \times \frac{W}{4} \times \frac{C_0}{4}$};
+        \node[conv] (e3) at (0, -6.6) {ConvLayer 3 ($t_3$)\\$\frac{H}{8} \times \frac{W}{8} \times C_0$};
+        \node[kan] (e4) at (0, -8.8) {PatchEmbed 3 $+$ KANBlock 1 ($t_4$)\\$\frac{H}{16} \times \frac{W}{16} \times C_1$};
         
-        % CNN Encoder
-        \node[conv] (e1) at (0, -2.5) {ConvLayer 1\\$\frac{H}{2} \times \frac{W}{2} \times C_0/8$};
-        \node[conv] (e2) at (0, -5) {ConvLayer 2\\$\frac{H}{4} \times \frac{W}{4} \times C_0/4$};
-        \node[conv] (e3) at (0, -7.5) {ConvLayer 3\\$\frac{H}{8} \times \frac{W}{8} \times C_0$};
+        % Bottom Center (Bottleneck)
+        \node[bottleneck] (b) at (5.5, -11.2) {PatchEmbed 4 $+$ KANBlock 2 (Bottleneck)\\$\frac{H}{32} \times \frac{W}{32} \times C_2$};
         
-        % KAN Encoder
-        \node[patch] (p3) at (4.5, -7.5) {PatchEmbed\\Stride 2};
-        \node[kan] (kb1) at (9, -7.5) {KANBlock 1\\$\frac{H}{16} \times \frac{W}{16} \times C_1$};
+        % Right Side (Decoder - Upsampling Path)
+        \node[kan] (d4) at (11, -8.8) {Decoder KANBlock 1\\$\frac{H}{16} \times \frac{W}{16} \times C_1$};
+        \node[kan] (d3) at (11, -6.6) {Decoder KANBlock 2\\$\frac{H}{8} \times \frac{W}{8} \times C_0$};
+        \node[conv] (d2) at (11, -4.4) {D\_ConvLayer 3\\$\frac{H}{4} \times \frac{W}{4} \times \frac{C_0}{4}$};
+        \node[conv] (d1) at (11, -2.2) {D\_ConvLayer 4\\$\frac{H}{2} \times \frac{W}{2} \times \frac{C_0}{8}$};
+        \node[conv] (final) at (11, 0) {$1\times1$ Conv Head\\$H \times W \times N_{\text{classes}}$};
         
-        % Bottleneck
-        \node[patch] (p4) at (9, -10) {PatchEmbed\\Stride 2};
-        \node[kan] (kb2) at (9, -12.5) {KANBlock 2 (Bottleneck)\\$\frac{H}{32} \times \frac{W}{32} \times C_2$};
+        % Downsampling Connections (Encoder)
+        \path[line] (input) -- node[right, io] {Pool $2\times2$} (e1);
+        \path[line] (e1) -- node[right, io] {Pool $2\times2$} (e2);
+        \path[line] (e2) -- node[right, io] {Pool $2\times2$} (e3);
+        \path[line] (e3) -- node[right, io] {PatchEmbed (Stride 2)} (e4);
+        \path[line] (e4) |- node[below left, io] {PatchEmbed (Stride 2)} (b.west);
         
-        % Decoder
-        \node[conv] (d1) at (16, -12.5) {D\_ConvLayer 1};
-        \node[kan] (dkb1) at (16, -10) {Decoder KANBlock 1\\$C_1$};
-        \node[conv] (d2) at (16, -7.5) {D\_ConvLayer 2};
-        \node[kan] (dkb2) at (16, -5) {Decoder KANBlock 2\\$C_0$};
-        \node[conv] (d3) at (16, -2.5) {D\_ConvLayer 3--5};
-        \node[conv] (final) at (16, 0) {$1\times1$ Conv\\$N_{\text{classes}}$};
+        % Upsampling Connections (Decoder)
+        \path[line] (b.east) -| node[below right, io] {D\_Conv 1 (Upsample $\times2$)} (d4);
+        \path[line] (d4) -- node[left, io] {D\_Conv 2 (Upsample $\times2$)} (d3);
+        \path[line] (d3) -- node[left, io] {D\_Conv 3 (Upsample $\times2$)} (d2);
+        \path[line] (d2) -- node[left, io] {D\_Conv 4 (Upsample $\times2$)} (d1);
+        \path[line] (d1) -- node[left, io] {D\_Conv 5 (Upsample $\times2$)} (final);
         
-        % Encoder connections
-        \path[line] (input) -- (e1);
-        \path[line] (e1) -- node[right, io] {Pool} (e2);
-        \path[line] (e2) -- node[right, io] {Pool} (e3);
-        \path[line] (e3) -- (p3);
-        \path[line] (p3) -- (kb1);
-        \path[line] (kb1) -- (p4);
-        \path[line] (p4) -- (kb2);
-        
-        % Decoder connections
-        \path[line] (kb2) -- node[above, io] {Upsample$\times$2} (d1);
-        \path[line] (d1) -- (dkb1);
-        \path[line] (dkb1) -- node[right, io] {Upsample$\times$2} (d2);
-        \path[line] (d2) -- (dkb2);
-        \path[line] (dkb2) -- node[right, io] {Upsample$\times$2} (d3);
-        \path[line] (d3) -- (final);
-        
-        % Skip connections
-        \draw[line, dashed, blue] (kb1.east) -- +(1,0) |- node[above, io, near end] {Skip $+$} (dkb1.east);
-        \draw[line, dashed, blue] (e3.south) -- +(0, -0.5) -| +(8, 0) |- node[above, io, near end] {Skip $+$} (dkb2.east);
-        \draw[line, dashed, blue] (e2.east) -- +(17, 0) |- node[above, io] {Skip $+$} (d3.east);
+        % Horizontal Skip Connections across the U-Shape
+        \path[skipline] (e1) -- node[above, io] {Skip ($+$)} (d1);
+        \path[skipline] (e2) -- node[above, io] {Skip ($+$)} (d2);
+        \path[skipline] (e3) -- node[above, io] {Skip ($+$)} (d3);
+        \path[skipline] (e4) -- node[above, io] {Skip ($+$)} (d4);
         
     \end{tikzpicture}
     }
     \vspace{1ex}
     
-    {\small \textit{*Note: Green blocks indicate KAN-based stages. Blue blocks indicate standard CNN stages. Dashed lines indicate additive skip connections.}}
-    \caption{UKAN Architecture: CNN encoder stages transition to KAN blocks at lower resolutions, with a mixed KAN-CNN decoder.}
+    {\small \textit{*Note: Green blocks indicate KAN-based stages. Blue blocks indicate standard CNN stages. Red block indicates the KAN bottleneck. Dashed lines indicate horizontal skip connections across the U-shape.}}
+    \caption{UKAN Architecture: Symmetric U-shaped encoder-decoder network transitioning from CNN stages to KAN blocks at lower resolutions, connected by horizontal skip connections.}
     \label{fig:ukan_arch}
 \end{figure}
 
