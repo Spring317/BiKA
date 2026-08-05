@@ -247,7 +247,6 @@ The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} s
 \end{equation}
 where $\phi_{q,p}: [0,1] \rightarrow \mathbb{R}$ are univariate inner functions and $\Phi_q: \mathbb{R} \rightarrow \mathbb{R}$ are outer functions. This theorem guarantees the existence of such a representation but does not prescribe how to learn it.
 
-\subsection{KAN vs MLP Architecture}
 Kolmogorov-Arnold Networks (KANs) \cite{liu2024kan} have been proposed as a novel approach to improve traditional Multi-Layer Perceptrons (MLPs) accuracy, inspired by the Kolmogorov-Arnold representation theorem. In a standard MLP, the network learns fixed scalar weights on its connections (edges) and applies pre-defined, fixed non-linear activation functions (such as ReLU or sigmoid) at its neurons (nodes). KANs invert this principle by placing learnable, non-linear activation functions directly on the network edges, while the nodes simply sum the incoming signals. The key different between KANs and traditional MLPs is illustrated in Figure~\ref{fig:kan_vs_mlp}.
 
 \begin{figure}[H]
@@ -303,23 +302,11 @@ where $\text{SiLU}(x) = x \cdot \sigma(x)$ is a base activation, and $\text{spli
 As a trade-off to the extra information captured, B-spline evaluation requires iterative recursion over the grid, resulting in $\mathcal{O}(G \cdot k)$ operations per activation (where $G$ is the grid size and $k$ is the spline order), making the original KAN impractical for high-throughput vision tasks. This is the main problem that we address in this thesis.
 
 
-\section{Efficient KAN Variants}
 \label{sec:kan_variants}
+\subsection{Optimized KAN networks}
 To overcome the computational bottleneck of B-splines, several efficient KAN linear replacements have been proposed. Each variant maintains the KAN philosophy of learning activation functions on edges but uses faster basis functions.
 
-\subsection{FasterKAN (RSWAf Basis)}
-FasterKAN~\cite{fasterkan2024} replaces B-splines with the Reflectional Switch Activation Function (RSWAf). Given a set of grid points $\{g_0, g_1, \dots, g_{G-1}\}$ uniformly spanning $[g_{\min}, g_{\max}]$ and an inverse denominator parameter $\beta$, the basis function is:
-\begin{equation}
-    r_k(x) = 1 - \tanh^2\left((x - g_k) \cdot \beta\right)
-\end{equation}
-Each basis function $r_k$ produces a smooth, localized bump centred at grid point $g_k$. The output of a FasterKAN linear layer with input dimension $d_{\text{in}}$ and output dimension $d_{\text{out}}$ is:
-\begin{equation}
-    y = \mathbf{W}_s \cdot \text{vec}\left(\{r_k(x_i)\}_{k=0,\dots,G-1}^{i=1,\dots,d_{\text{in}}}\right)
-\end{equation}
-where $\mathbf{W}_s \in \mathbb{R}^{d_{\text{out}} \times (d_{\text{in}} \cdot G)}$ is a learnable spline projection matrix, and $\text{vec}(\cdot)$ concatenates all basis evaluations into a single vector. The input is first normalised via LayerNorm. A custom CUDA kernel computes the forward and backward passes of the RSWAf function, achieving significant speedups over the B-spline implementation.
-
-\subsection{FastKAN (Gaussian RBF Basis)}
-FastKAN~\cite{li2024fastkan} reframes Kolmogorov-Arnold Networks through the lens of Radial Basis Function (RBF) networks. It replaces the computationally intensive 3rd-order B-splines with Gaussian RBF basis functions defined over a uniform grid of center points $\{g_0, g_1, \dots, g_{G-1}\}$:
+\textbf{FastKAN~\cite{li2024fastkan}} reframes Kolmogorov-Arnold Networks through the lens of Radial Basis Function (RBF) networks. It replaces the computationally intensive 3rd-order B-splines with Gaussian RBF basis functions defined over a uniform grid of center points $\{g_0, g_1, \dots, g_{G-1}\}$:
 \begin{equation}
     \psi_k(x) = \exp\left( -\left(\frac{x - g_k}{\gamma}\right)^2 \right)
 \end{equation}
@@ -329,8 +316,7 @@ where $\gamma > 0$ controls the bandwidth of the Gaussian basis functions. Each 
 \end{equation}
 where $c_{k,ij}$ are learnable expansion coefficients. By avoiding the iterative grid recursion required by B-splines, FastKAN computes basis evaluations in parallel via matrix multiplication, enabling execution speed comparable to standard MLPs while retaining KAN's edge-centric non-linear expressiveness.
 
-\subsection{PowerMLP}
-PowerMLP~\cite{qiu2024powermlp} addresses KAN's training latency bottleneck by reformulating the edge-centric spline activation functions into non-iterative power-basis expansions. Instead of evaluating localized grid splines or RBFs, PowerMLP approximates each non-linear univariate edge function $\phi(x)$ using a polynomial power-series expansion of order $K$:
+textbf{PowerMLP~\cite{qiu2024powermlp}} addresses KAN's training latency bottleneck by reformulating the edge-centric spline activation functions into non-iterative power-basis expansions. Instead of evaluating localized grid splines or RBFs, PowerMLP approximates each non-linear univariate edge function $\phi(x)$ using a polynomial power-series expansion of order $K$:
 \begin{equation}
     \phi(x) = \sum_{k=1}^{K} w_k \cdot \sigma(x)^k
 \end{equation}
@@ -340,8 +326,18 @@ where $\sigma(x)$ is a base non-linear activation function (such as SiLU or GELU
 \end{equation}
 where $\mathbf{W}_k \in \mathbb{R}^{d_{\text{out}} \times d_{\text{in}}}$ are standard weight matrices. Because power calculations ($\mathbf{x}^k$) are fully parallelizable and require no grid lookups or localized indexing, PowerMLP drastically reduces FLOPs and achieves up to $40\times$ faster training speed than standard B-spline KANs, combining MLP-like execution throughput with KAN-level non-linear representational power.
 
-\subsection{ReLU-KAN}
-ReLU-KAN~\cite{qiu2024relukan} replaces the smooth basis with a piecewise-linear function using ReLU:
+\textbf{FasterKAN~\cite{fasterkan2024}} replaces B-splines with the Reflectional Switch Activation Function (RSWAf). Given a set of grid points $\{g_0, g_1, \dots, g_{G-1}\}$ uniformly spanning $[g_{\min}, g_{\max}]$ and an inverse denominator parameter $\beta$, the basis function is:
+\begin{equation}
+    r_k(x) = 1 - \tanh^2\left((x - g_k) \cdot \beta\right)
+\end{equation}
+Each basis function $r_k$ produces a smooth, localized bump centred at grid point $g_k$. The output of a FasterKAN linear layer with input dimension $d_{\text{in}}$ and output dimension $d_{\text{out}}$ is:
+\begin{equation}
+    y = \mathbf{W}_s \cdot \text{vec}\left(\{r_k(x_i)\}_{k=0,\dots,G-1}^{i=1,\dots,d_{\text{in}}}\right)
+\end{equation}
+where $\mathbf{W}_s \in \mathbb{R}^{d_{\text{out}} \times (d_{\text{in}} \cdot G)}$ is a learnable spline projection matrix, and $\text{vec}(\cdot)$ concatenates all basis evaluations into a single vector. The input is first normalised via LayerNorm. A custom CUDA kernel computes the forward and backward passes of the RSWAf function, achieving significant speedups over the B-spline implementation.
+
+
+\textbf{ReLU-KAN~\cite{qiu2024relukan}} replaces the smooth basis with a piecewise-linear function using ReLU:
 \begin{equation}
     \psi_k(x) = \text{ReLU}(x - g_k) = \max(0, x - g_k)
 \end{equation}
@@ -352,28 +348,26 @@ This produces a basis of shifted ramp functions. The output is computed as:
 ReLU-KAN achieves maximal inference speed due to the trivial cost of ReLU evaluation, but trades off smoothness for speed.
 
 With the same policy proposed by FasterKAN \cite{fasterkan2024} and ReLU-KAN \cite{qiu2024relukan}, we decide to perform evaluation with more activation functions which have a lower computational complexity compared original KAN to find out the optimal point between efficiency and accuracy.
+\begin{itemize}
 
-\subsection{HardSwish Activation}
-HardSwish~\cite{howard2019searching} is defined mathematically as:
-\begin{equation}
-    \text{HardSwish}(x) = x \cdot \frac{\text{ReLU6}(x + 3)}{6}
-\end{equation}
-It serves as a computationally efficient, piecewise-linear approximation of the smooth Swish activation function ($x \cdot \sigma(x)$). By replacing the continuous exponential function in Sigmoid with a bounded linear ramp ($\text{ReLU6}(x) = \min(\max(0, x), 6)$), HardSwish enforces piecewise linearity across the input domain. For $x \le -3$, the output is identically 0; for $x \ge 3$, the function becomes purely linear ($f(x) = x$). In the intermediate region $[-3, 3]$, it forms a quadratic-like piecewise linear transition. This piecewise linear structure eliminates expensive transcendental operations while maintaining gradient stability for deep networks.
+  \item HardSwish~\cite{howard2019searching} is defined mathematically as:
+    \begin{equation}
+        \text{HardSwish}(x) = x \cdot \frac{\text{ReLU6}(x + 3)}{6}
+    \end{equation}
+    It serves as a computationally efficient, piecewise-linear approximation of the smooth Swish activation function ($x \cdot \sigma(x)$). By replacing the continuous exponential function in Sigmoid with a bounded linear ramp ($\text{ReLU6}(x) = \min(\max(0, x), 6)$), HardSwish enforces piecewise linearity across the input domain. For $x \le -3$, the output is identically 0; for $x \ge 3$, the function becomes purely linear ($f(x) = x$). In the intermediate region $[-3, 3]$, it forms a quadratic-like piecewise linear transition. This piecewise linear structure eliminates expensive transcendental operations while maintaining gradient stability for deep networks.
 
-\subsection{TeLU Activation}
-The Hyperbolic Tangent Exponential Linear Unit (TeLU)~\cite{fernandez2024telu} is formulated as:
-\begin{equation}
-    \text{TeLU}(x) = x \cdot \tanh(\exp(x))
-\end{equation}
-TeLU is designed to combine the fast convergence of linear activations with the smooth non-linear saturation of exponential units. In the active positive domain ($x > 0$), $\exp(x)$ increases rapidly, driving $\tanh(\exp(x)) \approx 1$. Consequently, $\text{TeLU}(x) \approx x$, displaying strong positive-region linearity (identity mapping) that allows gradients to flow unattenuated. In the negative domain ($x < 0$), the smooth decay of $\tanh(\exp(x))$ prevents dying activations while bounding negative values, maintaining a seamless transition between linear and non-linear regimes.
+  \item The Hyperbolic Tangent Exponential Linear Unit (TeLU)~\cite{fernandez2024telu} is formulated as:
+    \begin{equation}
+        \text{TeLU}(x) = x \cdot \tanh(\exp(x))
+    \end{equation}
+    TeLU is designed to combine the fast convergence of linear activations with the smooth non-linear saturation of exponential units. In the active positive domain ($x > 0$), $\exp(x)$ increases rapidly, driving $\tanh(\exp(x)) \approx 1$. Consequently, $\text{TeLU}(x) \approx x$, displaying strong positive-region linearity (identity mapping) that allows gradients to flow unattenuated. In the negative domain ($x < 0$), the smooth decay of $\tanh(\exp(x))$ prevents dying activations while bounding negative values, maintaining a seamless transition between linear and non-linear regimes.
 
-\subsection{PWLO (Piecewise Linear Optimisation)}
-Piecewise Linear Optimisation (PWLO)~\cite{schoots2025relating} approximates non-linear continuous functions by partitioning the input domain $[g_{\min}, g_{\max}]$ into $G$ sub-intervals $[g_k, g_{k+1})$ and assigning a localized linear affine transformation to each segment:
-\begin{equation}
-    f(x) = a_k \cdot x + b_k, \quad x \in [g_k, g_{k+1})
-\end{equation}
-where $a_k$ and $b_k$ denote the slope and offset of the $k$-th segment. PWLO explicitly enforces local linearity within each interval. By converting complex non-linear functions into a composition of linear segments, PWLO enables high-throughput execution using simple linear primitives (multiply-accumulate or shift-and-add) on edge acceleration hardware.
-
+  \item Piecewise Linear Optimisation (PWLO)~\cite{schoots2025relating} approximates non-linear continuous functions by partitioning the input domain $[g_{\min}, g_{\max}]$ into $G$ sub-intervals $[g_k, g_{k+1})$ and assigning a localized linear affine transformation to each segment:
+  \begin{equation}
+      f(x) = a_k \cdot x + b_k, \quad x \in [g_k, g_{k+1})
+  \end{equation}
+  where $a_k$ and $b_k$ denote the slope and offset of the $k$-th segment. PWLO explicitly enforces local linearity within each interval. By converting complex non-linear functions into a composition of linear segments, PWLO enables high-throughput execution using simple linear primitives (multiply-accumulate or shift-and-add) on edge acceleration hardware.
+\end{itemize}
 \section{U-Net Segmentation Architecture}
 \label{sec:unet}
 U-Net~\cite{ronneberger2015unet} established the symmetric encoder-decoder architecture with skip connections as the standard for dense prediction tasks. The encoder progressively downsamples the input through convolutional blocks and pooling operations, extracting increasingly abstract feature representations. The decoder upsamples these features back to the original resolution, with skip connections from corresponding encoder stages providing fine-grained spatial detail.
@@ -503,15 +497,6 @@ The default loss function used in both UKAN and BiKA training combines both obje
 This jointly optimizes for per-pixel classification accuracy and region-level overlap, with the Dice component ensuring that small classes (e.g., lane markings) are not overwhelmed by the dominant background class.
 
 
-\section{Optimization and Activation Functions}
-\label{sec:optim_activations}
-The successful training and efficient deployment of KAN-based architectures rely on specialized optimization techniques and functional approximations designed to mitigate the computational overhead of edge-centric activations.
-
-\subsection{KAN Optimization and Acceleration}
-While original KAN implementations suffer from slow training speeds due to iterative B-spline evaluations, several structural optimization methods have been proposed to accelerate computation. FastKAN~\cite{li2024fastkan} demonstrates that 3rd-order B-splines can be effectively approximated using Gaussian Radial Basis Functions (RBFs), reformulating KANs into RBF networks to eliminate grid iteration overhead and drastically accelerate forward and backward passes. In parallel, PowerMLP~\cite{qiu2024powermlp} addresses the training latency bottleneck by introducing non-iterative power-basis expansions, offering MLP-like execution speeds (achieving up to $40\times$ faster training than standard KANs) while preserving higher representational expressiveness. In our training pipelines, parameter optimization is further supported by adaptive gradient methods including Adam~\cite{kingma2015adam} and AdamW~\cite{LoshchilovH19}, alongside the OneCycleLR scheduler~\cite{smith2019superconvergence} for super-convergence.
-
-\subsection{Activation Functions}
-Activation functions inject the necessary non-linearity into the network. Beyond the standard Rectified Linear Unit (ReLU), our KAN variants utilize more advanced smooth activations. The Sigmoid Linear Unit (SiLU or Swish)~\cite{ramachandran2018searching}, defined as $x \cdot \sigma(x)$, is used extensively as a base activation function across the KAN linear layers due to its smooth, non-monotonic properties that improve gradient flow. Additionally, Hardswish~\cite{howard2019searching} is employed in specific KAN variants (HardSwish-KAN) to approximate the smooth SiLU activation with piecewise linear functions, significantly reducing computational overhead on edge devices while maintaining accuracy.
 
 \section{BDD100K Dataset}
 \label{sec:bdd100k}
