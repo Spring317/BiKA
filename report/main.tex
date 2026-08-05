@@ -233,11 +233,6 @@ The remainder of this thesis is structured as follows:
 
 This chapter introduces the foundational knowledge that are used to implement KAN-based segmentation networks. These include Kolmogorov-Arnold Networks (KANs), Binary Neural Networks (BNNs), and Binarized Kolmogorov-Arnold Networks (BiKA) concept which sucessfully combine the two architectures. 
 
-Binary Neural Networks (BNNs) address the hardware constraints of deep learning by pushing model quantization to its absolute theoretical limit. In a BNN, both the network weights and the intermediate feature activations are constrained to 1-bit representations, typically $\{-1, +1\}$, utilizing the sign function. This severe quantization completely eliminates the need for expensive floating-point multiply-accumulate (MAC) operations. Instead, convolutions and dense layers can be executed using highly efficient bitwise XNOR and popcount operations, drastically reducing memory bandwidth and latency on edge devices like FPGAs and embedded GPUs. Despite these immense computational advantages, the extreme information loss induced by binarizing continuous variables natively limits the expressiveness of BNNs. They often suffer from accuracy compared to full-precision networks and require specialized training methodologies, such as the Straight-Through Estimator (STE) and dense skip connections, to maintain stable gradient flow during backpropagation.
-
-Bridging the gap between the high representational capacity of KANs and the extreme hardware efficiency of BNNs, the Binarized Kolmogorov-Arnold Network (BiKA) introduces a novel paradigm for edge-deployed neural networks. While traditional KANs employ computationally expensive continuous splines and standard BNNs rely on uniform binarization, BiKA replaces the continuous edge functions of KANs with learnable, binary step functions parameterized by individualized connection thresholds. By assigning a unique, learnable bias threshold to every single synapse before binarization, BiKA faithfully implements the KAN philosophy of per-connection activations without requiring floating-point arithmetic during inference. Compared to KANs, BiKA sacrifices the smooth continuity of spline functions to achieve a completely multiply-free computational graph. Compared to traditional BNNs, BiKA achieves significantly higher expressiveness without adding computational complexity by shifting the learning capacity from continuous weight magnitudes to highly localized spatial thresholds. This synthesis provides a highly effective balance, delivering KAN-inspired accuracy within the strict power and resource budgets of binary architectures.
-
-
 \section{Kolmogorov-Arnold Networks}
 \label{sec:kan_background}
 
@@ -542,7 +537,7 @@ Figure~\ref{fig:bdd100k_grid} displays a $2 \times 3$ grid showcasing sample inp
 
 
 
-\chapter{Methodology and Architecture Design}
+\chapter{Methodology}
 
 This chapter details the two KAN-based segmentation architectures: the full-precision UKAN and the binarized BiKASegNet. We describe the integration of KAN layers into the U-Net framework, the design of binarized KAN convolutions, and the knowledge distillation pipeline connecting both models.
 
@@ -768,11 +763,38 @@ Each \texttt{BiKAConvBlock} integrates two \texttt{BiKA\_Conv2d} layers with Bat
 \end{align}
 The shortcut $\text{Shortcut}(\mathbf{x})$ is a $1\times1$ FP32 convolution with BatchNorm when channel dimensions change, and an identity mapping otherwise. To manage memory consumption during training, activation checkpointing (\texttt{torch.utils.checkpoint}) is applied to \texttt{BiKAConvBlock}, reducing peak GPU VRAM usage by approximately 60\%.
 
-\subsection{BiKASegNet Architecture}
 
 
-\section{Training Methodology}
+\section{Optimisation and Training Strategies}
 \label{sec:training}
+While the theoretical formulation of BiKA guarantees multiply-free 1-bit operations, standard PyTorch/ATen operators introduce significant memory transfer bottlenecks when executing 4D per-connection thresholding on GPUs. To maximize both training throughput and inference evaluation efficiency, custom C++/CUDA kernels were engineered in the \texttt{BiKA} repository (\texttt{src/bika/csrc/bika\_conv2d.cu} and \texttt{bika\_linear.cu}).
+
+\subsection{Custom CUDA Kernel Optimisations for BiKA}
+\label{sec:cuda_kernels}
+The custom CUDA kernel pipeline optimizes binary convolution and linear operations through several GPU-level memory and compute strategies:
+
+\subsubsection{Bit-Packing \& 32-bit Word Quantization}
+To overcome global memory bandwidth limitations during weight transfers, 32 continuous binary weights along kernel and input channel dimensions are bit-packed into single 32-bit unsigned integers (\texttt{unsigned int packed\_weight}). Bit-packing compresses the weight memory footprint by $32\times$, allowing 32 binary synapses to be fetched from GPU VRAM in a single 32-bit memory transaction.
+
+\subsubsection{Half-Precision (FP16) Shared Memory Bias Caching}
+The 4D per-connection bias tensor $\mathbf{b} \in \mathbb{R}^{C_{\text{out}} \times C_{\text{in}} \times K_H \times K_W}$ requires storing an individual threshold per synapse. To prevent VRAM fetch latency, the bias tensor is pre-negated and converted to 16-bit half-precision (\texttt{\_\_half neg\_bias\_half}). At kernel execution, CUDA thread blocks load FP16 bias values directly into fast GPU Shared Memory (\texttt{\_\_shared\_\_ \_\_half smem\_bias\_h}), halving shared memory bandwidth consumption compared to 32-bit float bias loading.
+
+\subsubsection{Output-Channel Tiling \& Thread-Level Register Reuse}
+The forward CUDA kernel (\texttt{bika\_conv2d\_forward\_kernel}) employs 2D output tiling ($TILE\_O = 4$ output channels and $TILE\_W = 4$ spatial width pixels per thread). By evaluating 4 output channels concurrently within local thread registers (\texttt{acc[TILE\_W][TILE\_O]}), global memory reads of input feature maps are reduced by $4\times$. Tiling parameters are configured to keep shared memory allocation under 48\,KB per block, ensuring high streaming multiprocessor (SM) occupancy.
+
+\subsubsection{Bitwise XNOR and Popcount Convolution Execution}
+During convolution execution, thread registers compare packed 32-bit input activation words (\texttt{x\_bits}) against packed binary weight words (\texttt{w\_bits}) using bitwise XNOR, followed by the hardware-accelerated population count intrinsic (\texttt{\_\_popc}):
+\begin{equation}
+    \text{xnor\_val} = \sim(\text{x\_bits} \oplus \text{w\_bits})
+\end{equation}
+\begin{equation}
+    \text{acc} \mathrel{+}= 2 \cdot \text{\_\_popc}(\text{xnor\_val}) - 32
+\end{equation}
+This replaces 32 floating-point multiply-accumulate operations with a single bitwise logic operation and integer popcount, eliminating floating-point ALUs from inner loops.
+
+\subsubsection{STE Hard-Tanh Backpropagation Kernels}
+Custom backward CUDA kernels (\texttt{bika\_conv2d\_backward\_wb\_kernel} and \texttt{bika\_linear\_backward\_kernel}) calculate gradients with respect to inputs ($\frac{\partial \mathcal{L}}{\partial \mathbf{x}}$), weights ($\frac{\partial \mathcal{L}}{\partial \mathbf{W}}$), and per-connection biases ($\frac{\partial \mathcal{L}}{\partial \mathbf{b}}$) using the Straight-Through Estimator (STE). Hard-Tanh gradient clipping ($|z| \le 1.0$) zeros out gradients for saturated weights, while atomic additions (\texttt{atomicAdd}) accumulate weight and bias updates across parallel GPU threads.
+
 \subsection{Optimisation for BNN Stability}
 Training BiKASegNet requires careful handling of the binary weight dynamics. Specifically:
 \begin{itemize}
