@@ -470,6 +470,23 @@ AdaBin~\cite{tu2022adabin} introduces a learnable per-channel output scaling fac
 \end{equation}
 At inference, $\alpha_c$ is fused into the subsequent BatchNorm layer's affine parameters, incurring zero additional computational cost.
 
+\subsection{BiKA\_Conv2d: Mathematical Formulation and Tensor Dimensions}
+\label{sec:bika_conv2d_math}
+The foundational building block of the Binarized Kolmogorov-Arnold Network is the \texttt{BiKA\_Conv2d} layer. In a conventional 2D convolution, the learnable weight tensor has shape $(C_{\text{out}}, C_{\text{in}}, K_H, K_W)$ while the bias is a 1D vector of shape $(C_{\text{out}},)$—assigning a single scalar offset per output channel. 
+
+In contrast, \texttt{BiKA\_Conv2d} constructs a 4D per-connection bias tensor matching the exact spatial and channel dimensions of the weight tensor:
+\begin{equation}
+    \mathbf{W} \in \mathbb{R}^{C_{\text{out}} \times C_{\text{in}} \times K_H \times K_W}, \quad \mathbf{b} \in \mathbb{R}^{C_{\text{out}} \times C_{\text{in}} \times K_H \times K_W}
+\end{equation}
+This per-connection bias design realizes the KAN paradigm by assigning an individualized, learnable step-function threshold $b_{o,c,k_h,k_w}$ to every single synapse. The forward mathematical operation for an output spatial location $(h', w')$ is defined as:
+\begin{equation}
+    y_{o,h',w'} = \sum_{c=1}^{C_{\text{in}}} \sum_{k_h=1}^{K_H} \sum_{k_w=1}^{K_W} \text{sign}\left(w_{o,c,k_h,k_w} - \bar{w}_o\right) \cdot \text{sign}\left(x_{c,h'+k_h,w'+k_w} + b_{o,c,k_h,k_w}\right)
+\end{equation}
+where $\bar{w}_o = \frac{1}{C_{\text{in}} K_H K_W} \sum_{c,k_h,k_w} w_{o,c,k_h,k_w}$ is the Libra-PB weight mean. Each synapse evaluates a 1-bit step activation $\phi_{o,c,k_h,k_w}(x) = \text{sign}(x + b_{o,c,k_h,k_w})$. Following the binary convolution, a learnable AdaBin channel scale $\alpha_c \in \mathbb{R}^{C_{\text{out}} \times 1 \times 1}$ rescales the output tensor:
+\begin{equation}
+    y_c \leftarrow \alpha_c \cdot y_c
+\end{equation}
+
 
 \section{Loss Functions for Segmentation}
 \label{sec:losses}
@@ -652,43 +669,33 @@ The decoder combines KAN blocks with standard convolutional upsampling (D\_ConvL
 \label{sec:bika_arch}
 BiKASegNet implements the KAN philosophy of learnable per-connection activations in a radically different way: instead of smooth spline functions, it uses binarized step functions with learnable per-connection thresholds. This produces a network where both weights and activations are binary ($\{+1, -1\}$), enabling extreme computational efficiency.
 
-\subsection{BiKA\_Conv2d: The Binarized KAN Convolution}
-The core innovation of BiKA is the BiKA\_Conv2d layer. In a standard convolution, the weight tensor has shape $(C_{\text{out}}, C_{\text{in}}, K_H, K_W)$ and the bias (if present) has shape $(C_{\text{out}},)$—a single scalar per output channel. In BiKA\_Conv2d, the bias has shape:
+\subsection{Adapting BiKA Layers for Semantic Road Segmentation}
+While Section~\ref{sec:bika_conv2d_math} defined the theoretical formulation of the \texttt{BiKA\_Conv2d} binarized layer, adapting 1-bit per-connection activation layers for dense semantic road segmentation requires specific structural modifications to overcome severe quantization loss and maintain stable gradient propagation. Based on the implementation in the \texttt{BiKA} repository (\texttt{src/bika/segmentation.py}), the key segmentation-oriented adaptations are:
+
+\subsubsection{Full-Precision FP32 Stem (\texttt{full\_precision\_stem})}
+The initial input stage (\texttt{self.enc1}) processes raw RGB images ($3 \times H \times W$) using a full-precision $3\times3$ FP32 convolution projection ($3 \rightarrow C$), followed by BatchNorm and RPReLU, before passing features to \texttt{BiKA\_Conv2d}. Direct binarization of continuous 8-bit RGB pixel values at the input layer severely degrades spatial details and accuracy, as raw pixel intensities lack the high-dimensional channel representation required for effective 1-bit thresholding.
+
+\subsubsection{ReActNet-Inspired RPReLU Activations}
+Standard ReLU activations set all negative values to zero ($\max(0, x)$), which leads to severe information loss and dead neurons in binary networks. BiKASegNet replaces standard ReLU with ReActNet-style RPReLU (Re-Activation PReLU):
 \begin{equation}
-    \mathbf{b} \in \mathbb{R}^{C_{\text{out}} \times C_{\text{in}} \times K_H \times K_W}
+    \text{RPReLU}(x) = \text{PReLU}(x + \gamma) + \beta
 \end{equation}
-This is a \textbf{per-connection bias}—every single synapse in the convolution has its own learnable threshold. The forward computation is:
-\begin{equation}
-    y_{o,h',w'} = \sum_{c,k_h,k_w} \text{sign}\left(w_{o,c,k_h,k_w} - \bar{w}_o\right) \cdot \text{sign}\left(x_{c,h'+k_h,w'+k_w} + b_{o,c,k_h,k_w}\right)
-\end{equation}
-where $\bar{w}_o = \frac{1}{C_{\text{in}} K_H K_W} \sum_{c,k_h,k_w} w_{o,c,k_h,k_w}$ is the Libra-PB weight centering.
+where $\gamma, \beta \in \mathbb{R}^{1 \times C \times 1 \times 1}$ are learnable per-channel pre-shift and post-shift parameters. RPReLU dynamically shifts binary activation distributions before and after non-linearities, allowing asymmetric activation ranges necessary for fine-grained pixel-wise road classification.
 
-This design directly realizes the KAN principle: each edge has its own activation function $\phi_{o,c,k_h,k_w}(x) = \text{sign}(x + b_{o,c,k_h,k_w})$, where the threshold $b$ is learnable. The weight binarization $\text{sign}(w - \bar{w})$ applies Libra-PB centering to ensure balanced binarization.
+\subsubsection{Full-Precision FP32 Classification Head (\texttt{full\_precision\_head})}
+The final segmentation output layer (\texttt{self.final}) uses a $1\times1$ FP32 convolution projection ($C \rightarrow N_{\text{classes}}$) rather than a binary convolution. Retaining full-precision weights and biases at the final layer ensures smooth, continuous logit distributions, which are essential for computing precise pixel-wise Cross-Entropy and Dice loss gradients during backpropagation.
 
-\subsubsection{AdaBin Output Scaling}
-Following the binary convolution, an AdaBin learnable per-channel scaling factor is applied:
-\begin{equation}
-    y_c \leftarrow \alpha_c \cdot y_c, \quad \alpha_c \in \mathbb{R}^{C_{\text{out}} \times 1 \times 1}
-\end{equation}
-At inference, $\alpha_c$ is fused into BatchNorm's $\gamma$ parameter, adding zero computational overhead.
+\subsubsection{Feature Concatenation in U-Net Decoder}
+Unlike additive skip connections, the BiKASegNet decoder concatenates encoder skip features with upsampled decoder features ($\text{dec3}$ takes $8C + 4C = 12C$ channels to $4C$, $\text{dec2}$ takes $4C + 2C = 6C$ channels to $2C$, and $\text{dec1}$ takes $2C + C = 3C$ channels to $C$). Feature concatenation preserves independent binary feature channels across spatial resolutions, providing richer representation recombination for multi-scale road and lane boundary segmentations.
 
-\subsubsection{Custom CUDA Implementation}
-The BiKA\_Conv2d forward pass is implemented via a custom CUDA kernel that:
-\begin{enumerate}
-    \item Packs binarized weights into \texttt{int32} words (32 binary weights per integer).
-    \item Pre-negates and converts the bias tensor to FP16 for shared memory bandwidth savings.
-    \item Computes the binary convolution using XNOR and popcount operations on the packed representations.
-\end{enumerate}
-The backward pass uses the Straight-Through Estimator (STE) to propagate gradients through the sign functions, with gradients zeroed for weights outside the $[-1, 1]$ clipping window.
-
-\subsection{BiKAConvBlock: Enhanced Binary Block}
-Each BiKAConvBlock consists of two BiKA\_Conv2d layers with BatchNorm and RPReLU activations, plus an FP32 skip connection:
+\subsection{BiKAConvBlock Design}
+Each \texttt{BiKAConvBlock} integrates two \texttt{BiKA\_Conv2d} layers with BatchNorm, RPReLU activations, and an FP32 shortcut connection (Bi-Real Net style):
 \begin{align}
     \mathbf{s} &= \text{Shortcut}(\mathbf{x}) \\
     \mathbf{h} &= \text{RPReLU}\left(\text{BN}\left(\text{BiKA\_Conv2d}_1(\mathbf{x})\right)\right) \\
     \mathbf{y} &= \text{RPReLU}\left(\text{BN}\left(\text{BiKA\_Conv2d}_2(\mathbf{h})\right) + \mathbf{s}\right)
 \end{align}
-The shortcut is a $1\times1$ FP32 convolution with BatchNorm when the channel dimensions change, and an identity otherwise. Activation checkpointing is applied during training to reduce VRAM usage by approximately 60\%.
+The shortcut $\text{Shortcut}(\mathbf{x})$ is a $1\times1$ FP32 convolution with BatchNorm when channel dimensions change, and an identity mapping otherwise. To manage memory consumption during training, activation checkpointing (\texttt{torch.utils.checkpoint}) is applied to \texttt{BiKAConvBlock}, reducing peak GPU VRAM usage by approximately 60\%.
 
 \subsection{BiKASegNet Architecture}
 The full BiKASegNet follows a standard U-Net topology with BiKAConvBlocks replacing standard convolution blocks, as shown in Figure~\ref{fig:bika_arch}.
