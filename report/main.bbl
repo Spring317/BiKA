@@ -43,6 +43,12 @@ A.~Kirillov, E.~Mintun, N.~Ravi, H.~Mao, C.~Rolland, L.~Gustafson, T.~Xiao,
   S.~Whitehead, A.~C. Berg, W.-Y. Lo, P.~Doll{\'a}r, and R.~Girshick, ``Segment
   anything,'' {\em arXiv preprint arXiv:2304.02643}, 2023.
 
+\bibitem{everingham2012pascal}
+M.~Everingham, S.~M.~A. Eslami, L.~Van~Gool, C.~K.~I. Williams, J.~Winn, and
+  A.~Zisserman, ``The {PASCAL Visual Object Classes} challenge: A
+  retrospective,'' {\em International Journal of Computer Vision}, vol.~111,
+  no.~1, pp.~98--136, 2015.
+
 \bibitem{silberman2012indoor}
 N.~Silberman, D.~Hoiem, P.~Kohli, and R.~Fergus, ``Indoor segmentation and
   support inference from {RGBD} images,'' in {\em Proceedings of the European
@@ -103,6 +109,22 @@ C.~Yu, J.~Wang, P.~C. Chao, C.~Gao, N.~Sang, and J.~Liu, ``{BiSeNet}: Bilateral
   Proceedings of the European Conference on Computer Vision (ECCV)},
   pp.~325--341, 2018.
 
+\bibitem{zhou2017ade20k}
+B.~Zhou, A.~Lapedriza, A.~Khosla, A.~Oliva, and A.~Torralba, ``Scene parsing
+  through {ADE20K} dataset,'' in {\em Proceedings of the IEEE Conference on
+  Computer Vision and Pattern Recognition (CVPR)}, pp.~5122--5130, 2017.
+
+\bibitem{landman2015synapse}
+B.~Landman, Z.~Xu, J.~Igelsias, M.~Styner, T.~Langerak, and A.~Klein, ``{MICCAI
+  Multi-Atlas Labeling Beyond the Cranial Vault} challenge.'' MICCAI Challenge
+  Datasets, 2015.
+
+\bibitem{lin2014coco}
+T.-Y. Lin, M.~Maire, S.~Belongie, J.~Hays, P.~Perona, D.~Ramanan,
+  P.~Doll{\'a}r, and C.~L. Zitnick, ``{Microsoft COCO}: Common objects in
+  context,'' in {\em Proceedings of the European Conference on Computer Vision
+  (ECCV)}, pp.~740--755, 2014.
+
 \bibitem{kolmogorov1957}
 A.~N. Kolmogorov, ``On the representation of continuous functions of several
   variables by superposition of continuous functions of one variable and
@@ -112,6 +134,13 @@ A.~N. Kolmogorov, ``On the representation of continuous functions of several
 C.~Li, X.~Liu, W.~Li, C.~Wang, H.~Liu, and Y.~Yuan, ``{U-KAN} makes strong
   backbone for medical image segmentation and generation,'' {\em arXiv preprint
   arXiv:2406.02918}, 2024.
+
+\bibitem{codella2019isic}
+N.~Codella, D.~Gutman, M.~E. Celebi, B.~Helba, M.~A. Marchetti, S.~W. Dusza,
+  A.~Kalloo, K.~Liopyris, N.~Mishra, H.~Kittler, and A.~Halpern, ``{Skin Lesion
+  Analysis Toward Melanoma Detection 2018}: A challenge hosted by the
+  {International Skin Imaging Collaboration (ISIC)},'' {\em arXiv preprint
+  arXiv:1902.03368}, 2019.
 
 \bibitem{fasterkan2024}
 A.~Tsiamis, ``{FasterKAN}: Accelerating kolmogorov-arnold networks with {RSWAf}
