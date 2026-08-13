@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{report}
+\documentclass[14pt,a4paper]{extreport}
 \usepackage[utf8]{inputenc} % For UTF-8 encoding
 \usepackage[T1]{fontenc}    % For better font encoding
 \usepackage[english]{babel} % For English language
@@ -6,11 +6,23 @@
 \usepackage{amsmath,amssymb}% For mathematical symbols
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric,arrows,positioning,calc,fit}
+\usepackage{color}          % For color definitions
+\usepackage{xcolor}         % Advanced color definitions
 \usepackage{hyperref}       % For hyperlinks
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    pdfborder={0 0 0}
+}
+\usepackage{setspace}       % For controlling line spacing
+\onehalfspacing             % 1.5 line spacing
 \usepackage{geometry}       % For adjusting page margins
+\geometry{margin=1in}       % 1 inch margins for 14pt readability
+\setlength{\headheight}{18pt}% Adjust header height for fancyhdr with 14pt font
 \usepackage{fancyhdr}       % For headers and footers
 \usepackage{listings}       % For code listings
-\usepackage{color}          % For color definitions
 \usepackage{caption}        % For customizing captions
 \usepackage{booktabs}       % For professional-looking tables
 \usepackage{longtable}      % For tables that span multiple pages
@@ -19,7 +31,6 @@
 \usepackage{subfigure}
 \usepackage{multirow}
 \usepackage{multicol}
-\geometry{margin=1in}
 \setlength{\parskip}{0.5em}
 \setlength{\parindent}{0em}
 \usepackage[acronym]{glossaries}
@@ -177,6 +188,8 @@ The experimental results demonstrate that KAN-based architectures successfully a
 \section{Context and motivation}
 \label{sec:context}
 \subsection{Context}
+Autonomous driving car from a long time ago have been one of human biggest dreams. Writers and filmakers have tried different concepts of self-driving car, come-along with a mordern far futures. The very first Auto-driven car came from the 80s TV series called Knight-Rider, which was a car that can drive itself and talk to the driver. In the 90s, the movie Total Recall introduced a self-driving taxi that can take passengers to their destinations without any human intervention. In the 2000s, the movie I, Robot featured a self-driving car that can navigate through traffic and avoid obstacles. And we cannot forget the absolute distopian Nigh City of Cyberpunk, packed with autonomous cars, in which the author state the constrast between the rapid rise in technology and the downfall of humanity. Another type of autonomous vehicle comes from the Galaxy far far away of Star War that symbolize the ambition of humanity to "make life easier!". 
+With latest advance in technology, these cars are not blueprints annymore but a fully functional vehicle. In recent years, self-driving cars have become a reality with companies like Tesla, Waymo, and Uber developing autonomous vehicles that can drive on public roads. 
 Semantic segmentation, the task of assigning a class label to every pixel in an image, is a foundational capability for autonomous driving perception systems. Accurate road segmentation enables autonomous vehicles to identify drivable surfaces, lane boundaries, sidewalks, and other critical scene elements in real time. The evolution of segmentation architectures has progressed from early fully convolutional networks (FCN)~\cite{long2015fcn} to the U-Net encoder-decoder architecture~\cite{ronneberger2015unet}, and more recently to Transformer-based models such as SegFormer~\cite{xie2021segformer}, Swin-UNet~\cite{cao2022swinunet} and Segment Anything~\cite{kirillov2023segment}.
 
 However, all of these architectures share a fundamental design choice inherited from Multi-Layer Perceptrons (MLPs): they place fixed, pre-defined activation functions (e.g., ReLU, GELU) at the \emph{nodes} of the network, while the \emph{edges} (connections) carry only learnable linear weights,. The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} suggests an alternative: replace every linear weight with a non-linear activation functions on the \emph{edges} themselves, allowing the network to learn both the weights and the optimal activation shape for each connection, which as a results, achieve better accuracy and interpretability. This principle forms the foundation of Kolmogorov-Arnold Networks (KANs)~\cite{liu2024kan}.

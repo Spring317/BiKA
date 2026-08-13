@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.14)  5 AUG 2026 15:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.14)  13 AUG 2026 09:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -6,10 +6,19 @@ entering extended mode
 (./main.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
-(/usr/share/texmf-dist/tex/latex/base/report.cls
-Document Class: report 2025/01/22 v1.4n Standard LaTeX document class
-(/usr/share/texmf-dist/tex/latex/base/size11.clo
-File: size11.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
+(/usr/share/texmf-dist/tex/latex/extsizes/extreport.cls
+Document Class: extreport 1996/10/08 v1.0 Non Standard LaTeX document class
+(/usr/share/texmf-dist/tex/latex/extsizes/size14.clo
+File: size14.clo 1999/11/11 v1.4a NON-Standard LaTeX file (size option)
+)
+(/usr/share/texmf-dist/tex/latex/base/exscale.sty
+Package: exscale 2025/06/05 v2.1i Standard LaTeX package exscale
+LaTeX Font Info:    Redeclaring symbol font `largesymbols' on input line 57.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> OMX/cmex/m/n on input line 57.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> OMX/cmex/m/n on input line 57.
+\big@size=\dimen148
 )
 \c@part=\count275
 \c@chapter=\count276
@@ -22,7 +31,7 @@ File: size11.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 \c@table=\count283
 \abovecaptionskip=\skip49
 \belowcaptionskip=\skip50
-\bibindent=\dimen148
+\bibindent=\dimen149
 )
 (/usr/share/texmf-dist/tex/latex/base/inputenc.sty
 Package: inputenc 2024/02/08 v1.3d Input encoding file
@@ -50,7 +59,7 @@ LaTeX Encoding Info:    Ignoring declaration for text command \IJ (encoding ?)
 on input line 2086.
 LaTeX Encoding Info:    Ignoring declaration for text command \SS (encoding ?) 
 on input line 2111.
-\U@D=\dimen149
+\U@D=\dimen150
 \l@unhyphenated=\language3
 
 (/usr/share/texmf-dist/tex/generic/babel/txtbabel.def)
@@ -95,8 +104,8 @@ Package graphics Info: Driver file: pdftex.def on input line 106.
 (/usr/share/texmf-dist/tex/latex/graphics-def/pdftex.def
 File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
 ))
-\Gin@req@height=\dimen150
-\Gin@req@width=\dimen151
+\Gin@req@height=\dimen151
+\Gin@req@width=\dimen152
 )
 (/usr/share/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2025/07/09 v2.17z AMS math features
@@ -109,11 +118,11 @@ Package: amstext 2024/11/17 v2.01 AMS text
 (/usr/share/texmf-dist/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
 \@emptytoks=\toks20
-\ex@=\dimen152
+\ex@=\dimen153
 ))
 (/usr/share/texmf-dist/tex/latex/amsmath/amsbsy.sty
 Package: amsbsy 1999/11/29 v1.2d Bold Symbols
-\pmbraise@=\dimen153
+\pmbraise@=\dimen154
 )
 (/usr/share/texmf-dist/tex/latex/amsmath/amsopn.sty
 Package: amsopn 2022/04/08 v2.04 operator names
@@ -135,7 +144,7 @@ LaTeX Info: Redefining \big on input line 721.
 LaTeX Info: Redefining \Big on input line 722.
 LaTeX Info: Redefining \bigg on input line 723.
 LaTeX Info: Redefining \Bigg on input line 724.
-\big@size=\dimen154
+\big@size=\dimen155
 LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
 \macc@depth=\count291
@@ -153,12 +162,12 @@ LaTeX Info: Redefining \Relbar on input line 970.
 \column@=\count296
 \maxfields@=\count297
 \andhelp@=\toks22
-\eqnshift@=\dimen155
-\alignsep@=\dimen156
-\tagshift@=\dimen157
-\tagwidth@=\dimen158
-\totwidth@=\dimen159
-\lineht@=\dimen160
+\eqnshift@=\dimen156
+\alignsep@=\dimen157
+\tagshift@=\dimen158
+\tagwidth@=\dimen159
+\totwidth@=\dimen160
+\lineht@=\dimen161
 \@envbody=\toks23
 \multlinegap=\skip52
 \multlinetaggap=\skip53
@@ -182,8 +191,8 @@ LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (/usr/share/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
 (/usr/share/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.tex
 \pgfutil@everybye=\toks25
-\pgfutil@tempdima=\dimen161
-\pgfutil@tempdimb=\dimen162
+\pgfutil@tempdima=\dimen162
+\pgfutil@tempdimb=\dimen163
 )
 (/usr/share/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def
 \pgfutil@abb=\box55
@@ -207,16 +216,16 @@ Package: pgfsys 2025-08-29 v3.1.11a (3.1.11a)
 x
 \pgfkeys@tmptoks=\toks28
 ))
-\pgf@x=\dimen163
-\pgf@y=\dimen164
-\pgf@xa=\dimen165
-\pgf@ya=\dimen166
-\pgf@xb=\dimen167
-\pgf@yb=\dimen168
-\pgf@xc=\dimen169
-\pgf@yc=\dimen170
-\pgf@xd=\dimen171
-\pgf@yd=\dimen172
+\pgf@x=\dimen164
+\pgf@y=\dimen165
+\pgf@xa=\dimen166
+\pgf@ya=\dimen167
+\pgf@xb=\dimen168
+\pgf@yb=\dimen169
+\pgf@xc=\dimen170
+\pgf@yc=\dimen171
+\pgf@xd=\dimen172
+\pgf@yd=\dimen173
 \w@pgf@writea=\write3
 \r@pgf@reada=\read3
 \c@pgf@counta=\count298
@@ -271,7 +280,7 @@ Package: pgfcore 2025-08-29 v3.1.11a (3.1.11a)
 (/usr/share/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
 (/usr/share/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
 (/usr/share/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.tex
-\pgfmath@dimen=\dimen173
+\pgfmath@dimen=\dimen174
 \pgfmath@count=\count305
 \pgfmath@box=\box56
 \pgfmath@toks=\toks32
@@ -295,29 +304,29 @@ x) (/usr/share/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base.code.tex)
 (/usr/share/texmf-dist/tex/generic/pgf/math/pgfint.code.tex)
 (/usr/share/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.code.tex
 File: pgfcorepoints.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@picminx=\dimen174
-\pgf@picmaxx=\dimen175
-\pgf@picminy=\dimen176
-\pgf@picmaxy=\dimen177
-\pgf@pathminx=\dimen178
-\pgf@pathmaxx=\dimen179
-\pgf@pathminy=\dimen180
-\pgf@pathmaxy=\dimen181
-\pgf@xx=\dimen182
-\pgf@xy=\dimen183
-\pgf@yx=\dimen184
-\pgf@yy=\dimen185
-\pgf@zx=\dimen186
-\pgf@zy=\dimen187
+\pgf@picminx=\dimen175
+\pgf@picmaxx=\dimen176
+\pgf@picminy=\dimen177
+\pgf@picmaxy=\dimen178
+\pgf@pathminx=\dimen179
+\pgf@pathmaxx=\dimen180
+\pgf@pathminy=\dimen181
+\pgf@pathmaxy=\dimen182
+\pgf@xx=\dimen183
+\pgf@xy=\dimen184
+\pgf@yx=\dimen185
+\pgf@yy=\dimen186
+\pgf@zx=\dimen187
+\pgf@zy=\dimen188
 )
 (/usr/share/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathconstruct.code.tex
 File: pgfcorepathconstruct.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@path@lastx=\dimen188
-\pgf@path@lasty=\dimen189
+\pgf@path@lastx=\dimen189
+\pgf@path@lasty=\dimen190
 ) (/usr/share/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusage.code.tex
 File: pgfcorepathusage.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@shorten@end@additional=\dimen190
-\pgf@shorten@start@additional=\dimen191
+\pgf@shorten@end@additional=\dimen191
+\pgf@shorten@start@additional=\dimen192
 )
 (/usr/share/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.code.tex
 File: pgfcorescopes.code.tex 2025-08-29 v3.1.11a (3.1.11a)
@@ -328,14 +337,14 @@ File: pgfcorescopes.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 )
 (/usr/share/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicstate.code.tex
 File: pgfcoregraphicstate.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgflinewidth=\dimen192
+\pgflinewidth=\dimen193
 )
 (/usr/share/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransformations.code.t
 ex
 File: pgfcoretransformations.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@pt@x=\dimen193
-\pgf@pt@y=\dimen194
-\pgf@pt@temp=\dimen195
+\pgf@pt@x=\dimen194
+\pgf@pt@y=\dimen195
+\pgf@pt@temp=\dimen196
 ) (/usr/share/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.code.tex
 File: pgfcorequick.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 )
@@ -347,11 +356,11 @@ x
 File: pgfcorepathprocessing.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 ) (/usr/share/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.code.tex
 File: pgfcorearrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgfarrowsep=\dimen196
+\pgfarrowsep=\dimen197
 )
 (/usr/share/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.code.tex
 File: pgfcoreshade.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@max=\dimen197
+\pgf@max=\dimen198
 \pgf@sys@shading@range@num=\count308
 \pgf@shadingcount=\count309
 )
@@ -382,8 +391,8 @@ File: pgfmoduleplot.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 )
 (/usr/share/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty
 Package: pgfcomp-version-0-65 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@nodesepstart=\dimen198
-\pgf@nodesepend=\dimen199
+\pgf@nodesepstart=\dimen199
+\pgf@nodesepend=\dimen256
 )
 (/usr/share/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version-1-18.sty
 Package: pgfcomp-version-1-18 2025-08-29 v3.1.11a (3.1.11a)
@@ -395,8 +404,8 @@ Package: pgfcomp-version-1-18 2025-08-29 v3.1.11a (3.1.11a)
 (/usr/share/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex))
 (/usr/share/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
 Package: pgffor 2025-08-29 v3.1.11a (3.1.11a)
-\pgffor@iter=\dimen256
-\pgffor@skip=\dimen257
+\pgffor@iter=\dimen257
+\pgffor@skip=\dimen258
 \pgffor@stack=\toks35
 \pgffor@toks=\toks36
 ))
@@ -407,16 +416,16 @@ Package: tikz 2025-08-29 v3.1.11a (3.1.11a)
 x
 File: pgflibraryplothandlers.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 \pgf@plot@mark@count=\count310
-\pgfplotmarksize=\dimen258
+\pgfplotmarksize=\dimen259
 )
-\tikz@lastx=\dimen259
-\tikz@lasty=\dimen260
-\tikz@lastxsaved=\dimen261
-\tikz@lastysaved=\dimen262
-\tikz@lastmovetox=\dimen263
-\tikz@lastmovetoy=\dimen264
-\tikzleveldistance=\dimen265
-\tikzsiblingdistance=\dimen266
+\tikz@lastx=\dimen260
+\tikz@lasty=\dimen261
+\tikz@lastxsaved=\dimen262
+\tikz@lastysaved=\dimen263
+\tikz@lastmovetox=\dimen264
+\tikz@lastmovetoy=\dimen265
+\tikzleveldistance=\dimen266
+\tikzsiblingdistance=\dimen267
 \tikz@figbox=\box62
 \tikz@figbox@bg=\box63
 \tikz@tempbox=\box64
@@ -451,7 +460,7 @@ File: tikzlibraryarrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 
 (/usr/share/texmf-dist/tex/generic/pgf/libraries/pgflibraryarrows.code.tex
 File: pgflibraryarrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\arrowsize=\dimen267
+\arrowsize=\dimen268
 ))
 (/usr/share/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrary
 positioning.code.tex
@@ -518,7 +527,7 @@ Package: etoolbox 2025/10/02 v2.5m e-TeX tools for LaTeX (JAW)
 Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
 )
 )
-\@linkdim=\dimen268
+\@linkdim=\dimen269
 \Hy@linkcounter=\count321
 \Hy@pagecounter=\count322
 
@@ -551,7 +560,7 @@ Package hyperref Info: Bookmarks ON on input line 4468.
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 4807.
-\XeTeXLinkMargin=\dimen269
+\XeTeXLinkMargin=\dimen270
 
 (/usr/share/texmf-dist/tex/generic/bitset/bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
@@ -561,8 +570,8 @@ Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
 \Fld@menulength=\count325
-\Field@Width=\dimen270
-\Fld@charsize=\dimen271
+\Field@Width=\dimen271
+\Fld@charsize=\dimen272
 Package hyperref Info: Hyper figures OFF on input line 6084.
 Package hyperref Info: Link nesting OFF on input line 6089.
 Package hyperref Info: Hyper index ON on input line 6092.
@@ -592,6 +601,11 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip54
 )
+Package hyperref Info: Option `colorlinks' set `true' on input line 18.
+
+(/usr/share/texmf-dist/tex/latex/setspace/setspace.sty
+Package: setspace 2022/12/04 v6.7b set line spacing
+)
 (/usr/share/texmf-dist/tex/latex/geometry/geometry.sty
 Package: geometry 2020/01/02 v5.9 Page Geometry
 
@@ -601,14 +615,14 @@ Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
 \Gm@cnth=\count331
 \Gm@cntv=\count332
 \c@Gm@tempcnt=\count333
-\Gm@bindingoffset=\dimen272
-\Gm@wd@mp=\dimen273
-\Gm@odd@mp=\dimen274
-\Gm@even@mp=\dimen275
-\Gm@layoutwidth=\dimen276
-\Gm@layoutheight=\dimen277
-\Gm@layouthoffset=\dimen278
-\Gm@layoutvoffset=\dimen279
+\Gm@bindingoffset=\dimen273
+\Gm@wd@mp=\dimen274
+\Gm@odd@mp=\dimen275
+\Gm@even@mp=\dimen276
+\Gm@layoutwidth=\dimen277
+\Gm@layoutheight=\dimen278
+\Gm@layouthoffset=\dimen279
+\Gm@layoutvoffset=\dimen280
 \Gm@dimlist=\toks37
 )
 (/usr/share/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
@@ -635,14 +649,14 @@ Package: fancyhdr 2025/02/07 v5.2 Extensive control of page headers and footers
 \lst@gtempboxa=\box66
 \lst@token=\toks39
 \lst@length=\count335
-\lst@currlwidth=\dimen280
+\lst@currlwidth=\dimen281
 \lst@column=\count336
 \lst@pos=\count337
-\lst@lostspace=\dimen281
-\lst@width=\dimen282
+\lst@lostspace=\dimen282
+\lst@width=\dimen283
 \lst@newlines=\count338
 \lst@lineno=\count339
-\lst@maxwidth=\dimen283
+\lst@maxwidth=\dimen284
 
 (/usr/share/texmf-dist/tex/latex/listings/lstpatch.sty
 File: lstpatch.sty 2025/11/14 1.11b (Carsten Heinz)
@@ -669,14 +683,14 @@ Package: caption 2023/08/05 v3.6o Customizing captions (AR)
 
 (/usr/share/texmf-dist/tex/latex/caption/caption3.sty
 Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
-\caption@tempdima=\dimen284
-\captionmargin=\dimen285
-\caption@leftmargin=\dimen286
-\caption@rightmargin=\dimen287
-\caption@width=\dimen288
-\caption@indent=\dimen289
-\caption@parindent=\dimen290
-\caption@hangindent=\dimen291
+\caption@tempdima=\dimen285
+\captionmargin=\dimen286
+\caption@leftmargin=\dimen287
+\caption@rightmargin=\dimen288
+\caption@width=\dimen289
+\caption@indent=\dimen290
+\caption@parindent=\dimen291
+\caption@hangindent=\dimen292
 Package caption Info: Standard document class detected.
 )
 \c@caption@flags=\count342
@@ -686,23 +700,23 @@ Package caption Info: listings package is loaded.
 )
 (/usr/share/texmf-dist/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
-\heavyrulewidth=\dimen292
-\lightrulewidth=\dimen293
-\cmidrulewidth=\dimen294
-\belowrulesep=\dimen295
-\belowbottomsep=\dimen296
-\aboverulesep=\dimen297
-\abovetopsep=\dimen298
-\cmidrulesep=\dimen299
-\cmidrulekern=\dimen300
-\defaultaddspace=\dimen301
+\heavyrulewidth=\dimen293
+\lightrulewidth=\dimen294
+\cmidrulewidth=\dimen295
+\belowrulesep=\dimen296
+\belowbottomsep=\dimen297
+\aboverulesep=\dimen298
+\abovetopsep=\dimen299
+\cmidrulesep=\dimen300
+\cmidrulekern=\dimen301
+\defaultaddspace=\dimen302
 \@cmidla=\count344
 \@cmidlb=\count345
-\@aboverulesep=\dimen302
-\@belowrulesep=\dimen303
+\@aboverulesep=\dimen303
+\@belowrulesep=\dimen304
 \@thisruleclass=\count346
 \@lastruleclass=\count347
-\@thisrulewidth=\dimen304
+\@thisrulewidth=\dimen305
 )
 (/usr/share/texmf-dist/tex/latex/tools/longtable.sty
 Package: longtable 2025-10-13 v4.24 Multi-page Table package (DPC)
@@ -711,7 +725,7 @@ Package: longtable 2025-10-13 v4.24 Multi-page Table package (DPC)
 \LTpre=\skip71
 \LTpost=\skip72
 \LTchunksize=\count348
-\LTcapwidth=\dimen305
+\LTcapwidth=\dimen306
 \LT@head=\box68
 \LT@firsthead=\box69
 \LT@foot=\box70
@@ -733,9 +747,9 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 )
 (/usr/share/texmf-dist/tex/latex/tools/array.sty
 Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
-\col@sep=\dimen306
+\col@sep=\dimen307
 \ar@mcellbox=\box75
-\extrarowheight=\dimen307
+\extrarowheight=\dimen308
 \NC@list=\toks43
 \extratabsurround=\skip73
 \backup@length=\skip74
@@ -745,9 +759,9 @@ Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
 Package: subfigure 2002/03/15 v2.1.5 subfigure package
 \subfigtopskip=\skip75
 \subfigcapskip=\skip76
-\subfigcaptopadj=\dimen308
+\subfigcaptopadj=\dimen309
 \subfigbottomskip=\skip77
-\subfigcapmargin=\dimen309
+\subfigcapmargin=\dimen310
 \subfiglabelskip=\skip78
 \c@subfigure=\count354
 \c@lofdepth=\count355
@@ -766,28 +780,28 @@ Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
 \multirow@colwidth=\skip81
 \multirow@cntb=\count358
 \multirow@dima=\skip82
-\bigstrutjot=\dimen310
+\bigstrutjot=\dimen311
 )
 (/usr/share/texmf-dist/tex/latex/tools/multicol.sty
 Package: multicol 2025/10/21 v2.0b multicolumn formatting (FMi)
 \c@tracingmulticols=\count359
 \mult@box=\box77
-\multicol@leftmargin=\dimen311
+\multicol@leftmargin=\dimen312
 \c@unbalance=\count360
 \c@collectmore=\count361
 \doublecol@number=\count362
 \multicoltolerance=\count363
 \multicolpretolerance=\count364
-\full@width=\dimen312
-\page@free=\dimen313
-\premulticols=\dimen314
-\postmulticols=\dimen315
+\full@width=\dimen313
+\page@free=\dimen314
+\premulticols=\dimen315
+\postmulticols=\dimen316
 \multicolsep=\skip83
 \multicolbaselineskip=\skip84
 \partial@page=\box78
 \last@line=\box79
 \mc@boxedresult=\box80
-\maxbalancingoverflow=\dimen316
+\maxbalancingoverflow=\dimen317
 \mult@rightbox=\box81
 \mult@grightbox=\box82
 \mult@firstbox=\box83
@@ -831,9 +845,9 @@ Package: multicol 2025/10/21 v2.0b multicolumn formatting (FMi)
 \c@minrows=\count365
 \c@columnbadness=\count366
 \c@finalcolumnbadness=\count367
-\last@try=\dimen317
-\multicolovershoot=\dimen318
-\multicolundershoot=\dimen319
+\last@try=\dimen318
+\multicolovershoot=\dimen319
+\multicolundershoot=\dimen320
 \mult@nat@firstbox=\box121
 \colbreak@box=\box122
 \mc@col@check@num=\count368
@@ -888,8 +902,8 @@ Package: datatool-base 2025/12/04 v3.4.3 (NLCT)
 \l__datatool_tmpd_int=\count374
 \l__datatool_count_int=\count375
 \l__datatool_tmp_datatype_int=\count376
-\l__datatool_tmpa_dim=\dimen320
-\l__datatool_tmpb_dim=\dimen321
+\l__datatool_tmpa_dim=\dimen321
+\l__datatool_tmpb_dim=\dimen322
 
 (/usr/share/texmf-dist/tex/latex/datatool/datatool-l3fp.def
 File: datatool-l3fp.def 2025/12/04 v3.4.3 (NLCT)
@@ -931,8 +945,8 @@ File: datatool-english-utf8.ldf 2025/03/12 v1.1 (NLCT)
 \gls@level=\count396
 \@gls@tmpb=\toks50
 \gls@tmplen=\skip86
-\l__glossaries_tmpa_dim=\dimen322
-\l__glossaries_tmpb_dim=\dimen323
+\l__glossaries_tmpa_dim=\dimen323
+\l__glossaries_tmpb_dim=\dimen324
 \glskeylisttok=\toks51
 \glslabeltok=\toks52
 \glsshorttok=\toks53
@@ -956,33 +970,33 @@ Package: glossary-super 2025/11/09 v4.9 (NLCT)
 (/usr/share/texmf-dist/tex/latex/supertabular/supertabular.sty
 Package: supertabular 2025/06/26 v4.2d the supertabular environment
 \c@tracingst=\count397
-\ST@wd=\dimen324
+\ST@wd=\dimen325
 \ST@rightskip=\skip90
 \ST@leftskip=\skip91
 \ST@parfillskip=\skip92
-\ST@pageleft=\dimen325
-\ST@headht=\dimen326
-\ST@tailht=\dimen327
-\ST@pagesofar=\dimen328
-\ST@pboxht=\dimen329
-\ST@rowht=\dimen330
-\ST@prevht=\dimen331
-\ST@toadd=\dimen332
-\ST@dimen=\dimen333
+\ST@pageleft=\dimen326
+\ST@headht=\dimen327
+\ST@tailht=\dimen328
+\ST@pagesofar=\dimen329
+\ST@pboxht=\dimen330
+\ST@rowht=\dimen331
+\ST@prevht=\dimen332
+\ST@toadd=\dimen333
+\ST@dimen=\dimen334
 \ST@pbox=\box124
 ))
 (/usr/share/texmf-dist/tex/latex/glossaries/styles/glossary-tree.sty
 Package: glossary-tree 2025/11/09 v4.9 (NLCT)
 \l__glossaries_tree_max_known_level_int=\count398
-\l__glossaries_tree_offset_dim=\dimen334
-\l__glossaries_tree_namewidth_dim=\dimen335
-\l__glossaries_tree_symbolwidth_dim=\dimen336
-\l__glossaries_tree_prenamesym_width_dim=\dimen337
-\l__glossaries_tree_presubnamesym_width_dim=\dimen338
-\l__glossaries_tree_namewidth_padding_dim=\dimen339
-\l__glossaries_tree_symbolwidth_padding_dim=\dimen340
-\l__glossaries_tree_namesymbolwidth_dim=\dimen341
-\l__glossaries_tree_namesymbolwidth_padding_dim=\dimen342
+\l__glossaries_tree_offset_dim=\dimen335
+\l__glossaries_tree_namewidth_dim=\dimen336
+\l__glossaries_tree_symbolwidth_dim=\dimen337
+\l__glossaries_tree_prenamesym_width_dim=\dimen338
+\l__glossaries_tree_presubnamesym_width_dim=\dimen339
+\l__glossaries_tree_namewidth_padding_dim=\dimen340
+\l__glossaries_tree_symbolwidth_padding_dim=\dimen341
+\l__glossaries_tree_namesymbolwidth_dim=\dimen342
+\l__glossaries_tree_namesymbolwidth_padding_dim=\dimen343
 \l__glossaries_tree_level_int=\count399
 \glstreeindent=\skip93
 ))
@@ -990,11 +1004,11 @@ Package: glossary-tree 2025/11/09 v4.9 (NLCT)
 \glo@main@file=\write5
 \openout5 = `main.glo'.
 
-Package glossaries Info: Writing glossary file main.glo on input line 39.
+Package glossaries Info: Writing glossary file main.glo on input line 50.
 \glo@acronym@file=\write6
 \openout6 = `main.acn'.
 
-Package glossaries Info: Writing glossary file main.acn on input line 39.
+Package glossaries Info: Writing glossary file main.acn on input line 50.
 
 (/usr/share/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
@@ -1002,35 +1016,35 @@ File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 ) (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 59.
-LaTeX Font Info:    ... okay on input line 59.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
 
 (/usr/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count401
-\scratchdimen=\dimen343
+\scratchdimen=\dimen344
 \scratchbox=\box125
 \nofMPsegments=\count402
 \nofMParguments=\count403
 \everyMPshowfont=\toks55
 \MPscratchCnt=\count404
-\MPscratchDim=\dimen344
+\MPscratchDim=\dimen345
 \MPnumerator=\count405
 \makeMPintoPDFobject=\count406
 \everyMPtoPDFconversion=\toks56
@@ -1043,7 +1057,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring OFF on input line 59.
+Package hyperref Info: Link coloring ON on input line 70.
  (./main.out)
 (./main.out)
 \@outlinefile=\write7
@@ -1066,15 +1080,15 @@ Package hyperref Info: Link coloring OFF on input line 59.
 * \textheight=700.50687pt
 * \oddsidemargin=0.0pt
 * \evensidemargin=0.0pt
-* \topmargin=-37.0pt
-* \headheight=12.0pt
+* \topmargin=-39.0pt
+* \headheight=18.0pt
 * \headsep=25.0pt
-* \topskip=11.0pt
+* \topskip=14.0pt
 * \footskip=30.0pt
-* \marginparwidth=50.0pt
+* \marginparwidth=15.0pt
 * \marginparsep=10.0pt
 * \columnsep=10.0pt
-* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \skip\footins=12.0pt plus 4.0pt minus 2.0pt
 * \hoffset=0.0pt
 * \voffset=0.0pt
 * \mag=1000
@@ -1097,15 +1111,15 @@ Package caption Info: End \AtBeginDocument code.
 <images/usth.png, id=226, 722.7pt x 310.761pt>
 File: images/usth.png Graphic file (type png)
 <use images/usth.png>
-Package pdftex.def Info: images/usth.png  used on input line 74.
+Package pdftex.def Info: images/usth.png  used on input line 85.
 (pdftex.def)             Requested size: 203.83417pt x 87.64789pt.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 86.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 97.
 
 
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 86.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 97.
 
 
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -1115,28 +1129,28 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 \openout4 = `main.ist'.
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf-dist/fonts
-/enc/dvips/cm-super/cm-super-t1.enc} <./images/usth.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 103--108
+/enc/dvips/cm-super/cm-super-t1.enc} <./images/usth.png>] [2]
+Underfull \hbox (badness 10000) in paragraph at lines 114--119
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 103--108
+Underfull \hbox (badness 10000) in paragraph at lines 114--119
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 103--108
+Underfull \hbox (badness 10000) in paragraph at lines 114--119
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 103--108
+Underfull \hbox (badness 10000) in paragraph at lines 114--119
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 103--108
+Underfull \hbox (badness 10000) in paragraph at lines 114--119
 
  []
 
@@ -1145,466 +1159,251 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.113 \clearpage
+l.124 \clearpage
                  [1
 
-] (./main.toc
-Overfull \hbox (4.92085pt too wide) in paragraph at lines 29--29
- [][] [][]\T1/cmr/m/n/10.95 Binarized Kolmogorov-Arnold Net-works Con-vo-lu-tio
-nal layer (BiKA_Conv2d)[] [][]  
+] (./main.toc [1
+
+
+]
+Overfull \hbox (1.04803pt too wide) in paragraph at lines 29--29
+ [][] [][][]\T1/cmr/m/n/14.4 Binarized Kolmogorov-Arnold Net-works Con-vo-lu-ti
+onal 
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[1
-
-
-])
+[2])
 \tf@toc=\write8
 \openout8 = `main.toc'.
 
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[2] (./main.lof)
+ [3] (./main.lof)
 \tf@lof=\write9
 \openout9 = `main.lof'.
 
+ [4
 
+] (./main.lot
+Overfull \hbox (42.31339pt too wide) in paragraph at lines 7--7
+ [][] [][][]\T1/cmr/m/n/14.4 Segmentation ac-cu-racy com-par-i-son across ar-ch
+i-tec-tures on BDD100K 
+ []
 
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[3
-
-] (./main.lot)
+)
 \tf@lot=\write10
 \openout10 = `main.lot'.
 
- (./main.acr)
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[4
+ (./main.acr) [5
 
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 143--144
+Underfull \hbox (badness 10000) in paragraph at lines 154--155
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--151
+Underfull \hbox (badness 10000) in paragraph at lines 156--162
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--151
+Underfull \hbox (badness 10000) in paragraph at lines 156--162
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--151
+Underfull \hbox (badness 10000) in paragraph at lines 156--162
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--151
+Underfull \hbox (badness 10000) in paragraph at lines 156--162
 
  []
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[5
-
-]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [6
 
+] [7
+
 ]
+Overfull \hbox (7.71468pt too wide) in paragraph at lines 177--178
+\T1/cmr/m/n/14.4 through-put with two dis-tinct prob-lems: Seg-ment Ev-ery-thin
+g (20 classes)
+ []
 
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+[8
 
-[7
-
-{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
+{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}] [9]
 Chapter 1.
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.190 
+l.194 
        [1
 
 
 ]
-Overfull \hbox (0.77577pt too wide) in paragraph at lines 198--199
-[]\T1/cmr/m/n/10.95 Modern seg-men-ta-tion ar-chi-tec-tures have in-creas-ingly
- adopt at-ten-tion mech-a-nisms. Seg-Former [[]]
+pdfTeX warning (ext4): destination with the same identifier (name{page.2}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.203 
+       [2] [3]
+Overfull \hbox (0.5631pt too wide) in paragraph at lines 224--225
+[]\T1/cmr/m/n/14.4 Adapt the U-KAN ar-chi-tec-ture for road seg-men-ta-tion on 
+the BDD100K
  []
 
-
-Overfull \hbox (6.11568pt too wide) in paragraph at lines 204--205
-\T1/cmr/m/n/10.95 mul-ti-ple ef-fi-cient KAN vari-ants, and (2) propos-ing BiKA
-, which com-bines the KAN per-connection
- []
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[2]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[3]
+[4] [5]
 Chapter 2.
+[6
 
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[4
-
-]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[5]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[6]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[7]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[8]
-Overfull \hbox (42.49983pt too wide) in paragraph at lines 469--469
-[]\T1/cmr/bx/n/12 Binarized Kolmogorov-Arnold Net-works Con-vo-lu-tional layer 
-(BiKA_Conv2d) 
- []
-
-
-Overfull \hbox (3.28964pt too wide) in paragraph at lines 471--472
-\T1/cmr/m/n/10.95 The foun-da-tional build-ing block of the Bi-na-rized Kolmogo
-rov-Arnold Net-work is the \T1/cmtt/m/n/10.95 BiKA_Conv2d
- []
-
-
-Overfull \hbox (6.6038pt too wide) in paragraph at lines 471--472
-\T1/cmr/m/n/10.95 layer. In a con-ven-tional 2D con-vo-lu-tion, the learn-able 
-weight ten-sor has shape $\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 C[]; C[]; K[]
-; K[]\OT1/cmr/m/n/10.95 )$
- []
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[9]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[10]
-<images/bdd100k_samples/img1.jpg, id=535, 1284.8pt x 722.7pt>
+] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17]
+<images/bdd100k_samples/img1.jpg, id=584, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/img1.jpg Graphic file (type jpg)
 <use images/bdd100k_samples/img1.jpg>
-Package pdftex.def Info: images/bdd100k_samples/img1.jpg  used on input line 52
-5.
+Package pdftex.def Info: images/bdd100k_samples/img1.jpg  used on input line 53
+8.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/img2.jpg, id=536, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/img2.jpg, id=585, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/img2.jpg Graphic file (type jpg)
 <use images/bdd100k_samples/img2.jpg>
-Package pdftex.def Info: images/bdd100k_samples/img2.jpg  used on input line 52
-6.
+Package pdftex.def Info: images/bdd100k_samples/img2.jpg  used on input line 53
+9.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/img3.jpg, id=537, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/img3.jpg, id=586, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/img3.jpg Graphic file (type jpg)
 <use images/bdd100k_samples/img3.jpg>
-Package pdftex.def Info: images/bdd100k_samples/img3.jpg  used on input line 52
-7.
+Package pdftex.def Info: images/bdd100k_samples/img3.jpg  used on input line 54
+0.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/mask1.png, id=538, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/mask1.png, id=587, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/mask1.png Graphic file (type png)
 <use images/bdd100k_samples/mask1.png>
 Package pdftex.def Info: images/bdd100k_samples/mask1.png  used on input line 5
-29.
+42.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/mask2.png, id=539, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/mask2.png, id=588, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/mask2.png Graphic file (type png)
 <use images/bdd100k_samples/mask2.png>
 Package pdftex.def Info: images/bdd100k_samples/mask2.png  used on input line 5
-30.
+43.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/mask3.png, id=540, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/mask3.png, id=589, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/mask3.png Graphic file (type png)
 <use images/bdd100k_samples/mask3.png>
 Package pdftex.def Info: images/bdd100k_samples/mask3.png  used on input line 5
-31.
+44.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
 
-Overfull \hbox (4.28894pt too wide) in paragraph at lines 524--534
+Overfull \hbox (4.28894pt too wide) in paragraph at lines 537--547
  [][] 
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[11 <./images/bdd100k_samples/img1.jpg> <./images/bdd100k_samples/img2.jpg> <./
+[18 <./images/bdd100k_samples/img1.jpg> <./images/bdd100k_samples/img2.jpg> <./
 images/bdd100k_samples/img3.jpg> <./images/bdd100k_samples/mask1.png> <./images
 /bdd100k_samples/mask2.png (PNG copy)> <./images/bdd100k_samples/mask3.png>]
 Chapter 3.
 
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[12
-
-]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[13]
-Overfull \hbox (9.45735pt too wide) in paragraph at lines 643--645
-\T1/cmr/m/n/10.95 The eval-u-a-tions from all $\OML/cmm/m/it/10.95 G$ \T1/cmr/m
-/n/10.95 knot points across $\OML/cmm/m/it/10.95 d[]$ \T1/cmr/m/n/10.95 di-men-
-sions are con-cate-nated into $[] [] \OMS/cmsy/m/n/10.95 2
+Overfull \hbox (10.27014pt too wide) in paragraph at lines 557--557
+[]\T1/cmr/bx/n/20.74 UKAN: U-Shaped KAN Seg-men-ta-tion Net-
  []
 
 
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+Overfull \hbox (33.03995pt too wide) in paragraph at lines 559--560
+\T1/cmr/m/n/14.4 UKAN adapts the U-Net ar-chi-tec-ture by re-plac-ing the stan-
+dard MLP/Transformer
+ []
 
-[14]
+[19
 
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+] [20] [21]
+Overfull \hbox (0.78918pt too wide) in paragraph at lines 650--651
+\T1/cmr/m/n/14.4 ties of the in-di-vid-ual ac-ti-va-tion func-tions, this sec-t
+ion de-tails how HardSwish-
+ []
 
-[15]
-LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 729.
+[22] [23] [24]
+LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <14.4> not available
+(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 742.
 
-Overfull \hbox (30.97705pt too wide) in paragraph at lines 743--754
+Overfull \hbox (3.26787pt too wide) in paragraph at lines 745--747
+\T1/cmr/m/n/14.4 the pa-ram-e-ter ca-pac-ity ($\OMS/cmsy/m/n/14.4 ^^X$\T1/cmr/m
+/n/14.4 4.1M pa-ram-e-ters) and rep-re-sen-ta-tional band-
+ []
+
+[25]
+Overfull \hbox (109.51938pt too wide) in paragraph at lines 756--767
+ [][] 
+ []
+
+[26]
+Overfull \hbox (31.89725pt too wide) in paragraph at lines 780--781
+\T1/cmr/m/n/14.4 For both chan-nel con-fig-u-ra-tions, the fi-nal seg-men-ta-ti
+on out-put layer (\T1/cmtt/m/n/14.4 self.final\T1/cmr/m/n/14.4 )
+ []
+
+[27]
+Overfull \hbox (92.32675pt too wide) in paragraph at lines 791--793
+\T1/cmr/m/n/14.4 mem-ory con-sump-tion dur-ing train-ing, ac-ti-va-tion check-p
+oint-ing (\T1/cmtt/m/n/14.4 torch.utils.checkpoint\T1/cmr/m/n/14.4 )
+ []
+
+
+Overfull \hbox (17.06682pt too wide) in paragraph at lines 803--804
+\T1/cmr/m/n/14.4 bit-packed into sin-gle 32-bit un-signed in-te-gers (\T1/cmtt/
+m/n/14.4 unsigned int packed_weight\T1/cmr/m/n/14.4 ,
+ []
+
+[28] [29]
+Overfull \hbox (9.71861pt too wide) in paragraph at lines 825--826
+\T1/cmr/m/n/14.4 ($[]$), weights ($[]$), and per-connection bi-ases ($[]$) us-i
+ng the Straight-Through
+ []
+
+[30]
+Overfull \hbox (95.16217pt too wide) in paragraph at lines 841--842
+[]\T1/cmr/m/n/14.4 ImageNet-standard nor-mal-i-sa-tion ($\OML/cmm/m/it/14.4 ^^V
+ \OT1/cmr/m/n/14.4 = [0\OML/cmm/m/it/14.4 :\OT1/cmr/m/n/14.4 485\OML/cmm/m/it/1
+4.4 ; \OT1/cmr/m/n/14.4 0\OML/cmm/m/it/14.4 :\OT1/cmr/m/n/14.4 456\OML/cmm/m/it
+/14.4 ; \OT1/cmr/m/n/14.4 0\OML/cmm/m/it/14.4 :\OT1/cmr/m/n/14.4 406]$\T1/cmr/m
+/n/14.4 , $\OML/cmm/m/it/14.4 ^^[ \OT1/cmr/m/n/14.4 = [0\OML/cmm/m/it/14.4 :\OT
+1/cmr/m/n/14.4 229\OML/cmm/m/it/14.4 ; \OT1/cmr/m/n/14.4 0\OML/cmm/m/it/14.4 :\
+OT1/cmr/m/n/14.4 224\OML/cmm/m/it/14.4 ; \OT1/cmr/m/n/14.4 0\OML/cmm/m/it/14.4 
+:\OT1/cmr/m/n/14.4 225]$\T1/cmr/m/n/14.4 ). 
+ []
+
+[31]
+Chapter 4.
+[32
+
+] [33]
+Overfull \hbox (30.74524pt too wide) in paragraph at lines 902--915
  [][] 
  []
 
 
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[16]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[17]
-Overfull \hbox (9.25595pt too wide) in paragraph at lines 793--794
-\T1/cmr/m/n/10.95 Because CUDA warp ex-e-cu-tion pro-cesses 32 threads con-cur-
-rently and hard-ware pop-count (\T1/cmtt/m/n/10.95 __popc\T1/cmr/m/n/10.95 )
+Overfull \hbox (1.30371pt too wide) in paragraph at lines 929--939
+ [][] 
  []
 
-
-Overfull \hbox (11.54872pt too wide) in paragraph at lines 799--800
-\T1/cmr/m/n/10.95 The for-ward CUDA ker-nel (\T1/cmtt/m/n/10.95 bika_conv2d_for
-ward_kernel\T1/cmr/m/n/10.95 ) em-ploys 2D out-put tiling ($\OML/cmm/m/it/10.95
- TILE[]O \OT1/cmr/m/n/10.95 =
- []
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[18]
-Overfull \hbox (57.03946pt too wide) in paragraph at lines 812--813
-\T1/cmr/m/n/10.95 Custom back-ward CUDA ker-nels (\T1/cmtt/m/n/10.95 bika_conv2
-d_backward_wb_kernel \T1/cmr/m/n/10.95 and \T1/cmtt/m/n/10.95 bika_linear_backw
-ard_kernel\T1/cmr/m/n/10.95 )
- []
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[19]
-Chapter 4.
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[20
-
-]
+[34]
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[21]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[22]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[23]
+[35] [36] [37]
 Chapter 5.
+[38
 
-Overfull \hbox (4.70691pt too wide) in paragraph at lines 1005--1006
-\T1/cmr/m/n/10.95 achiev-ing ex-treme com-pres-sion ($\OMS/cmsy/m/n/10.95 ^^X$\
-T1/cmr/m/n/10.95 32$\OMS/cmsy/m/n/10.95 ^^B$\T1/cmr/m/n/10.95 ) and com-pu-ta-t
-ional ac-cel-er-a-tion through XNOR/popcount
+] [39] (./main.bbl [40
+
+]
+Underfull \hbox (badness 1584) in paragraph at lines 80--82
+\T1/cmr/m/n/14.4 RSWAf ba-sis func-tions.'' [][]$\T1/cmtt/m/n/14.4 https : / / 
+github . com / AthanasiosDelis /
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[24
-
-] (./main.bbl
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[25
-
-])
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[26] (./main.aux)
+[41] [42]) [43] (./main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
@@ -1613,43 +1412,43 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: DE1453805935CA38290E2CEE48A2C0B7;9620.
  ) 
 Here is how much of TeX's memory you used:
- 34919 strings out of 469515
- 675933 string characters out of 5470807
- 1193845 words of memory out of 5000000
- 62854 multiletter control sequences out of 15000+600000
- 651833 words of font info for 98 fonts, out of 8000000 for 9000
+ 35020 strings out of 469515
+ 679475 string characters out of 5470807
+ 1195392 words of memory out of 5000000
+ 62926 multiletter control sequences out of 15000+600000
+ 653676 words of font info for 105 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  84i,12n,104p,2489b,1036s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/
-texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texmf-dist/font
-s/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mmi6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/
-share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/p
-ublic/amsfonts/cm/cmr5.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmr6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr
-/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmsy6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmsy8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10
-.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/shar
-e/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/share/texmf-dist/fo
-nts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf-dist/fonts/type1/publi
-c/cm-super/sfbx1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx
-2074.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb></usr/
-share/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb></usr/share/texmf-dis
-t/fonts/type1/public/cm-super/sfrm0700.pfb></usr/share/texmf-dist/fonts/type1/p
-ublic/cm-super/sfrm0800.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/
-sfrm1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></
-usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/share/texmf
--dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/share/texmf-dist/fonts/typ
-e1/public/cm-super/sfti1095.pfb></usr/share/texmf-dist/fonts/type1/public/cm-su
-per/sftt1095.pfb>
-Output written on main.pdf (35 pages, 934747 bytes).
+texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmmi12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></us
+r/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></
+usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmsy8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/symbols/msb
+m10.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/s
+hare/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf-dist
+/fonts/type1/public/cm-super/sfbx1728.pfb></usr/share/texmf-dist/fonts/type1/pu
+blic/cm-super/sfbx2074.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/s
+fbx2986.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx3583.pfb></u
+sr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0700.pfb></usr/share/texmf-
+dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/share/texmf-dist/fonts/type
+1/public/cm-super/sfrm1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-sup
+er/sfrm1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb
+></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm2074.pfb></usr/share/te
+xmf-dist/fonts/type1/public/cm-super/sfti1200.pfb></usr/share/texmf-dist/fonts/
+type1/public/cm-super/sfti1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm
+-super/sftt1440.pfb>
+Output written on main.pdf (55 pages, 928403 bytes).
 PDF statistics:
- 837 PDF objects out of 1000 (max. 8388607)
- 716 compressed objects within 8 object streams
- 189 named destinations out of 1000 (max. 500000)
+ 931 PDF objects out of 1000 (max. 8388607)
+ 790 compressed objects within 8 object streams
+ 208 named destinations out of 1000 (max. 500000)
  488 words of extra memory for PDF output out of 10000 (max. 10000000)
 
