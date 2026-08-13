@@ -1,80 +1,74 @@
 \babel@toc {english}{}\relax 
-\contentsline {chapter}{Content}{IV}{chapter*.1}%
-\contentsline {chapter}{List of Figures}{V}{chapter*.2}%
-\contentsline {chapter}{List of Table}{VI}{chapter*.3}%
-\contentsline {chapter}{List of Abbreviations}{VI}{chapter*.3}%
-\contentsline {chapter}{Declaration}{VII}{chapter*.4}%
-\contentsline {chapter}{Acknowledgements}{VIII}{chapter*.5}%
-\contentsline {chapter}{Abstract}{IX}{chapter*.6}%
+\contentsline {chapter}{Content}{III}{chapter*.1}%
+\contentsline {chapter}{List of Figures}{IV}{chapter*.2}%
+\contentsline {chapter}{List of Table}{V}{chapter*.3}%
+\contentsline {chapter}{List of Abbreviations}{V}{chapter*.3}%
+\contentsline {chapter}{Declaration}{VI}{chapter*.4}%
+\contentsline {chapter}{Acknowledgements}{VII}{chapter*.5}%
+\contentsline {chapter}{Abstract}{VIII}{chapter*.6}%
 \contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
 \contentsline {section}{\numberline {1.1}Context and motivation}{1}{section.1.1}%
 \contentsline {subsection}{\numberline {1.1.1}Context}{1}{subsection.1.1.1}%
 \contentsline {section}{\numberline {1.2}Related Work}{3}{section.1.2}%
-\contentsline {subsection}{\numberline {1.2.1}Foundational Convolutional Encoder-Decoder Architectures}{3}{subsection.1.2.1}%
-\contentsline {subsection}{\numberline {1.2.2}Context Aggregation \& Multi-Scale Networks}{5}{subsection.1.2.2}%
-\contentsline {subsection}{\numberline {1.2.3}Real-Time \& Lightweight Road Segmentation Models}{6}{subsection.1.2.3}%
-\contentsline {subsection}{\numberline {1.2.4}Vision Transformers \& Attention-Based Architectures}{7}{subsection.1.2.4}%
-\contentsline {subsection}{\numberline {1.2.5}Kolmogorov-Arnold Networks (KANs) in Segmentation}{8}{subsection.1.2.5}%
-\contentsline {subsection}{\numberline {1.2.6}Binary Neural Networks (BNNs) \& Model Compression}{10}{subsection.1.2.6}%
-\contentsline {subsection}{\numberline {1.2.7}Problem Statement}{12}{subsection.1.2.7}%
-\contentsline {subsection}{\numberline {1.2.8}Motivation}{13}{subsection.1.2.8}%
-\contentsline {section}{\numberline {1.3}Thesis Objective}{13}{section.1.3}%
-\contentsline {section}{\numberline {1.4}Thesis Structure}{13}{section.1.4}%
-\contentsline {chapter}{\numberline {2}Background}{15}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Kolmogorov-Arnold Networks}{15}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}Original KAN Implementation with B-Splines}{17}{subsection.2.1.1}%
-\contentsline {subsection}{\numberline {2.1.2}Optimized KAN networks}{17}{subsection.2.1.2}%
-\contentsline {section}{\numberline {2.2}U-Net Segmentation Architecture}{21}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Binary Neural Networks}{22}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Straight-Through Estimator (STE)}{23}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Key BNN Techniques}{23}{subsection.2.3.2}%
-\contentsline {subsubsection}{Bi-Real Net Skip Connections}{23}{section*.9}%
-\contentsline {subsubsection}{RPReLU (ReActNet)}{23}{section*.10}%
-\contentsline {subsubsection}{Libra-PB (Balanced Binarization)}{24}{section*.11}%
-\contentsline {subsubsection}{AdaBin (Adaptive Binary Scaling)}{24}{section*.12}%
-\contentsline {subsection}{\numberline {2.3.3}Binarized Kolmogorov-Arnold Networks Convolutional layer (BiKA\_Conv2d)}{24}{subsection.2.3.3}%
-\contentsline {section}{\numberline {2.4}Loss Functions for Segmentation}{25}{section.2.4}%
-\contentsline {subsection}{\numberline {2.4.1}Cross-Entropy Loss}{25}{subsection.2.4.1}%
-\contentsline {subsection}{\numberline {2.4.2}Dice Loss}{26}{subsection.2.4.2}%
-\contentsline {subsection}{\numberline {2.4.3}Combined Cross-Entropy Dice Loss}{26}{subsection.2.4.3}%
-\contentsline {section}{\numberline {2.5}BDD100K Dataset}{26}{section.2.5}%
-\contentsline {chapter}{\numberline {3}Methodology}{28}{chapter.3}%
-\contentsline {section}{\numberline {3.1}UKAN: U-Shaped KAN Segmentation Network}{28}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Overall Architecture}{28}{subsection.3.1.1}%
-\contentsline {subsection}{\numberline {3.1.2}KAN Encoder and Bottleneck}{30}{subsection.3.1.2}%
-\contentsline {subsection}{\numberline {3.1.3}KANBlock Design}{30}{subsection.3.1.3}%
-\contentsline {subsection}{\numberline {3.1.4}KAN Variant Layer Integration in UKAN}{31}{subsection.3.1.4}%
-\contentsline {subsubsection}{HardSwish-KAN Linear Layer}{31}{section*.15}%
-\contentsline {subsubsection}{TeLU-KAN Linear Layer}{31}{section*.16}%
-\contentsline {subsubsection}{PWLO-KAN Linear Layer}{32}{section*.17}%
-\contentsline {subsection}{\numberline {3.1.5}Decoder}{32}{subsection.3.1.5}%
-\contentsline {section}{\numberline {3.2}BiKASegNet: Binarized KAN Segmentation Network}{33}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Adapting BiKA Layers for Semantic Road Segmentation}{34}{subsection.3.2.1}%
-\contentsline {subsubsection}{Overall Architectural Adaptation \& Channel Width Scaling}{34}{section*.19}%
-\contentsline {subsubsection}{Full-Precision Input Stem (\texttt {full\_precision\_stem})}{35}{section*.21}%
-\contentsline {subsubsection}{ReActNet-Inspired RPReLU Activations}{35}{section*.22}%
-\contentsline {subsubsection}{Full-Precision Classification Head (\texttt {full\_precision\_head})}{36}{section*.23}%
-\contentsline {subsubsection}{Feature Concatenation in U-Net Decoder}{36}{section*.24}%
-\contentsline {subsection}{\numberline {3.2.2}BiKAConvBlock Design}{37}{subsection.3.2.2}%
-\contentsline {section}{\numberline {3.3}Optimisation and Training Strategies}{37}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Custom CUDA Kernel Optimisations for BiKA}{37}{subsection.3.3.1}%
-\contentsline {subsubsection}{Bit-Packing \& 32-bit Word Quantization}{38}{section*.25}%
-\contentsline {subsubsection}{32-Bit Word Alignment and Channel-32 Hardware Optimisation}{38}{section*.26}%
-\contentsline {subsubsection}{Half-Precision (FP16) Shared Memory Bias Caching}{38}{section*.27}%
-\contentsline {subsubsection}{Output-Channel Tiling \& Thread-Level Register Reuse}{39}{section*.28}%
-\contentsline {subsubsection}{Bitwise XNOR and Popcount Convolution Execution}{39}{section*.29}%
-\contentsline {subsubsection}{STE Hard-Tanh Backpropagation Kernels}{39}{section*.30}%
-\contentsline {subsection}{\numberline {3.3.2}Data Augmentation}{40}{subsection.3.3.2}%
-\contentsline {chapter}{\numberline {4}Experimental Evaluation and Results}{41}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Experimental Setup}{41}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Segmentation Quality Benchmarks}{43}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Model Efficiency Analysis}{44}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Inference Throughput}{44}{subsection.4.3.1}%
-\contentsline {section}{\numberline {4.4}Ablation Studies}{44}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Effect of KAN Variant Selection}{44}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}Effect of Knowledge Distillation}{45}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Effect of BNN Training Techniques}{45}{subsection.4.4.3}%
-\contentsline {chapter}{\numberline {5}Conclusions and Future Works}{47}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Conclusions}{47}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Future Works}{48}{section.5.2}%
-\contentsline {chapter}{Bibliography}{49}{section.5.2}%
+\contentsline {subsection}{\numberline {1.2.1}Problem Statement}{7}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Motivation}{8}{subsection.1.2.2}%
+\contentsline {section}{\numberline {1.3}Thesis Objective}{8}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Thesis Structure}{8}{section.1.4}%
+\contentsline {chapter}{\numberline {2}Background}{10}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Kolmogorov-Arnold Networks}{10}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Original KAN Implementation with B-Splines}{12}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Optimized KAN networks}{12}{subsection.2.1.2}%
+\contentsline {section}{\numberline {2.2}U-Net Segmentation Architecture}{16}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Binary Neural Networks}{17}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Straight-Through Estimator (STE)}{18}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Key BNN Techniques}{18}{subsection.2.3.2}%
+\contentsline {subsubsection}{Bi-Real Net Skip Connections}{18}{section*.9}%
+\contentsline {subsubsection}{RPReLU (ReActNet)}{18}{section*.10}%
+\contentsline {subsubsection}{Libra-PB (Balanced Binarization)}{19}{section*.11}%
+\contentsline {subsubsection}{AdaBin (Adaptive Binary Scaling)}{19}{section*.12}%
+\contentsline {subsection}{\numberline {2.3.3}Binarized Kolmogorov-Arnold Networks Convolutional layer (BiKA\_Conv2d)}{19}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Loss Functions for Segmentation}{20}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Cross-Entropy Loss}{20}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Dice Loss}{21}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}Combined Cross-Entropy Dice Loss}{21}{subsection.2.4.3}%
+\contentsline {section}{\numberline {2.5}BDD100K Dataset}{21}{section.2.5}%
+\contentsline {chapter}{\numberline {3}Methodology}{23}{chapter.3}%
+\contentsline {section}{\numberline {3.1}UKAN: U-Shaped KAN Segmentation Network}{23}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Overall Architecture}{23}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}KAN Encoder and Bottleneck}{25}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}KANBlock Design}{25}{subsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.1.4}KAN Variant Layer Integration in UKAN}{26}{subsection.3.1.4}%
+\contentsline {subsubsection}{HardSwish-KAN Linear Layer}{26}{section*.15}%
+\contentsline {subsubsection}{TeLU-KAN Linear Layer}{26}{section*.16}%
+\contentsline {subsubsection}{PWLO-KAN Linear Layer}{27}{section*.17}%
+\contentsline {subsection}{\numberline {3.1.5}Decoder}{27}{subsection.3.1.5}%
+\contentsline {section}{\numberline {3.2}BiKASegNet: Binarized KAN Segmentation Network}{28}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Adapting BiKA Layers for Semantic Road Segmentation}{29}{subsection.3.2.1}%
+\contentsline {subsubsection}{Overall Architectural Adaptation \& Channel Width Scaling}{29}{section*.19}%
+\contentsline {subsubsection}{Full-Precision Input Stem (\texttt {full\_precision\_stem})}{30}{section*.21}%
+\contentsline {subsubsection}{ReActNet-Inspired RPReLU Activations}{30}{section*.22}%
+\contentsline {subsubsection}{Full-Precision Classification Head (\texttt {full\_precision\_head})}{31}{section*.23}%
+\contentsline {subsubsection}{Feature Concatenation in U-Net Decoder}{31}{section*.24}%
+\contentsline {subsection}{\numberline {3.2.2}BiKAConvBlock Design}{32}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Optimisation and Training Strategies}{32}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Custom CUDA Kernel Optimisations for BiKA}{32}{subsection.3.3.1}%
+\contentsline {subsubsection}{Bit-Packing \& 32-bit Word Quantization}{33}{section*.25}%
+\contentsline {subsubsection}{32-Bit Word Alignment and Channel-32 Hardware Optimisation}{33}{section*.26}%
+\contentsline {subsubsection}{Half-Precision (FP16) Shared Memory Bias Caching}{33}{section*.27}%
+\contentsline {subsubsection}{Output-Channel Tiling \& Thread-Level Register Reuse}{34}{section*.28}%
+\contentsline {subsubsection}{Bitwise XNOR and Popcount Convolution Execution}{34}{section*.29}%
+\contentsline {subsubsection}{STE Hard-Tanh Backpropagation Kernels}{34}{section*.30}%
+\contentsline {subsection}{\numberline {3.3.2}Data Augmentation}{35}{subsection.3.3.2}%
+\contentsline {chapter}{\numberline {4}Experimental Evaluation and Results}{36}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Experimental Setup}{36}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Segmentation Quality Benchmarks}{38}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Model Efficiency Analysis}{39}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Inference Throughput}{39}{subsection.4.3.1}%
+\contentsline {section}{\numberline {4.4}Ablation Studies}{39}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Effect of KAN Variant Selection}{39}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Effect of Knowledge Distillation}{40}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Effect of BNN Training Techniques}{40}{subsection.4.4.3}%
+\contentsline {chapter}{\numberline {5}Conclusions and Future Works}{42}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Conclusions}{42}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Future Works}{43}{section.5.2}%
+\contentsline {chapter}{Bibliography}{44}{section.5.2}%

@@ -195,169 +195,21 @@ Although many autonomous car driving system have been created, they share the sa
 
 \section{Related Work}
 \label{sec:related_work}
-The field of semantic segmentation—and specifically road scene perception for autonomous driving—has evolved through several architectural paradigms over the past decade. This section reviews prior work across six key domains: foundational convolutional encoder-decoder networks, context aggregation architectures, real-time/lightweight road segmentation models, Vision Transformers, Kolmogorov-Arnold Networks (KANs), and Binary Neural Networks (BNNs). For each model, we analyze three explicit criteria: \textbf{(1) WHAT} the architecture is, \textbf{(2) WHY} it was proposed, and \textbf{(3) HOW} it operates mathematically or structurally, alongside the benchmark \textbf{datasets} used and \textbf{results} achieved.
+The field of semantic segmentation—and specifically road scene perception for autonomous driving—has evolved through several architectural paradigms over the past decade. This section reviews prior work across six key domains: foundational convolutional encoder-decoder networks, context aggregation architectures, real-time/lightweight road segmentation models, Vision Transformers, Kolmogorov-Arnold Networks (KANs), and Binary Neural Networks (BNNs).
 
-\subsection{Foundational Convolutional Encoder-Decoder Architectures}
-Early semantic segmentation relied on adapting classification networks for pixel-level prediction:
-\begin{itemize}
-    \item \textbf{Fully Convolutional Networks (FCN)}~\cite{long2015fcn}:
-    \begin{itemize}
-        \item \emph{What}: A end-to-end fully convolutional network architecture for dense prediction.
-        \item \emph{Why}: Proposed to eliminate fully connected layers in classification CNNs (such as VGG-16), which destroyed spatial coordinates and prevented arbitrary-size image processing.
-        \item \emph{How}: Replaces dense layers with $1\times1$ convolutions and combines deep, coarse semantic layers with shallow, fine spatial layers using transposed convolution skip connections (FCN-8s, FCN-16s, FCN-32s).
-        \item \emph{Datasets \& Results}: Evaluated on \textbf{PASCAL VOC 2012} (achieving 62.2\% mIoU) and \textbf{NYUDv2} (34.0\% mIoU).
-    \end{itemize}
-    
-    \item \textbf{U-Net}~\cite{ronneberger2015unet}:
-    \begin{itemize}
-        \item \emph{What}: A symmetric U-shaped encoder-decoder architecture with horizontal skip connections.
-        \item \emph{Why}: Designed to solve the loss of fine-grained spatial localization caused by successive spatial downsampling in deep encoders.
-        \item \emph{How}: The encoder extracts multi-scale feature maps, while the decoder upsamples feature channels. Horizontal skip connections copy high-resolution encoder features directly to decoder stages, concatenating them before convolution.
-        \item \emph{Datasets \& Results}: Benchmark on the \textbf{ISBI Cell Tracking Challenge 2015} (92.0\% IoU on PhC-U373), establishing the foundational topology for dense medical and road segmentation.
-    \end{itemize}
-    
-    \item \textbf{SegNet}~\cite{badrinarayanan2017segnet}:
-    \begin{itemize}
-        \item \emph{What}: A deep convolutional encoder-decoder architecture utilizing max-pooling indices for memory-efficient upsampling.
-        \item \emph{Why}: Proposed to reduce the high memory overhead of storing full high-resolution feature maps in decoder skip connection buffers.
-        \item \emph{How}: The encoder records the max-pooling indices (locations of maximum values) for each $2\times2$ pooling window. The decoder reuses these stored indices to perform sparse unpooling without learnable parameters.
-        \item \emph{Datasets \& Results}: Benchmark on \textbf{CamVid} (60.1\% mIoU) and \textbf{Cityscapes} (57.0\% mIoU).
-    \end{itemize}
-\end{itemize}
+The evolution of semantic segmentation began with the adaptation of classification Convolutional Neural Networks (CNNs) for dense pixel-level prediction. Long et al.~\cite{long2015fcn} introduced Fully Convolutional Networks (FCN), replacing fully connected layers with $1\times1$ convolutions to preserve spatial coordinates and enable variable-resolution image input; by fusing deep, coarse semantic features with shallow, fine spatial details via transposed convolutions (FCN-8s), FCN achieved 62.2\% mean Intersection over Union (mIoU) on PASCAL VOC 2012 and 34.0\% mIoU on NYUDv2. To address the loss of fine-grained spatial localization caused by repetitive pooling operations, Ronneberger et al.~\cite{ronneberger2015unet} proposed U-Net, a symmetric encoder-decoder architecture that concatenates high-resolution encoder feature maps directly to decoder stages across horizontal skip connections, establishing a dominant paradigm in biomedical and road segmentation while achieving 92.0\% IoU on the ISBI Cell Tracking Challenge. Seeking to minimize memory consumption during upsampling, Badrinarayanan et al.~\cite{badrinarayanan2017segnet} developed SegNet, which records max-pooling indices during encoding and reuses them in the decoder to perform sparse parameter-free unpooling, reaching 60.1\% mIoU on CamVid and 57.0\% mIoU on Cityscapes.
 
-\subsection{Context Aggregation \& Multi-Scale Networks}
-To capture both fine boundary details and large object context, multi-scale feature aggregation models were developed:
-\begin{itemize}
-    \item \textbf{DeepLabV3+}~\cite{chen2018deeplabv3plus}:
-    \begin{itemize}
-        \item \emph{What}: An encoder-decoder architecture combining Atrous Spatial Pyramid Pooling (ASPP) with depthwise separable convolutions.
-        \item \emph{Why}: Proposed to resolve context confusion by enlarging receptive fields without increasing parameter count or reducing spatial resolution.
-        \item \emph{How}: Employs dilated/atrous convolutions at multiple sampling rates ($r = 6, 12, 18$) within an ASPP module to capture multi-scale context, followed by a simple decoder for sharp object boundaries.
-        \item \emph{Datasets \& Results}: Achieved state-of-the-art performance on \textbf{PASCAL VOC 2012} (89.0\% mIoU) and \textbf{Cityscapes} (82.1\% mIoU).
-    \end{itemize}
-    
-    \item \textbf{PSPNet (Pyramid Scene Parsing Network)}~\cite{zhao2017pspnet}:
-    \begin{itemize}
-        \item \emph{What}: A multi-scale scene parsing network utilizing sub-region spatial pooling.
-        \item \emph{Why}: Solved global scene misclassification where standard CNNs failed to utilize surrounding contextual relationships (e.g., mistaking a boat for a car on water).
-        \item \emph{How}: Applies a 4-level Pyramid Pooling Module ($1\times1, 2\times2, 3\times3, 6\times6$) to aggregate sub-region features across different scales before concatenating them with the main feature map.
-        \item \emph{Datasets \& Results}: Achieved 80.2\% mIoU on \textbf{Cityscapes} and 85.4\% mIoU on \textbf{PASCAL VOC 2012}.
-    \end{itemize}
-\end{itemize}
+To resolve contextual ambiguities and capture multi-scale spatial features simultaneously, context aggregation architectures were developed. Chen et al.~\cite{chen2018deeplabv3plus} proposed DeepLabV3+, combining Atrous Spatial Pyramid Pooling (ASPP) with an encoder-decoder structure; by employing dilated convolutions at multiple sampling rates ($r = 6, 12, 18$) to expand the receptive field without increasing parameter counts, DeepLabV3+ achieved state-of-the-art performance with 89.0\% mIoU on PASCAL VOC 2012 and 82.1\% mIoU on Cityscapes. Similarly, Zhao et al.~\cite{zhao2017pspnet} introduced the Pyramid Scene Parsing Network (PSPNet) to prevent global context misclassifications—such as confusing boats on water with land vehicles—by applying a 4-level Pyramid Pooling Module ($1\times1, 2\times2, 3\times3, 6\times6$) to aggregate sub-region features across multiple scales, obtaining 80.2\% mIoU on Cityscapes and 85.4\% mIoU on PASCAL VOC 2012.
 
-\subsection{Real-Time \& Lightweight Road Segmentation Models}
-Autonomous driving perception demands high frame rates under strict power and hardware constraints:
-\begin{itemize}
-    \item \textbf{ENet (Efficient Neural Network)}~\cite{paszke2016enet}:
-    \begin{itemize}
-        \item \emph{What}: An ultra-compact real-time asymmetric encoder-decoder architecture designed specifically for low-power embedded hardware.
-        \item \emph{Why}: Addressed the extreme latency and memory bandwidth bottlenecks of large FCN/DeepLab models on embedded vehicle platforms.
-        \item \emph{How}: Implements bottleneck blocks with early spatial downsampling, asymmetric $5\times1$ and $1\times5$ factorized convolutions, and dilated convolutions to maintain receptive fields with minimal parameters.
-        \item \emph{Datasets \& Results}: Achieved 58.3\% mIoU at \textbf{76.8 FPS} ($1024\times512$ resolution) on an NVIDIA Titan X for \textbf{Cityscapes}, and 51.3\% mIoU on \textbf{CamVid}.
-    \end{itemize}
-    
-    \item \textbf{BiSeNet (Bilateral Segmentation Network)}~\cite{yu2018bisenet}:
-    \begin{itemize}
-        \item \emph{What}: A real-time bilateral segmentation architecture featuring decoupled dual-stream paths.
-        \item \emph{Why}: Resolved the fundamental speed-accuracy trade-off caused by shrinking channel capacity or aggressively downsampling input resolutions.
-        \item \emph{How}: Decouples processing into a shallow \emph{Spatial Path} (3 layers preserving high-resolution spatial details) and a deep \emph{Context Path} (fast backbone with Attention Refinement Modules), fusing them via a Feature Fusion Module (FFM).
-        \item \emph{Datasets \& Results}: Reached \textbf{105.8 FPS} with 74.7\% mIoU on \textbf{Cityscapes} ($768\times1536$ resolution) and 68.7\% mIoU on \textbf{CamVid} at \textbf{146.7 FPS}.
-    \end{itemize}
-\end{itemize}
+Deploying semantic segmentation models on autonomous vehicles requires high processing throughput under strict computational and thermal constraints. Paszke et al.~\cite{paszke2016enet} designed ENet, an ultra-compact real-time architecture utilizing bottleneck blocks with early spatial downsampling, factorized asymmetric $5\times1$ and $1\times5$ convolutions, and dilated kernels to maintain receptive fields with minimal parameters, reaching 58.3\% mIoU at 76.8 frames per second (FPS) on an NVIDIA Titan X for $1024\times512$ Cityscapes images and 51.3\% mIoU on CamVid. To overcome the speed-accuracy trade-off inherent in aggressive downsampling, Yu et al.~\cite{yu2018bisenet} proposed BiSeNet (Bilateral Segmentation Network), which decouples spatial detail preservation from context extraction into a shallow Spatial Path and a deep Context Path with Attention Refinement Modules; BiSeNet achieved an impressive 105.8 FPS with 74.7\% mIoU on Cityscapes ($768\times1536$ resolution) and 68.7\% mIoU on CamVid at 146.7 FPS.
 
-\subsection{Vision Transformers \& Attention-Based Architectures}
-Attention mechanisms have revolutionized dense visual perception by modeling long-range dependencies:
-\begin{itemize}
-    \item \textbf{SegFormer}~\cite{xie2021segformer}:
-    \begin{itemize}
-        \item \emph{What}: A lightweight, positional-encoding-free Transformer architecture paired with an All-MLP decoder.
-        \item \emph{Why}: Overcame the heavy computational cost and fixed positional embedding limitations of standard Vision Transformers (ViT) when handling variable-resolution driving images.
-        \item \emph{How}: Employs a Mix Transformer (MiT) hierarchical encoder with overlapping patch embeddings and efficient self-attention (spatial reduction), feeding multi-level features into a simple All-MLP decoder.
-        \item \emph{Datasets \& Results}: Achieved 84.0\% mIoU with MiT-B5 on \textbf{Cityscapes} (and 76.2\% mIoU at \textbf{47.7 FPS} with MiT-B0), and 51.8\% mIoU on \textbf{ADE20K}.
-    \end{itemize}
-    
-    \item \textbf{Swin-UNet}~\cite{cao2022swinunet}:
-    \begin{itemize}
-        \item \emph{What}: A pure U-shaped Transformer architecture built with shifted-window self-attention blocks.
-        \item \emph{Why}: Solved the quadratic computational complexity $\mathcal{O}(H^2 W^2)$ of global self-attention while capturing cross-window spatial interactions.
-        \item \emph{How}: Replaces all standard convolutional layers in U-Net with Swin Transformer blocks, utilizing Shifted Window (S-WMSA) local self-attention in a symmetric encoder-decoder topology.
-        \item \emph{Datasets \& Results}: Benchmark on the \textbf{Synapse Multi-Organ Dataset} (79.13\% average Dice score) and \textbf{ACDC} (90.00\% Dice score).
-    \end{itemize}
-    
-    \item \textbf{Segment Anything (SAM)}~\cite{kirillov2023segment}:
-    \begin{itemize}
-        \item \emph{What}: A promptable vision foundation model for zero-shot class-agnostic semantic segmentation.
-        \item \emph{Why}: Designed to establish a universal segmentation model capable of generalizing across unseen domains without task-specific fine-tuning.
-        \item \emph{How}: Combines a heavy ViT image encoder with a flexible prompt encoder (points, boxes, text) and a lightweight two-way transformer mask decoder.
-        \item \emph{Datasets \& Results}: Trained on the \textbf{SA-1B dataset} (1.1 billion masks across 11 million images), achieving 46.5 mIoU zero-shot on \textbf{COCO}.
-    \end{itemize}
-\end{itemize}
+Attention mechanisms have further advanced dense visual perception by capturing global, long-range dependencies across driving scenes. Xie et al.~\cite{xie2021segformer} introduced SegFormer, a lightweight, positional-encoding-free Transformer paired with an All-MLP decoder; by employing overlapping patch embeddings and spatial-reduction self-attention, SegFormer achieved 84.0\% mIoU with MiT-B5 on Cityscapes (and 76.2\% mIoU at 47.7 FPS with MiT-B0), as well as 51.8\% mIoU on ADE20K. To eliminate the quadratic computational complexity $\mathcal{O}(H^2 W^2)$ of global self-attention while maintaining cross-window connectivity, Cao et al.~\cite{cao2022swinunet} proposed Swin-UNet, a pure U-shaped Transformer architecture replacing convolutional layers with Shifted Window (S-WMSA) self-attention blocks, achieving 79.13\% average Dice score on the Synapse Multi-Organ dataset and 90.00\% Dice on ACDC. Addressing zero-shot class-agnostic segmentation, Kirillov et al.~\cite{kirillov2023segment} developed Segment Anything (SAM), training a heavy ViT image encoder paired with a prompt encoder and two-way transformer mask decoder on the 1.1-billion-mask SA-1B dataset to achieve 46.5 mIoU zero-shot on COCO.
 
-\subsection{Kolmogorov-Arnold Networks (KANs) in Segmentation}
-Recently, Kolmogorov-Arnold Networks have emerged as a fundamental alternative to Multi-Layer Perceptrons:
-\begin{itemize}
-    \item \textbf{KAN (Kolmogorov-Arnold Network)}~\cite{liu2024kan}:
-    \begin{itemize}
-        \item \emph{What}: A neural network architecture placing learnable 1D activation functions on edges (connections) rather than fixed nodes.
-        \item \emph{Why}: Solved the fixed-activation limitation of traditional MLPs based on the Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957}.
-        \item \emph{How}: Parameterizes connection non-linearities using B-splines ($\phi(x) = w_b b(x) + w_s \text{spline}(x)$), learning both weights and activation function shapes dynamically.
-        \item \emph{Datasets \& Results}: Demonstrated superior accuracy and interpretability over MLPs on \textbf{PDE solving} and \textbf{function approximation} with up to $10\times$ fewer parameters.
-    \end{itemize}
-    
-    \item \textbf{U-KAN (UKAN)}~\cite{li2024ukan}:
-    \begin{itemize}
-        \item \emph{What}: A U-shaped segmentation architecture incorporating KAN layers into the bottleneck and decoder stages.
-        \item \emph{Why}: Adapted KAN principles to 2D image segmentation to capture complex non-linear feature combinations while managing spatial computational complexity.
-        \item \emph{How}: Reformulates 1D B-spline KAN operations into vectorized 2D matrix multiplications, replacing standard MLP/Transformer blocks in a U-Net backbone.
-        \item \emph{Datasets \& Results}: Achieved 89.84\% average Dice score on the \textbf{Synapse Multi-Organ Dataset} and 90.12\% IoU on \textbf{ISIC 2018 Skin Lesion Segmentation}.
-    \end{itemize}
-    
-    \item \textbf{FasterKAN}~\cite{fasterkan2024}:
-    \begin{itemize}
-        \item \emph{What}: An accelerated KAN variant replacing grid-allocated B-splines with Reflectional Switch Activation Functions (RSWAf).
-        \item \emph{Why}: Overcame the severe GPU training latency caused by non-uniform memory access during B-spline grid updates.
-        \item \emph{How}: Computes 1D edge non-linearities using multiscale Radial Basis Functions (RBF), enabling fully parallelized C++/CUDA matrix operations.
-        \item \emph{Datasets \& Results}: Demonstrated $3\times$ to $5\times$ speedups over standard B-spline KANs on image classification and segmentation benchmarks.
-    \end{itemize}
-\end{itemize}
+Recently, Kolmogorov-Arnold Networks (KANs) were introduced by Liu et al.~\cite{liu2024kan} as a fundamental alternative to traditional Multi-Layer Perceptrons (MLPs). Grounded in the Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957}, KANs replace fixed node activation functions (e.g., ReLU, GELU) with learnable 1D B-spline activation functions on network edges ($\phi(x) = w_b b(x) + w_s \text{spline}(x)$), enabling the network to dynamically learn activation function shapes while outperforming MLPs with up to $10\times$ fewer parameters on PDE solving and function approximation. Extending KANs to dense vision tasks, Li et al.~\cite{li2024ukan} introduced U-KAN (UKAN), reformulating 1D spline KAN operations into vectorized 2D matrix multiplications to replace standard MLP/Transformer blocks within a U-Net backbone, attaining an 89.84\% average Dice score on the Synapse Multi-Organ dataset and 90.12\% IoU on ISIC 2018 Skin Lesion Segmentation. To resolve the slow GPU training latency caused by non-uniform B-spline grid allocations in KANs, Tsiamis~\cite{fasterkan2024} developed FasterKAN, replacing grid-allocated B-splines with Reflectional Switch Activation Functions (RSWAf) based on multiscale Radial Basis Functions (RBF) to achieve a $3\times$ to $5\times$ speedup on CUDA platforms.
 
-\subsection{Binary Neural Networks (BNNs) \& Model Compression}
-To achieve extreme hardware efficiency, Binary Neural Networks quantize values to 1 bit:
-\begin{itemize}
-    \item \textbf{Hubara BNN}~\cite{hubara2016binarized}:
-    \begin{itemize}
-        \item \emph{What}: The seminal 1-bit neural network architecture constraining both weights and activations to $\{-1, +1\}$.
-        \item \emph{Why}: Replaced expensive 32-bit floating-point multiply-accumulate (MAC) operations with bitwise XNOR logic and population count (\texttt{\_\_popc}) hardware intrinsics.
-        \item \emph{How}: Applies the sign binarization function $x_b = \text{sign}(x)$ in the forward pass and uses the Straight-Through Estimator (STE) $\frac{\partial \text{sign}(x)}{\partial x} = \mathbf{1}_{|x| \le 1}$ for backpropagation.
-        \item \emph{Datasets \& Results}: Achieved 98.6\% accuracy on \textbf{MNIST}, 89.8\% on \textbf{CIFAR-10}, and 97.2\% on \textbf{SVHN}.
-    \end{itemize}
-    
-    \item \textbf{XNOR-Net}~\cite{rastegari2016xnor} \& \textbf{Bi-Real Net}~\cite{qin2020bireal}:
-    \begin{itemize}
-        \item \emph{What}: Advanced BNN architectures introducing real-valued scaling factors and identity shortcut connections.
-        \item \emph{Why}: Mitigated severe quantization error and gradient vanishing caused by crude 1-bit sign functions in deep networks.
-        \item \emph{How}: XNOR-Net computes analytic per-channel scaling factors $\alpha \approx \frac{1}{n}\|\mathbf{W}\|_1$, while Bi-Real Net adds FP32 real-valued shortcut connections ($\mathbf{y} = \text{sign}(\mathbf{x}) * \mathbf{W}_b + \mathbf{x}$) to preserve continuous gradient flow.
-        \item \emph{Datasets \& Results}: Achieved Top-1 ImageNet accuracy of 51.2\% (XNOR-Net) and 56.4\% (Bi-Real Net).
-    \end{itemize}
-    
-    \item \textbf{ReActNet}~\cite{liu2020reactnet}, \textbf{IR-Net}~\cite{qin2020irnet}, \& \textbf{AdaBin}~\cite{tu2022adabin}:
-    \begin{itemize}
-        \item \emph{What}: State-of-the-art BNN optimization methods incorporating activation shifts (RPReLU), balanced binarization (Libra-PB), and adaptive binary sets.
-        \item \emph{Why}: Addressed dead activations and binary distribution imbalance, allowing BNNs to approach full-precision accuracy.
-        \item \emph{How}: ReActNet introduces learnable per-channel pre-shift ($\gamma$) and post-shift ($\beta$) parameters ($\text{RPReLU}(x) = \text{PReLU}(x + \gamma) + \beta$), IR-Net centers weights to maximize information entropy, and AdaBin fits learnable per-channel scaling sets.
-        \item \emph{Datasets \& Results}: ReActNet achieved \textbf{69.4\% Top-1 accuracy} on \textbf{ImageNet}, matching the full-precision MobileNetV1 baseline.
-    \end{itemize}
-    
-    \item \textbf{Group-Net}~\cite{zhuang2019structured}:
-    \begin{itemize}
-        \item \emph{What}: A structured binary network architecture engineered for image classification and semantic segmentation.
-        \item \emph{Why}: Addressed the severe spatial details degradation in 1-bit dense prediction tasks.
-        \item \emph{How}: Divides binary operations into multiple parallel binary branches with structured group fusion, aggregating multi-branch binary features to reconstruct rich continuous representations.
-        \item \emph{Datasets \& Results}: Achieved 63.8\% mIoU on \textbf{Cityscapes} semantic road segmentation with 1-bit quantization and 68.1\% mIoU on \textbf{PASCAL VOC}.
-    \end{itemize}
-\end{itemize}
+To achieve extreme model compression and speed for edge hardware deployment, Binary Neural Networks (BNNs) constrain both weights and activations to 1-bit binary values ($\{-1, +1\}$). Hubara et al.~\cite{hubara2016binarized} formalized 1-bit neural networks using the sign binarization function $x_b = \text{sign}(x)$ in the forward pass and the Straight-Through Estimator (STE) during backpropagation, replacing expensive 32-bit floating-point multiply-accumulate operations with bitwise XNOR logic and population count (\texttt{\_\_popc}) hardware intrinsics, achieving 98.6\% accuracy on MNIST and 89.8\% on CIFAR-10. To mitigate quantization loss, Rastegari et al.~\cite{rastegari2016xnor} proposed XNOR-Net by introducing analytic real-valued channel scaling factors ($\alpha$), while Liu et al.~\cite{qin2020bireal} introduced Bi-Real Net with FP32 real-valued identity shortcuts ($\mathbf{y} = \text{sign}(\mathbf{x}) * \mathbf{W}_b + \mathbf{x}$) to preserve continuous gradient flow, reaching Top-1 ImageNet accuracies of 51.2\% and 56.4\%, respectively. Further advancing BNN expressiveness, ReActNet~\cite{liu2020reactnet} introduced learnable per-channel activation shifts via RPReLU ($\text{RPReLU}(x) = \text{PReLU}(x + \gamma) + \beta$), IR-Net~\cite{qin2020irnet} proposed Libra-PB for information-entropy-balanced weight binarization, and AdaBin~\cite{tu2022adabin} fitted adaptive binary scaling sets, enabling ReActNet to reach 69.4\% Top-1 accuracy on ImageNet. Extending binary compression to dense prediction, Zhuang et al.~\cite{zhuang2019structured} presented Group-Net, a structured binary network that divides binary operations into multiple parallel branches with group fusion to reconstruct continuous spatial feature maps, achieving 63.8\% mIoU on Cityscapes road segmentation and 68.1\% mIoU on PASCAL VOC under 1-bit quantization.
 
-Our work builds directly upon these foundations by: (1) adapting U-KAN for dense road segmentation across multiple efficient KAN kernel variants (FasterKAN, ReLU-KAN, HardSwish-KAN, PWLO-KAN, TeLU-KAN), and (2) proposing BiKA, which combines the per-connection activation philosophy of KANs with state-of-the-art BNN techniques (RPReLU, Libra-PB, AdaBin, FP32 shortcuts) for ultra-lightweight, hardware-accelerated road segmentation.
+Our research builds directly upon these complementary paradigms by bridging expressiveness and extreme compression: first, we adapt U-KAN for dense road segmentation by integrating multiple efficient KAN variant kernels (FasterKAN, ReLU-KAN, HardSwish-KAN, PWLO-KAN, TeLU-KAN) into the U-Net architecture to evaluate their impact on segmentation mIoU and latency; second, we propose BiKA (Binarized KAN), combining the per-connection activation philosophy of KANs with state-of-the-art BNN techniques (RPReLU, Libra-PB, AdaBin, FP32 shortcuts) to achieve ultra-lightweight, hardware-accelerated 1-bit road segmentation.
 
 \subsection{Problem Statement}
 However, all of these architectures share a fundamental design choice inherited from Multi-Layer Perceptrons (MLPs): they place fixed, pre-defined activation functions (e.g., ReLU, GELU) at the \emph{nodes} of the network, while the \emph{edges} (connections) carry only learnable linear weights,. The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} suggests an alternative: replace every linear weight with a non-linear activation functions on the \emph{edges} themselves, allowing the network to learn both the weights and the optimal activation shape for each connection, which as a results, achieve better accuracy and interpretability. This principle forms the foundation of Kolmogorov-Arnold Networks (KANs)~\cite{liu2024kan}.
