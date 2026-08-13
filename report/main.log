@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.14)  13 AUG 2026 09:56
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.14)  13 AUG 2026 10:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1113,13 +1113,13 @@ File: images/usth.png Graphic file (type png)
 <use images/usth.png>
 Package pdftex.def Info: images/usth.png  used on input line 85.
 (pdftex.def)             Requested size: 203.83417pt x 87.64789pt.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 97.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 96.
 
 
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 97.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 96.
 
 
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -1129,28 +1129,28 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 \openout4 = `main.ist'.
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf-dist/fonts
-/enc/dvips/cm-super/cm-super-t1.enc} <./images/usth.png>] [2]
-Underfull \hbox (badness 10000) in paragraph at lines 114--119
+/enc/dvips/cm-super/cm-super-t1.enc} <./images/usth.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 113--118
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 114--119
+Underfull \hbox (badness 10000) in paragraph at lines 113--118
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 114--119
+Underfull \hbox (badness 10000) in paragraph at lines 113--118
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 114--119
+Underfull \hbox (badness 10000) in paragraph at lines 113--118
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 114--119
+Underfull \hbox (badness 10000) in paragraph at lines 113--118
 
  []
 
@@ -1159,7 +1159,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.124 \clearpage
+l.123 \clearpage
                  [1
 
 ] (./main.toc [1
@@ -1195,27 +1195,27 @@ i-tec-tures on BDD100K
 
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 154--155
+Underfull \hbox (badness 10000) in paragraph at lines 153--154
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 156--162
+Underfull \hbox (badness 10000) in paragraph at lines 155--161
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 156--162
+Underfull \hbox (badness 10000) in paragraph at lines 155--161
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 156--162
+Underfull \hbox (badness 10000) in paragraph at lines 155--161
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 156--162
+Underfull \hbox (badness 10000) in paragraph at lines 155--161
 
  []
 
@@ -1224,7 +1224,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 156--162
 ] [7
 
 ]
-Overfull \hbox (7.71468pt too wide) in paragraph at lines 177--178
+Overfull \hbox (7.71468pt too wide) in paragraph at lines 176--177
 \T1/cmr/m/n/14.4 through-put with two dis-tinct prob-lems: Seg-ment Ev-ery-thin
 g (20 classes)
  []
@@ -1238,18 +1238,12 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.194 
+l.193 
        [1
 
 
-]
-pdfTeX warning (ext4): destination with the same identifier (name{page.2}) has 
-been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.203 
-       [2] [3]
-Overfull \hbox (0.5631pt too wide) in paragraph at lines 224--225
+] [2] [3]
+Overfull \hbox (0.5631pt too wide) in paragraph at lines 223--224
 []\T1/cmr/m/n/14.4 Adapt the U-KAN ar-chi-tec-ture for road seg-men-ta-tion on 
 the BDD100K
  []
@@ -1259,44 +1253,44 @@ Chapter 2.
 [6
 
 ] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17]
-<images/bdd100k_samples/img1.jpg, id=584, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/img1.jpg, id=581, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/img1.jpg Graphic file (type jpg)
 <use images/bdd100k_samples/img1.jpg>
 Package pdftex.def Info: images/bdd100k_samples/img1.jpg  used on input line 53
-8.
+7.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/img2.jpg, id=585, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/img2.jpg, id=582, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/img2.jpg Graphic file (type jpg)
 <use images/bdd100k_samples/img2.jpg>
 Package pdftex.def Info: images/bdd100k_samples/img2.jpg  used on input line 53
-9.
+8.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/img3.jpg, id=586, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/img3.jpg, id=583, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/img3.jpg Graphic file (type jpg)
 <use images/bdd100k_samples/img3.jpg>
-Package pdftex.def Info: images/bdd100k_samples/img3.jpg  used on input line 54
-0.
+Package pdftex.def Info: images/bdd100k_samples/img3.jpg  used on input line 53
+9.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/mask1.png, id=587, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/mask1.png, id=584, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/mask1.png Graphic file (type png)
 <use images/bdd100k_samples/mask1.png>
 Package pdftex.def Info: images/bdd100k_samples/mask1.png  used on input line 5
-42.
+41.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/mask2.png, id=588, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/mask2.png, id=585, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/mask2.png Graphic file (type png)
 <use images/bdd100k_samples/mask2.png>
 Package pdftex.def Info: images/bdd100k_samples/mask2.png  used on input line 5
-43.
+42.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/mask3.png, id=589, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/mask3.png, id=586, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/mask3.png Graphic file (type png)
 <use images/bdd100k_samples/mask3.png>
 Package pdftex.def Info: images/bdd100k_samples/mask3.png  used on input line 5
-44.
+43.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
 
-Overfull \hbox (4.28894pt too wide) in paragraph at lines 537--547
+Overfull \hbox (4.28894pt too wide) in paragraph at lines 536--546
  [][] 
  []
 
@@ -1305,12 +1299,12 @@ images/bdd100k_samples/img3.jpg> <./images/bdd100k_samples/mask1.png> <./images
 /bdd100k_samples/mask2.png (PNG copy)> <./images/bdd100k_samples/mask3.png>]
 Chapter 3.
 
-Overfull \hbox (10.27014pt too wide) in paragraph at lines 557--557
+Overfull \hbox (10.27014pt too wide) in paragraph at lines 556--556
 []\T1/cmr/bx/n/20.74 UKAN: U-Shaped KAN Seg-men-ta-tion Net-
  []
 
 
-Overfull \hbox (33.03995pt too wide) in paragraph at lines 559--560
+Overfull \hbox (33.03995pt too wide) in paragraph at lines 558--559
 \T1/cmr/m/n/14.4 UKAN adapts the U-Net ar-chi-tec-ture by re-plac-ing the stan-
 dard MLP/Transformer
  []
@@ -1318,51 +1312,51 @@ dard MLP/Transformer
 [19
 
 ] [20] [21]
-Overfull \hbox (0.78918pt too wide) in paragraph at lines 650--651
+Overfull \hbox (0.78918pt too wide) in paragraph at lines 649--650
 \T1/cmr/m/n/14.4 ties of the in-di-vid-ual ac-ti-va-tion func-tions, this sec-t
 ion de-tails how HardSwish-
  []
 
 [22] [23] [24]
 LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 742.
+(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 741.
 
-Overfull \hbox (3.26787pt too wide) in paragraph at lines 745--747
+Overfull \hbox (3.26787pt too wide) in paragraph at lines 744--746
 \T1/cmr/m/n/14.4 the pa-ram-e-ter ca-pac-ity ($\OMS/cmsy/m/n/14.4 ^^X$\T1/cmr/m
 /n/14.4 4.1M pa-ram-e-ters) and rep-re-sen-ta-tional band-
  []
 
 [25]
-Overfull \hbox (109.51938pt too wide) in paragraph at lines 756--767
+Overfull \hbox (109.51938pt too wide) in paragraph at lines 755--766
  [][] 
  []
 
 [26]
-Overfull \hbox (31.89725pt too wide) in paragraph at lines 780--781
+Overfull \hbox (31.89725pt too wide) in paragraph at lines 779--780
 \T1/cmr/m/n/14.4 For both chan-nel con-fig-u-ra-tions, the fi-nal seg-men-ta-ti
 on out-put layer (\T1/cmtt/m/n/14.4 self.final\T1/cmr/m/n/14.4 )
  []
 
 [27]
-Overfull \hbox (92.32675pt too wide) in paragraph at lines 791--793
+Overfull \hbox (92.32675pt too wide) in paragraph at lines 790--792
 \T1/cmr/m/n/14.4 mem-ory con-sump-tion dur-ing train-ing, ac-ti-va-tion check-p
 oint-ing (\T1/cmtt/m/n/14.4 torch.utils.checkpoint\T1/cmr/m/n/14.4 )
  []
 
 
-Overfull \hbox (17.06682pt too wide) in paragraph at lines 803--804
+Overfull \hbox (17.06682pt too wide) in paragraph at lines 802--803
 \T1/cmr/m/n/14.4 bit-packed into sin-gle 32-bit un-signed in-te-gers (\T1/cmtt/
 m/n/14.4 unsigned int packed_weight\T1/cmr/m/n/14.4 ,
  []
 
 [28] [29]
-Overfull \hbox (9.71861pt too wide) in paragraph at lines 825--826
+Overfull \hbox (9.71861pt too wide) in paragraph at lines 824--825
 \T1/cmr/m/n/14.4 ($[]$), weights ($[]$), and per-connection bi-ases ($[]$) us-i
 ng the Straight-Through
  []
 
 [30]
-Overfull \hbox (95.16217pt too wide) in paragraph at lines 841--842
+Overfull \hbox (95.16217pt too wide) in paragraph at lines 840--841
 []\T1/cmr/m/n/14.4 ImageNet-standard nor-mal-i-sa-tion ($\OML/cmm/m/it/14.4 ^^V
  \OT1/cmr/m/n/14.4 = [0\OML/cmm/m/it/14.4 :\OT1/cmr/m/n/14.4 485\OML/cmm/m/it/1
 4.4 ; \OT1/cmr/m/n/14.4 0\OML/cmm/m/it/14.4 :\OT1/cmr/m/n/14.4 456\OML/cmm/m/it
@@ -1378,12 +1372,12 @@ Chapter 4.
 [32
 
 ] [33]
-Overfull \hbox (30.74524pt too wide) in paragraph at lines 902--915
+Overfull \hbox (30.74524pt too wide) in paragraph at lines 901--914
  [][] 
  []
 
 
-Overfull \hbox (1.30371pt too wide) in paragraph at lines 929--939
+Overfull \hbox (1.30371pt too wide) in paragraph at lines 928--938
  [][] 
  []
 
@@ -1414,7 +1408,7 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 Here is how much of TeX's memory you used:
  35020 strings out of 469515
  679475 string characters out of 5470807
- 1195392 words of memory out of 5000000
+ 1194392 words of memory out of 5000000
  62926 multiletter control sequences out of 15000+600000
  653676 words of font info for 105 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -1445,10 +1439,10 @@ er/sfrm1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb
 xmf-dist/fonts/type1/public/cm-super/sfti1200.pfb></usr/share/texmf-dist/fonts/
 type1/public/cm-super/sfti1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm
 -super/sftt1440.pfb>
-Output written on main.pdf (55 pages, 928403 bytes).
+Output written on main.pdf (54 pages, 928104 bytes).
 PDF statistics:
- 931 PDF objects out of 1000 (max. 8388607)
- 790 compressed objects within 8 object streams
+ 927 PDF objects out of 1000 (max. 8388607)
+ 787 compressed objects within 8 object streams
  208 named destinations out of 1000 (max. 500000)
  488 words of extra memory for PDF output out of 10000 (max. 10000000)
 
