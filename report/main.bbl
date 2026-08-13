@@ -59,11 +59,27 @@ J.~Fritsch, T.~K{\"u}hnl, and A.~Geiger, ``A new performance measure and
   International Conference on Intelligent Transportation Systems (ITSC)},
   pp.~1693--1700, 2013.
 
+\bibitem{cordts2016cityscapes}
+M.~Cordts, M.~Omran, S.~Ramos, T.~Rehfeld, M.~Enzweiler, R.~Benenson,
+  U.~Franke, S.~Roth, and B.~Schiele, ``The {Cityscapes} dataset for semantic
+  urban scene understanding,'' in {\em Proceedings of the IEEE Conference on
+  Computer Vision and Pattern Recognition (CVPR)}, pp.~3213--3223, 2016.
+
+\bibitem{wu2022yolop}
+D.~Wu, M.~Liao, W.~Zhang, X.~Wang, X.~Bai, W.~Cheng, and W.~Liu, ``{YOLOP}: You
+  only look once for panoptic driving perception,'' {\em Machine Intelligence
+  Research}, vol.~19, no.~6, pp.~550--562, 2022.
+
 \bibitem{badrinarayanan2017segnet}
 V.~Badrinarayanan, A.~Kendall, and R.~Cipolla, ``{SegNet}: A deep convolutional
   encoder-decoder architecture for image segmentation,'' {\em IEEE Transactions
   on Pattern Analysis and Machine Intelligence}, vol.~39, no.~12,
   pp.~2481--2495, 2017.
+
+\bibitem{brostow2009camvid}
+G.~J. Brostow, J.~Fauqueur, and R.~Cipolla, ``Semantic object classes in video:
+  A high-definition ground truth database,'' {\em Pattern Recognition Letters},
+  vol.~30, no.~2, pp.~88--97, 2009.
 
 \bibitem{chen2018deeplabv3plus}
 L.-C. Chen, Y.~Zhu, G.~Papandreou, F.~Schroff, and H.~Adam, ``Encoder-decoder
