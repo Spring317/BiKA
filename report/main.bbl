@@ -43,6 +43,11 @@ A.~Kirillov, E.~Mintun, N.~Ravi, H.~Mao, C.~Rolland, L.~Gustafson, T.~Xiao,
   S.~Whitehead, A.~C. Berg, W.-Y. Lo, P.~Doll{\'a}r, and R.~Girshick, ``Segment
   anything,'' {\em arXiv preprint arXiv:2304.02643}, 2023.
 
+\bibitem{silberman2012indoor}
+N.~Silberman, D.~Hoiem, P.~Kohli, and R.~Fergus, ``Indoor segmentation and
+  support inference from {RGBD} images,'' in {\em Proceedings of the European
+  Conference on Computer Vision (ECCV)}, pp.~746--760, 2012.
+
 \bibitem{badrinarayanan2017segnet}
 V.~Badrinarayanan, A.~Kendall, and R.~Cipolla, ``{SegNet}: A deep convolutional
   encoder-decoder architecture for image segmentation,'' {\em IEEE Transactions
