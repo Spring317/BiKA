@@ -2,10 +2,10 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {3.1}{\ignorespaces Side-by-side comparison between 16-channel baseline and 32-channel BiKASegNet configurations.}}{29}{table.caption.20}%
+\contentsline {table}{\numberline {3.1}{\ignorespaces Side-by-side comparison between 16-channel baseline and 32-channel BiKASegNet configurations.}}{30}{table.caption.20}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Segmentation accuracy comparison across architectures on BDD100K road segmentation.}}{37}{table.caption.31}%
-\contentsline {table}{\numberline {4.2}{\ignorespaces Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio.}}{38}{table.caption.32}%
-\contentsline {table}{\numberline {4.3}{\ignorespaces Per-component inference latency comparison between UKAN and BiKASegNet.}}{38}{table.caption.33}%
-\contentsline {table}{\numberline {4.4}{\ignorespaces Ablation study on knowledge distillation and boundary loss for BiKASegNet.}}{39}{table.caption.34}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Segmentation accuracy comparison across architectures on BDD100K road segmentation.}}{38}{table.caption.31}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio.}}{39}{table.caption.32}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Per-component inference latency comparison between UKAN and BiKASegNet.}}{39}{table.caption.33}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Ablation study on knowledge distillation and boundary loss for BiKASegNet.}}{40}{table.caption.34}%
 \addvspace {10\p@ }

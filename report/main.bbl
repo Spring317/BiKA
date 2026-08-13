@@ -109,15 +109,39 @@ C.~Yu, J.~Wang, P.~C. Chao, C.~Gao, N.~Sang, and J.~Liu, ``{BiSeNet}: Bilateral
   Proceedings of the European Conference on Computer Vision (ECCV)},
   pp.~325--341, 2018.
 
+\bibitem{zheng2021setr}
+S.~Zheng, J.~Lu, H.~Zhao, X.~Zhu, Z.~Luo, Y.~Wang, Y.~Fu, J.~Feng, T.~Xiang,
+  P.~H.~S. Torr, and L.~Zhang, ``Rethinking semantic segmentation from a
+  sequence-to-sequence perspective with transformers,'' in {\em Proceedings of
+  the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pp.~6881--6890, 2021.
+
 \bibitem{zhou2017ade20k}
 B.~Zhou, A.~Lapedriza, A.~Khosla, A.~Oliva, and A.~Torralba, ``Scene parsing
   through {ADE20K} dataset,'' in {\em Proceedings of the IEEE Conference on
   Computer Vision and Pattern Recognition (CVPR)}, pp.~5122--5130, 2017.
 
+\bibitem{chen2021transunet}
+J.~Chen, Y.~Lu, Q.~Yu, X.~Luo, E.~Adeli, Y.~Wang, L.~Lu, A.~L. Yuille, and
+  Y.~Zhou, ``{TransUNet}: Transformers make strong encoders for medical image
+  segmentation,'' {\em arXiv preprint arXiv:2102.04306}, 2021.
+
 \bibitem{landman2015synapse}
 B.~Landman, Z.~Xu, J.~Igelsias, M.~Styner, T.~Langerak, and A.~Klein, ``{MICCAI
   Multi-Atlas Labeling Beyond the Cranial Vault} challenge.'' MICCAI Challenge
   Datasets, 2015.
+
+\bibitem{liu2021swin}
+Z.~Liu, Y.~Lin, Y.~Cao, H.~Hu, Y.~Wei, Z.~Zhang, S.~Lin, and B.~Guo, ``{Swin
+  Transformer}: Hierarchical vision transformer using shifted windows,'' in
+  {\em Proceedings of the IEEE/CVF International Conference on Computer Vision
+  (ICCV)}, pp.~10012--10022, 2021.
+
+\bibitem{cheng2022mask2former}
+B.~Cheng, I.~Misra, A.~G. Schwing, A.~Kirillov, and R.~Girdhar,
+  ``Masked-attention mask transformer for universal image segmentation,'' in
+  {\em Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition (CVPR)}, pp.~1280--1289, 2022.
 
 \bibitem{lin2014coco}
 T.-Y. Lin, M.~Maire, S.~Belongie, J.~Hays, P.~Perona, D.~Ramanan,
