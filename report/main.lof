@@ -1,11 +1,11 @@
 \babel@toc {english}{}\relax 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces MLP vs KAN~\cite {liu2024kan}.}}{7}{figure.caption.7}%
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Standard U-Net encoder-decoder architecture with skip connections~\cite {ronneberger2015unet}.}}{12}{figure.caption.8}%
-\contentsline {figure}{\numberline {2.3}{\ignorespaces Sample $2 \times 3$ grid from the BDD100K dataset: top row shows RGB driving scene images, bottom row shows the corresponding pixel-level ground truth semantic segmentation color labels~\cite {bdd100k2020}.}}{18}{figure.caption.13}%
+\contentsline {figure}{\numberline {2.1}{\ignorespaces MLP vs KAN~\cite {liu2024kan}.}}{16}{figure.caption.7}%
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Standard U-Net encoder-decoder architecture with skip connections~\cite {ronneberger2015unet}.}}{21}{figure.caption.8}%
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Sample $2 \times 3$ grid from the BDD100K dataset: top row shows RGB driving scene images, bottom row shows the corresponding pixel-level ground truth semantic segmentation color labels~\cite {bdd100k2020}.}}{27}{figure.caption.13}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces UKAN Architecture: Symmetric U-shaped encoder-decoder network transitioning from CNN stages to KAN blocks at lower resolutions, connected by horizontal skip connections.}}{20}{figure.caption.14}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces BiKASegNet Architecture}}{24}{figure.caption.18}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces UKAN Architecture: Symmetric U-shaped encoder-decoder network transitioning from CNN stages to KAN blocks at lower resolutions, connected by horizontal skip connections.}}{29}{figure.caption.14}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces BiKASegNet Architecture}}{33}{figure.caption.18}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }

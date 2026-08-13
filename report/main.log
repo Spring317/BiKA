@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.14)  13 AUG 2026 10:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.14)  13 AUG 2026 13:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1108,7 +1108,7 @@ Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
 Package caption Info: subfigure package is loaded.
 Package caption Info: supertabular package is loaded.
 Package caption Info: End \AtBeginDocument code.
-<images/usth.png, id=226, 722.7pt x 310.761pt>
+<images/usth.png, id=250, 722.7pt x 310.761pt>
 File: images/usth.png Graphic file (type png)
 <use images/usth.png>
 Package pdftex.def Info: images/usth.png  used on input line 85.
@@ -1166,20 +1166,20 @@ l.123 \clearpage
 
 
 ]
-Overfull \hbox (1.04803pt too wide) in paragraph at lines 29--29
+Overfull \hbox (1.04803pt too wide) in paragraph at lines 35--35
  [][] [][][]\T1/cmr/m/n/14.4 Binarized Kolmogorov-Arnold Net-works Con-vo-lu-ti
 onal 
  []
 
-[2])
+[2] [3])
 \tf@toc=\write8
 \openout8 = `main.toc'.
 
- [3] (./main.lof)
+ [4] (./main.lof)
 \tf@lof=\write9
 \openout9 = `main.lof'.
 
- [4
+ [5
 
 ] (./main.lot
 Overfull \hbox (42.31339pt too wide) in paragraph at lines 7--7
@@ -1191,7 +1191,7 @@ i-tec-tures on BDD100K
 \tf@lot=\write10
 \openout10 = `main.lot'.
 
- (./main.acr) [5
+ (./main.acr) [6
 
 
 ]
@@ -1219,9 +1219,9 @@ Underfull \hbox (badness 10000) in paragraph at lines 155--161
 
  []
 
-[6
+[7
 
-] [7
+] [8
 
 ]
 Overfull \hbox (7.71468pt too wide) in paragraph at lines 176--177
@@ -1229,9 +1229,9 @@ Overfull \hbox (7.71468pt too wide) in paragraph at lines 176--177
 g (20 classes)
  []
 
-[8
+[9
 
-{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}] [9]
+{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}] [10]
 Chapter 1.
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
@@ -1242,121 +1242,196 @@ l.193
        [1
 
 
-] [2] [3]
-Overfull \hbox (0.5631pt too wide) in paragraph at lines 223--224
+] [2]
+Overfull \hbox (2.27473pt too wide) in paragraph at lines 198--199
+\T1/cmr/m/n/14.4 for au-tonomous driv-ing^^Vhas evolved through sev-eral ar-chi
+-tec-tural paradigms
+ []
+
+
+Overfull \hbox (4.59085pt too wide) in paragraph at lines 200--200
+[]\T1/cmr/bx/n/17.28 Foundational Con-vo-lu-tional Encoder-Decoder Ar-
+ []
+
+[3]
+Overfull \hbox (2.40218pt too wide) in paragraph at lines 208--209
+[]\T1/cmr/m/it/14.4 Datasets & Re-sults\T1/cmr/m/n/14.4 : Eval-u-ated on \T1/cm
+r/bx/n/14.4 PAS-CAL VOC 2012 \T1/cmr/m/n/14.4 (achiev-
+ []
+
+[4]
+Overfull \hbox (2.51047pt too wide) in paragraph at lines 235--236
+\T1/cmr/m/n/14.4 scale con-text, fol-lowed by a sim-ple de-coder for sharp ob-j
+ect bound-
+ []
+
+
+Overfull \hbox (17.11543pt too wide) in paragraph at lines 248--248
+[]\T1/cmr/bx/n/17.28 Real-Time & Lightweight Road Seg-men-ta-tion Mod-
+ []
+
+[5]
+Overfull \hbox (0.54242pt too wide) in paragraph at lines 264--265
+\T1/cmr/bx/n/14.4 Cityscapes \T1/cmr/m/n/14.4 ($\OT1/cmr/m/n/14.4 768 \OMS/cmsy
+/m/n/14.4 ^^B \OT1/cmr/m/n/14.4 1536$ \T1/cmr/m/n/14.4 res-o-lu-tion) and 68.7%
+ mIoU on \T1/cmr/bx/n/14.4 CamVid
+ []
+
+[6]
+Overfull \hbox (38.49146pt too wide) in paragraph at lines 276--277
+[]\T1/cmr/m/it/14.4 Datasets & Re-sults\T1/cmr/m/n/14.4 : Achieved 84.0% mIoU w
+ith MiT-B5 on \T1/cmr/bx/n/14.4 Cityscapes
+ []
+
+[7]
+Overfull \hbox (2.64581pt too wide) in paragraph at lines 291--292
+[]\T1/cmr/m/it/14.4 How\T1/cmr/m/n/14.4 : Com-bines a heavy ViT im-age en-coder
+ with a flex-i-ble prompt
+ []
+
+
+Overfull \hbox (7.89326pt too wide) in paragraph at lines 296--296
+[]\T1/cmr/bx/n/17.28 Kolmogorov-Arnold Net-works (KANs) in Seg-men-
+ []
+
+[8]
+Overfull \hbox (0.77438pt too wide) in paragraph at lines 312--313
+\T1/cmr/bx/n/14.4 Synapse Multi-Organ Dataset \T1/cmr/m/n/14.4 and 90.12% IoU o
+n \T1/cmr/bx/n/14.4 ISIC 2018
+ []
+
+[9]
+Overfull \hbox (12.72604pt too wide) in paragraph at lines 330--331
+[]\T1/cmr/m/it/14.4 Why\T1/cmr/m/n/14.4 : Re-placed ex-pen-sive 32-bit floating
+-point multiply-accumulate
+ []
+
+[10]
+Overfull \hbox (4.74315pt too wide) in paragraph at lines 356--357
+\T1/cmr/m/n/14.4 man-tic road seg-men-ta-tion with 1-bit quan-ti-za-tion and 68
+.1% mIoU
+ []
+
+
+Overfull \hbox (1.01477pt too wide) in paragraph at lines 360--361
+\T1/cmr/m/n/14.4 (FasterKAN, ReLU-KAN, HardSwish-KAN, PWLO-KAN, TeLU-KAN), and
+ []
+
+[11] [12]
+Overfull \hbox (0.5631pt too wide) in paragraph at lines 380--381
 []\T1/cmr/m/n/14.4 Adapt the U-KAN ar-chi-tec-ture for road seg-men-ta-tion on 
 the BDD100K
  []
 
-[4] [5]
+[13] [14]
 Chapter 2.
-[6
+[15
 
-] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17]
-<images/bdd100k_samples/img1.jpg, id=583, 1284.8pt x 722.7pt>
+] [16] [17] [18] [19] [20] [21] [22] [23] [24] [25] [26]
+<images/bdd100k_samples/img1.jpg, id=667, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/img1.jpg Graphic file (type jpg)
 <use images/bdd100k_samples/img1.jpg>
-Package pdftex.def Info: images/bdd100k_samples/img1.jpg  used on input line 53
-7.
+Package pdftex.def Info: images/bdd100k_samples/img1.jpg  used on input line 69
+4.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/img2.jpg, id=584, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/img2.jpg, id=668, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/img2.jpg Graphic file (type jpg)
 <use images/bdd100k_samples/img2.jpg>
-Package pdftex.def Info: images/bdd100k_samples/img2.jpg  used on input line 53
-8.
+Package pdftex.def Info: images/bdd100k_samples/img2.jpg  used on input line 69
+5.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/img3.jpg, id=585, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/img3.jpg, id=669, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/img3.jpg Graphic file (type jpg)
 <use images/bdd100k_samples/img3.jpg>
-Package pdftex.def Info: images/bdd100k_samples/img3.jpg  used on input line 53
-9.
+Package pdftex.def Info: images/bdd100k_samples/img3.jpg  used on input line 69
+6.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/mask1.png, id=586, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/mask1.png, id=670, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/mask1.png Graphic file (type png)
 <use images/bdd100k_samples/mask1.png>
-Package pdftex.def Info: images/bdd100k_samples/mask1.png  used on input line 5
-41.
+Package pdftex.def Info: images/bdd100k_samples/mask1.png  used on input line 6
+98.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/mask2.png, id=587, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/mask2.png, id=671, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/mask2.png Graphic file (type png)
 <use images/bdd100k_samples/mask2.png>
-Package pdftex.def Info: images/bdd100k_samples/mask2.png  used on input line 5
-42.
+Package pdftex.def Info: images/bdd100k_samples/mask2.png  used on input line 6
+99.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
-<images/bdd100k_samples/mask3.png, id=588, 1284.8pt x 722.7pt>
+<images/bdd100k_samples/mask3.png, id=672, 1284.8pt x 722.7pt>
 File: images/bdd100k_samples/mask3.png Graphic file (type png)
 <use images/bdd100k_samples/mask3.png>
-Package pdftex.def Info: images/bdd100k_samples/mask3.png  used on input line 5
-43.
+Package pdftex.def Info: images/bdd100k_samples/mask3.png  used on input line 7
+00.
 (pdftex.def)             Requested size: 140.41893pt x 78.97894pt.
 
-Overfull \hbox (4.28894pt too wide) in paragraph at lines 536--546
+Overfull \hbox (4.28894pt too wide) in paragraph at lines 693--703
  [][] 
  []
 
-[18 <./images/bdd100k_samples/img1.jpg> <./images/bdd100k_samples/img2.jpg> <./
+[27 <./images/bdd100k_samples/img1.jpg> <./images/bdd100k_samples/img2.jpg> <./
 images/bdd100k_samples/img3.jpg> <./images/bdd100k_samples/mask1.png> <./images
 /bdd100k_samples/mask2.png (PNG copy)> <./images/bdd100k_samples/mask3.png>]
 Chapter 3.
 
-Overfull \hbox (10.27014pt too wide) in paragraph at lines 556--556
+Overfull \hbox (10.27014pt too wide) in paragraph at lines 713--713
 []\T1/cmr/bx/n/20.74 UKAN: U-Shaped KAN Seg-men-ta-tion Net-
  []
 
 
-Overfull \hbox (33.03995pt too wide) in paragraph at lines 558--559
+Overfull \hbox (33.03995pt too wide) in paragraph at lines 715--716
 \T1/cmr/m/n/14.4 UKAN adapts the U-Net ar-chi-tec-ture by re-plac-ing the stan-
 dard MLP/Transformer
  []
 
-[19
+[28
 
-] [20] [21]
-Overfull \hbox (0.78918pt too wide) in paragraph at lines 649--650
+] [29] [30]
+Overfull \hbox (0.78918pt too wide) in paragraph at lines 806--807
 \T1/cmr/m/n/14.4 ties of the in-di-vid-ual ac-ti-va-tion func-tions, this sec-t
 ion de-tails how HardSwish-
  []
 
-[22] [23] [24]
+[31] [32] [33]
 LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <14.4> not available
-(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 741.
+(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 898.
 
-Overfull \hbox (3.26787pt too wide) in paragraph at lines 744--746
+Overfull \hbox (3.26787pt too wide) in paragraph at lines 901--903
 \T1/cmr/m/n/14.4 the pa-ram-e-ter ca-pac-ity ($\OMS/cmsy/m/n/14.4 ^^X$\T1/cmr/m
 /n/14.4 4.1M pa-ram-e-ters) and rep-re-sen-ta-tional band-
  []
 
-[25]
-Overfull \hbox (109.51938pt too wide) in paragraph at lines 755--766
+[34]
+Overfull \hbox (109.51938pt too wide) in paragraph at lines 912--923
  [][] 
  []
 
-[26]
-Overfull \hbox (31.89725pt too wide) in paragraph at lines 779--780
+[35]
+Overfull \hbox (31.89725pt too wide) in paragraph at lines 936--937
 \T1/cmr/m/n/14.4 For both chan-nel con-fig-u-ra-tions, the fi-nal seg-men-ta-ti
 on out-put layer (\T1/cmtt/m/n/14.4 self.final\T1/cmr/m/n/14.4 )
  []
 
-[27]
-Overfull \hbox (92.32675pt too wide) in paragraph at lines 790--792
+[36]
+Overfull \hbox (92.32675pt too wide) in paragraph at lines 947--949
 \T1/cmr/m/n/14.4 mem-ory con-sump-tion dur-ing train-ing, ac-ti-va-tion check-p
 oint-ing (\T1/cmtt/m/n/14.4 torch.utils.checkpoint\T1/cmr/m/n/14.4 )
  []
 
 
-Overfull \hbox (17.06682pt too wide) in paragraph at lines 802--803
+Overfull \hbox (17.06682pt too wide) in paragraph at lines 959--960
 \T1/cmr/m/n/14.4 bit-packed into sin-gle 32-bit un-signed in-te-gers (\T1/cmtt/
 m/n/14.4 unsigned int packed_weight\T1/cmr/m/n/14.4 ,
  []
 
-[28] [29]
-Overfull \hbox (9.71861pt too wide) in paragraph at lines 824--825
+[37] [38]
+Overfull \hbox (9.71861pt too wide) in paragraph at lines 981--982
 \T1/cmr/m/n/14.4 ($[]$), weights ($[]$), and per-connection bi-ases ($[]$) us-i
 ng the Straight-Through
  []
 
-[30]
-Overfull \hbox (95.16217pt too wide) in paragraph at lines 840--841
+[39]
+Overfull \hbox (95.16217pt too wide) in paragraph at lines 997--998
 []\T1/cmr/m/n/14.4 ImageNet-standard nor-mal-i-sa-tion ($\OML/cmm/m/it/14.4 ^^V
  \OT1/cmr/m/n/14.4 = [0\OML/cmm/m/it/14.4 :\OT1/cmr/m/n/14.4 485\OML/cmm/m/it/1
 4.4 ; \OT1/cmr/m/n/14.4 0\OML/cmm/m/it/14.4 :\OT1/cmr/m/n/14.4 456\OML/cmm/m/it
@@ -1367,49 +1442,49 @@ OT1/cmr/m/n/14.4 224\OML/cmm/m/it/14.4 ; \OT1/cmr/m/n/14.4 0\OML/cmm/m/it/14.4
 :\OT1/cmr/m/n/14.4 225]$\T1/cmr/m/n/14.4 ). 
  []
 
-[31]
+[40]
 Chapter 4.
-[32
+[41
 
-] [33]
-Overfull \hbox (30.74524pt too wide) in paragraph at lines 901--914
+] [42]
+Overfull \hbox (30.74524pt too wide) in paragraph at lines 1058--1071
  [][] 
  []
 
 
-Overfull \hbox (1.30371pt too wide) in paragraph at lines 928--938
+Overfull \hbox (1.30371pt too wide) in paragraph at lines 1085--1095
  [][] 
  []
 
-[34]
+[43]
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[35] [36] [37]
+[44] [45] [46]
 Chapter 5.
-[38
+[47
 
-] [39] (./main.bbl [40
+] [48] (./main.bbl [49
 
-]
-Underfull \hbox (badness 1584) in paragraph at lines 80--82
+] [50]
+Underfull \hbox (badness 1584) in paragraph at lines 85--87
 \T1/cmr/m/n/14.4 RSWAf ba-sis func-tions.'' [][]$\T1/cmtt/m/n/14.4 https : / / 
 github . com / AthanasiosDelis /
  []
 
-[41] [42]) [43] (./main.aux)
+[51]) [52] (./main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: DE1453805935CA38290E2CEE48A2C0B7;9620.
+(rerunfilecheck)             Checksum: 123B7016B60C22E9323746C2E0FE1A19;11569.
  ) 
 Here is how much of TeX's memory you used:
- 35022 strings out of 469515
- 679497 string characters out of 5470807
- 1194392 words of memory out of 5000000
- 62927 multiletter control sequences out of 15000+600000
+ 35052 strings out of 469515
+ 679928 string characters out of 5470807
+ 1195392 words of memory out of 5000000
+ 62937 multiletter control sequences out of 15000+600000
  654452 words of font info for 106 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  84i,12n,104p,2489b,1036s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1440,10 +1515,10 @@ xmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/share/texmf-dist/fonts/
 type1/public/cm-super/sfrm2074.pfb></usr/share/texmf-dist/fonts/type1/public/cm
 -super/sfti1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1440
 .pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt1440.pfb>
-Output written on main.pdf (54 pages, 935736 bytes).
+Output written on main.pdf (64 pages, 959462 bytes).
 PDF statistics:
- 937 PDF objects out of 1000 (max. 8388607)
- 793 compressed objects within 8 object streams
- 208 named destinations out of 1000 (max. 500000)
- 488 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1027 PDF objects out of 1200 (max. 8388607)
+ 872 compressed objects within 9 object streams
+ 228 named destinations out of 1000 (max. 500000)
+ 536 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -43,38 +43,43 @@ A.~Kirillov, E.~Mintun, N.~Ravi, H.~Mao, C.~Rolland, L.~Gustafson, T.~Xiao,
   S.~Whitehead, A.~C. Berg, W.-Y. Lo, P.~Doll{\'a}r, and R.~Girshick, ``Segment
   anything,'' {\em arXiv preprint arXiv:2304.02643}, 2023.
 
-\bibitem{kolmogorov1957}
-A.~N. Kolmogorov, ``On the representation of continuous functions of several
-  variables by superposition of continuous functions of one variable and
-  addition,'' {\em Doklady Akademii Nauk SSSR}, vol.~114, pp.~953--956, 1957.
-
-\bibitem{arnold2009}
-V.~I. Arnold, ``On the representation of functions of several variables as a
-  superposition of functions of a smaller number of variables,'' {\em Selected
-  Works}, 2009.
-
-\bibitem{li2024ukan}
-C.~Li, X.~Liu, W.~Li, C.~Wang, H.~Liu, and Y.~Yuan, ``{U-KAN} makes strong
-  backbone for medical image segmentation and generation,'' {\em arXiv preprint
-  arXiv:2406.02918}, 2024.
-
-\bibitem{qin2020bireal}
-Z.~Liu, B.~Wu, W.~Luo, X.~Yang, W.~Liu, and K.-T. Cheng, ``{Bi-Real Net}:
-  Enhancing the performance of 1-bit {CNNs} with improved representational
-  capability and advanced training algorithm,'' in {\em Proceedings of the
-  European Conference on Computer Vision (ECCV)}, pp.~722--737, 2018.
-
-\bibitem{liu2020reactnet}
-Z.~Liu, Z.~Shen, M.~Savvides, and K.-T. Cheng, ``{ReActNet}: Towards precise
-  binary neural network with generalized activation functions,'' in {\em
-  Proceedings of the European Conference on Computer Vision (ECCV)},
-  pp.~143--159, 2020.
+\bibitem{badrinarayanan2017segnet}
+V.~Badrinarayanan, A.~Kendall, and R.~Cipolla, ``{SegNet}: A deep convolutional
+  encoder-decoder architecture for image segmentation,'' {\em IEEE Transactions
+  on Pattern Analysis and Machine Intelligence}, vol.~39, no.~12,
+  pp.~2481--2495, 2017.
 
 \bibitem{chen2018deeplabv3plus}
 L.-C. Chen, Y.~Zhu, G.~Papandreou, F.~Schroff, and H.~Adam, ``Encoder-decoder
   with atrous separable convolution for semantic image segmentation,'' in {\em
   Proceedings of the European Conference on Computer Vision (ECCV)},
   pp.~801--818, 2018.
+
+\bibitem{zhao2017pspnet}
+H.~Zhao, J.~Shi, X.~Qi, X.~Wang, and J.~Jia, ``Pyramid scene parsing network,''
+  in {\em Proceedings of the IEEE Conference on Computer Vision and Pattern
+  Recognition (CVPR)}, pp.~2881--2890, 2017.
+
+\bibitem{paszke2016enet}
+A.~Paszke, A.~Chaurasia, S.~Kim, and E.~Culurciello, ``{ENet}: A deep neural
+  network architecture for real-time semantic segmentation,'' {\em arXiv
+  preprint arXiv:1606.02147}, 2016.
+
+\bibitem{yu2018bisenet}
+C.~Yu, J.~Wang, P.~C. Chao, C.~Gao, N.~Sang, and J.~Liu, ``{BiSeNet}: Bilateral
+  segmentation network for real-time semantic segmentation,'' in {\em
+  Proceedings of the European Conference on Computer Vision (ECCV)},
+  pp.~325--341, 2018.
+
+\bibitem{kolmogorov1957}
+A.~N. Kolmogorov, ``On the representation of continuous functions of several
+  variables by superposition of continuous functions of one variable and
+  addition,'' {\em Doklady Akademii Nauk SSSR}, vol.~114, pp.~953--956, 1957.
+
+\bibitem{li2024ukan}
+C.~Li, X.~Liu, W.~Li, C.~Wang, H.~Liu, and Y.~Yuan, ``{U-KAN} makes strong
+  backbone for medical image segmentation and generation,'' {\em arXiv preprint
+  arXiv:2406.02918}, 2024.
 
 \bibitem{fasterkan2024}
 A.~Tsiamis, ``{FasterKAN}: Accelerating kolmogorov-arnold networks with {RSWAf}
@@ -92,6 +97,18 @@ M.~Rastegari, V.~Ordonez, J.~Redmon, and A.~Farhadi, ``{XNOR-Net}: Imagenet
   Proceedings of the European Conference on Computer Vision (ECCV)},
   pp.~525--542, 2016.
 
+\bibitem{qin2020bireal}
+Z.~Liu, B.~Wu, W.~Luo, X.~Yang, W.~Liu, and K.-T. Cheng, ``{Bi-Real Net}:
+  Enhancing the performance of 1-bit {CNNs} with improved representational
+  capability and advanced training algorithm,'' in {\em Proceedings of the
+  European Conference on Computer Vision (ECCV)}, pp.~722--737, 2018.
+
+\bibitem{liu2020reactnet}
+Z.~Liu, Z.~Shen, M.~Savvides, and K.-T. Cheng, ``{ReActNet}: Towards precise
+  binary neural network with generalized activation functions,'' in {\em
+  Proceedings of the European Conference on Computer Vision (ECCV)},
+  pp.~143--159, 2020.
+
 \bibitem{qin2020irnet}
 H.~Qin, R.~Gong, X.~Liu, M.~Shen, Z.~Wei, F.~Yu, and J.~Song, ``Forward and
   backward information retention for accurate binary neural networks,'' in {\em
@@ -108,6 +125,11 @@ B.~Zhuang, C.~Shen, M.~Tan, L.~Liu, and I.~Reid, ``Structured binary neural
   networks for accurate image classification and semantic segmentation,'' in
   {\em Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
   Recognition (CVPR)}, pp.~413--422, 2019.
+
+\bibitem{arnold2009}
+V.~I. Arnold, ``On the representation of functions of several variables as a
+  superposition of functions of a smaller number of variables,'' {\em Selected
+  Works}, 2009.
 
 \bibitem{li2024fastkan}
 Z.~Li, ``Kolmogorov-arnold networks are radial basis function networks,'' {\em
