@@ -48,6 +48,17 @@ N.~Silberman, D.~Hoiem, P.~Kohli, and R.~Fergus, ``Indoor segmentation and
   support inference from {RGBD} images,'' in {\em Proceedings of the European
   Conference on Computer Vision (ECCV)}, pp.~746--760, 2012.
 
+\bibitem{maska2014isbi}
+M.~Ma{\v{s}}ka, C.~Ortiz-de Sol{\'a}rzano, A.~Dornier, {\em et~al.}, ``A
+  benchmark for comparison of cell tracking algorithms,'' {\em Bioinformatics},
+  vol.~30, no.~11, pp.~1609--1617, 2014.
+
+\bibitem{fritsch2013kitti}
+J.~Fritsch, T.~K{\"u}hnl, and A.~Geiger, ``A new performance measure and
+  evaluation benchmark for road detection algorithms,'' in {\em IEEE
+  International Conference on Intelligent Transportation Systems (ITSC)},
+  pp.~1693--1700, 2013.
+
 \bibitem{badrinarayanan2017segnet}
 V.~Badrinarayanan, A.~Kendall, and R.~Cipolla, ``{SegNet}: A deep convolutional
   encoder-decoder architecture for image segmentation,'' {\em IEEE Transactions
