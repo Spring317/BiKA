@@ -6,6 +6,9 @@
 \addvspace {10\p@ }
 \contentsline {table}{\numberline {4.1}{\ignorespaces Segmentation accuracy comparison across architectures on BDD100K road segmentation.}}{38}{table.caption.31}%
 \contentsline {table}{\numberline {4.2}{\ignorespaces Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio.}}{39}{table.caption.32}%
-\contentsline {table}{\numberline {4.3}{\ignorespaces Per-component inference latency comparison between UKAN and BiKASegNet.}}{39}{table.caption.33}%
-\contentsline {table}{\numberline {4.4}{\ignorespaces Ablation study on knowledge distillation and boundary loss for BiKASegNet.}}{40}{table.caption.34}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Per-component inference latency comparison between UKAN (FP32) and BiKASegNet (1-bit).}}{39}{table.caption.33}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces BiKASegNet GPU CUDA kernel optimization progression across versions V1--V8.}}{40}{table.caption.34}%
+\contentsline {table}{\numberline {4.5}{\ignorespaces BiKASegNet CPU SIMD optimization journey (x86\_64, 12 Threads, AVX2 SIMD).}}{40}{table.caption.35}%
+\contentsline {table}{\numberline {4.6}{\ignorespaces Ablation study on Knowledge Distillation ($\tau =4$) and boundary loss for BiKASegNet.}}{41}{table.caption.36}%
+\contentsline {table}{\numberline {4.7}{\ignorespaces Ablation study on individual BNN architectural components within \texttt {BiKAConvBlock}.}}{41}{table.caption.37}%
 \addvspace {10\p@ }

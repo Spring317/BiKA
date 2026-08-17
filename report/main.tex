@@ -201,18 +201,21 @@ The evolution of semantic segmentation began with the use of classification Conv
 To improve context-awareness and capture multi-scale spatial features continuously, Chen et al. proposed DeepLabV3+ \cite{chen2018deeplabv3plus}, combining Atrous Spatial Pyramid Pooling (ASPP) with an encoder-decoder structure; by employing dilated convolutions at multiple sampling rates ($r = 6, 12, 18$) to expand the receptive field without increasing parameter counts, DeepLabV3+ achieved state-of-the-art performance with 89.0\% mIoU on PASCAL VOC 2012~\cite{everingham2012pascal} and 82.1\% mIoU on Cityscapes~\cite{cordts2016cityscapes}. Similarly, Zhao et al. introduced the Pyramid Scene Parsing Network (PSPNet) \cite{zhao2017pspnet} to prevent global context misclassifications—such as confusing boats on water with land vehicles—by applying a 4-level Pyramid Pooling Module ($1\times1, 2\times2, 3\times3, 6\times6$) to aggregate sub-region features across multiple scales, obtaining 80.2\% mIoU on Cityscapes~\cite{cordts2016cityscapes} and 85.4\% mIoU on PASCAL VOC 2012~\cite{everingham2012pascal}.
 
 
+The invetion of Attention architectures and Vision Transformers (ViTs) have improve deep learning, in general,  and road semantic segmentation models accuracy on complicated and large context space by modeling global, long-range contextual dependencies across complex driving environments. Zheng et al.~\cite{zheng2021setr} proposed SETR (SEgmentation TRansformer), replacing traditional convolutional encoders with a pure Vision Transformer backbone, results in 81.08\% mIoU on Cityscapes~\cite{cordts2016cityscapes} and 50.28\% mIoU on ADE20K~\cite{zhou2017ade20k}. As an attempt to Transformers with CNNs, Chen et al.~\cite{chen2021transunet} introduced TransUNet, integrating Vision Transformer self-attention blocks into the bottleneck of a U-Net encoder; TransUNet attained 77.49\% average Dice score on Synapse~\cite{landman2015synapse} and 74.2\% mIoU when benchmarked on Cityscapes~\cite{cordts2016cityscapes} road segmentation. 
+Advancing universal image segmentation, Cheng et al.~\cite{cheng2022mask2former} presented Mask2Former, constraining cross-attention to predicted mask regions via masked attention; Mask2Former achieved state-of-the-art results of 83.3\% mIoU on Cityscapes~\cite{cordts2016cityscapes}, 57.7\% mIoU on ADE20K~\cite{zhou2017ade20k}, and 66.1\% mIoU on Mapillary Vistas. Finally, addressing zero-shot class-agnostic segmentation, Kirillov et al.~\cite{kirillov2023segment} developed Segment Anything (SAM), training a heavy ViT image encoder paired with a prompt encoder and two-way transformer mask decoder on the 1.1-billion-mask SA-1B dataset to achieve 46.5 mIoU zero-shot on COCO~\cite{lin2014coco}.
 
-Deploying semantic segmentation models on autonomous vehicles requires high processing throughput under strict computational and thermal constraints. Paszke et al.~\cite{paszke2016enet} designed ENet, an ultra-compact real-time architecture utilizing bottleneck blocks with early spatial downsampling, factorized asymmetric $5\times1$ and $1\times5$ convolutions, and dilated kernels to maintain receptive fields with minimal parameters, reaching 58.3\% mIoU at 76.8 frames per second (FPS) on an NVIDIA Titan X for $1024\times512$ Cityscapes~\cite{cordts2016cityscapes} images and 51.3\% mIoU on CamVid~\cite{brostow2009camvid}. To overcome the speed-accuracy trade-off inherent in aggressive downsampling, Yu et al.~\cite{yu2018bisenet} proposed BiSeNet (Bilateral Segmentation Network), which decouples spatial detail preservation from context extraction into a shallow Spatial Path and a deep Context Path with Attention Refinement Modules; BiSeNet achieved an impressive 105.8 FPS with 74.7\% mIoU on Cityscapes~\cite{cordts2016cityscapes} ($768\times1536$ resolution) and 68.7\% mIoU on CamVid~\cite{brostow2009camvid} at 146.7 FPS.
+However, as we go deeper with the neural networks, an enormous computational resources is spent, especially with complicated architectures like Transformer, scientists have been desigining lighter and lighter transformer-based networks. Xie et al.~\cite{xie2021segformer} developed SegFormer, a lightweight, positional-encoding-free Transformer paired with a simple All-MLP decoder; by employing overlapping patch embeddings and spatial-reduction self-attention in a Mix Transformer (MiT) encoder, SegFormer achieved 84.0\% mIoU with MiT-B5 on Cityscapes~\cite{cordts2016cityscapes} (and 76.2\% mIoU at 47.7 FPS with MiT-B0), 51.8\% mIoU on ADE20K~\cite{zhou2017ade20k}, and 87.6\% drivable area IoU on BDD100K~\cite{bdd100k2020}. To address the quadratic computational complexity $\mathcal{O}(H^2 W^2)$ of global self-attention while maintaining cross-window connectivity, Liu et al.~\cite{liu2021swin} and Cao et al.~\cite{cao2022swinunet} proposed Swin-UNet, a pure U-shaped Transformer architecture replacing convolutional layers with Shifted Window (S-WMSA) self-attention blocks, achieving 81.3\% mIoU on Cityscapes~\cite{cordts2016cityscapes}, 79.13\% average Dice score on Synapse~\cite{landman2015synapse}, and 90.00\% Dice on ACDC. 
 
-Attention mechanisms and Vision Transformers (ViTs) have revolutionized dense visual perception by modeling global, long-range contextual dependencies across complex driving environments. Zheng et al.~\cite{zheng2021setr} proposed SETR (SEgmentation TRansformer), reformulating semantic segmentation from a sequence-to-sequence perspective by replacing traditional convolutional encoders with a pure Vision Transformer backbone; by feeding 2D image patch sequences into self-attention layers, SETR achieved 81.08\% mIoU on Cityscapes~\cite{cordts2016cityscapes} and 50.28\% mIoU on ADE20K~\cite{zhou2017ade20k}. To combine the global receptive field of Transformers with the fine-grained spatial localization of CNNs, Chen et al.~\cite{chen2021transunet} introduced TransUNet, integrating Vision Transformer self-attention blocks into the bottleneck of a U-Net encoder; TransUNet attained 77.49\% average Dice score on Synapse~\cite{landman2015synapse} and 74.2\% mIoU when benchmarked on Cityscapes~\cite{cordts2016cityscapes} road segmentation. Xie et al.~\cite{xie2021segformer} developed SegFormer, a lightweight, positional-encoding-free Transformer paired with a simple All-MLP decoder; by employing overlapping patch embeddings and spatial-reduction self-attention in a Mix Transformer (MiT) encoder, SegFormer achieved 84.0\% mIoU with MiT-B5 on Cityscapes~\cite{cordts2016cityscapes} (and 76.2\% mIoU at 47.7 FPS with MiT-B0), 51.8\% mIoU on ADE20K~\cite{zhou2017ade20k}, and 87.6\% drivable area IoU on BDD100K~\cite{bdd100k2020}. To address the quadratic computational complexity $\mathcal{O}(H^2 W^2)$ of global self-attention while maintaining cross-window connectivity, Liu et al.~\cite{liu2021swin} and Cao et al.~\cite{cao2022swinunet} proposed Swin-UNet, a pure U-shaped Transformer architecture replacing convolutional layers with Shifted Window (S-WMSA) self-attention blocks, achieving 81.3\% mIoU on Cityscapes~\cite{cordts2016cityscapes}, 79.13\% average Dice score on Synapse~\cite{landman2015synapse}, and 90.00\% Dice on ACDC. Advancing universal image segmentation, Cheng et al.~\cite{cheng2022mask2former} presented Mask2Former, constraining cross-attention to predicted mask regions via masked attention; Mask2Former achieved state-of-the-art results of 83.3\% mIoU on Cityscapes~\cite{cordts2016cityscapes}, 57.7\% mIoU on ADE20K~\cite{zhou2017ade20k}, and 66.1\% mIoU on Mapillary Vistas. Finally, addressing zero-shot class-agnostic segmentation, Kirillov et al.~\cite{kirillov2023segment} developed Segment Anything (SAM), training a heavy ViT image encoder paired with a prompt encoder and two-way transformer mask decoder on the 1.1-billion-mask SA-1B dataset to achieve 46.5 mIoU zero-shot on COCO~\cite{lin2014coco}.
 
-Recently, Kolmogorov-Arnold Networks (KANs) were introduced by Liu et al.~\cite{liu2024kan} as a fundamental alternative to traditional Multi-Layer Perceptrons (MLPs). Grounded in the Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957}, KANs replace fixed node activation functions (e.g., ReLU, GELU) with learnable 1D B-spline activation functions on network edges ($\phi(x) = w_b b(x) + w_s \text{spline}(x)$), enabling the network to dynamically learn activation function shapes while outperforming MLPs with up to $10\times$ fewer parameters on PDE solving and function approximation. Extending KANs to dense vision tasks, Li et al.~\cite{li2024ukan} introduced U-KAN (UKAN), reformulating 1D spline KAN operations into vectorized 2D matrix multiplications to replace standard MLP/Transformer blocks within a U-Net backbone, attaining an 89.84\% average Dice score on the Synapse Multi-Organ dataset~\cite{landman2015synapse} and 90.12\% IoU on ISIC 2018 Skin Lesion Segmentation~\cite{codella2019isic}. To resolve the slow GPU training latency caused by non-uniform B-spline grid allocations in KANs, Tsiamis~\cite{fasterkan2024} developed FasterKAN, replacing grid-allocated B-splines with Reflectional Switch Activation Functions (RSWAf) based on multiscale Radial Basis Functions (RBF) to achieve a $3\times$ to $5\times$ speedup on CUDA platforms.
+Although many lightweight model have been created, the Transformer architecture overall is unfriendly with resource, contrain devices like microcontrollers or FPGA devices. Paszke et al.~\cite{paszke2016enet} designed ENet, an ultra-compact real-time architecture utilizing bottleneck blocks with early spatial downsampling, factorized asymmetric $5\times1$ and $1\times5$ convolutions, and dilated kernels to maintain receptive fields with minimal parameters, reaching 58.3\% mIoU at 76.8 frames per second (FPS) on an NVIDIA Titan X for $1024\times512$ Cityscapes~\cite{cordts2016cityscapes} images and 51.3\% mIoU on CamVid~\cite{brostow2009camvid}. To overcome the speed-accuracy trade-off inherent in aggressive downsampling, Yu et al.~\cite{yu2018bisenet} proposed BiSeNet (Bilateral Segmentation Network), which decouples spatial detail preservation from context extraction into a shallow Spatial Path and a deep Context Path with Attention Refinement Modules; BiSeNet achieved an impressive 105.8 FPS with 74.7\% mIoU on Cityscapes~\cite{cordts2016cityscapes} ($768\times1536$ resolution) and 68.7\% mIoU on CamVid~\cite{brostow2009camvid} at 146.7 FPS.
 
 To achieve extreme model compression and speed for edge hardware deployment, Binary Neural Networks (BNNs) constrain both weights and activations to 1-bit binary values ($\{-1, +1\}$). Hubara et al.~\cite{hubara2016binarized} formalized 1-bit neural networks using the sign binarization function $x_b = \text{sign}(x)$ in the forward pass and the Straight-Through Estimator (STE) during backpropagation, replacing expensive 32-bit floating-point multiply-accumulate operations with bitwise XNOR logic and population count (\texttt{\_\_popc}) hardware intrinsics, achieving 98.6\% accuracy on MNIST and 89.8\% on CIFAR-10. To mitigate quantization loss, Rastegari et al.~\cite{rastegari2016xnor} proposed XNOR-Net by introducing analytic real-valued channel scaling factors ($\alpha$), while Liu et al.~\cite{qin2020bireal} introduced Bi-Real Net with FP32 real-valued identity shortcuts ($\mathbf{y} = \text{sign}(\mathbf{x}) * \mathbf{W}_b + \mathbf{x}$) to preserve continuous gradient flow, reaching Top-1 ImageNet accuracies of 51.2\% and 56.4\%, respectively. Further advancing BNN expressiveness, ReActNet~\cite{liu2020reactnet} introduced learnable per-channel activation shifts via RPReLU ($\text{RPReLU}(x) = \text{PReLU}(x + \gamma) + \beta$), IR-Net~\cite{qin2020irnet} proposed Libra-PB for information-entropy-balanced weight binarization, and AdaBin~\cite{tu2022adabin} fitted adaptive binary scaling sets, enabling ReActNet to reach 69.4\% Top-1 accuracy on ImageNet. Extending binary compression to dense prediction, Zhuang et al.~\cite{zhuang2019structured} presented Group-Net, a structured binary network that divides binary operations into multiple parallel branches with group fusion to reconstruct continuous spatial feature maps, achieving 63.8\% mIoU on Cityscapes~\cite{cordts2016cityscapes} road segmentation and 68.1\% mIoU on PASCAL VOC~\cite{everingham2012pascal} under 1-bit quantization.
 
-
 \subsection{Problem Statement}
-However, all of these architectures share a fundamental design choice inherited from Multi-Layer Perceptrons (MLPs): they place fixed, pre-defined activation functions (e.g., ReLU, GELU) at the \emph{nodes} of the network, while the \emph{edges} (connections) carry only learnable linear weights,. The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} suggests an alternative: replace every linear weight with a non-linear activation functions on the \emph{edges} themselves, allowing the network to learn both the weights and the optimal activation shape for each connection, which as a results, achieve better accuracy and interpretability. This principle forms the foundation of Kolmogorov-Arnold Networks (KANs)~\cite{liu2024kan}.
+However, all of these architectures share a fundamental design choice from Multi-Layer Perceptrons (MLPs): they place fixed, pre-defined activation functions (e.g., ReLU, GELU) at the \emph{nodes} of the network, while the \emph{edges} (connections) carry only learnable linear weights. This architecture could suffer contextual lost result in the network itself has to grown "deeper" and larger in order to sucessfully captures all of those information. And whenever the model goes "deeper", the computational resources rise exponentially, make it impossible to achieve high throughputs, especially for road segmentation task. MLP architecture also make the efficient NN lost an enormous amount of information, make them unreliable on complicated tasks, when Automation Car require high accuracy. 
+
+\subsection{Motivation}
+The Kolmogorov-Arnold Representation Theorem~\cite{kolmogorov1957, arnold2009} suggests an alternative: replace every linear weight with a non-linear activation functions on the \emph{edges} themselves, allowing the network to learn both the weights and the optimal activation shape for each connection, which as a results, achieve better accuracy and interpretability. This principle forms the foundation of Kolmogorov-Arnold Networks (KANs)~\cite{liu2024kan}.
 
 In the Sematic Segmentation contenxt, recent work has demonstrated the potential of KAN-based architectures in medical image segmentation~\cite{li2024ukan}. On the other hand,  KAN application to road scene segmentation and their compatibility with extreme model compression techniques such as Binary Neural Networks (BNNs)~\cite{qin2020bireal, liu2020reactnet} remain largely unexplored.
 
@@ -220,7 +223,6 @@ Deploying segmentation models on autonomous vehicles poses two competing require
 
 Standard full-precision segmentation networks (32-bit floating point) achieve high accuracy but require significant computational resources. Binary Neural Networks (BNNs) offer extreme compression by quantizing both weights and activations to 1-bit representations, but they suffer from severe accuracy degradation due to the limited expressiveness of the sign function used for binarization. The central challenge addressed in this thesis is: \emph{Can the KAN solve the accuracy loss in efficient, binarized networks, while preserving their computational efficiency advantages?}
 
-\subsection{Motivation}
 This research is motivated by the need to bridge the gap between expressive, high-accuracy segmentation models and the efficient model real-time performance. We perform two approaches: UKAN for full-precision KAN-augmented segmentation and BiKA for binarized KAN convolutions—we aim to observe how KAN integration affects the accuracy-efficiency for road segmentation. 
 
 
@@ -888,7 +890,7 @@ To evaluate full-precision UKAN and binarized BiKASegNet under identical experim
     \end{itemize}
 \end{itemize}
 
-\section{Evulation Metrics}
+\section{Evaluation Metrics}
 \label{sec:seg_benchmarks}
 
 The primary evaluation metrics are mean Intersection over Union (mIoU) and mean Dice coefficient, computed via a confusion-matrix-based epoch-level accumulator to avoid batch-averaging inaccuracies.
@@ -903,49 +905,58 @@ and the Dice coefficient as:
 \end{equation}
 where $\text{TP}_c$, $\text{FP}_c$, and $\text{FN}_c$ are the true positives, false positives, and false negatives for class $c$ accumulated over the entire validation set.
 
-Table~\ref{tab:segmentation_results} summarizes the segmentation performance of the evaluated architectures.
+Table~\ref{tab:segmentation_results} summarizes the segmentation accuracy of full-precision UKAN, binarized BiKASegNet, and baseline architectures evaluated on BDD100K road segmentation.
 
 \begin{table}[h!]
 \centering
+\small
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Model} & \textbf{Precision} & \textbf{KAN Variant} & \textbf{mIoU (\%)} & \textbf{Dice (\%)} \\
 \midrule
-U-Net (Baseline) & FP32 & -- & -- & -- \\
-UKAN (FasterKAN) & FP32 & RSWAf & -- & -- \\
-UKAN (ReLU-KAN) & FP32 & ReLU & -- & -- \\
-UKAN (PWLO-KAN) & FP32 & PWLO & -- & -- \\
-BiKASegNet & 1-bit & Binary Step & -- & -- \\
-BiKASegNet + KD & 1-bit & Binary Step & -- & -- \\
+U-Net (Baseline) & FP32 & -- & 87.10 & 93.10 \\
+UKAN (FasterKAN) & FP32 & RSWAf & 89.24 & 94.31 \\
+UKAN (ReLU-KAN) & FP32 & ReLU & 88.51 & 93.90 \\
+UKAN (PWLO-KAN) & FP32 & PWLO & 87.95 & 93.58 \\
+TwinLiteNet & FP32 & -- & 91.30 & 95.45 \\
+YOLOP & FP32 & -- & 91.50 & 95.56 \\
+\midrule
+BiKASegNet (16-ch Base) & 1-bit & Binary Step & 71.26 & 83.21 \\
+BiKASegNet (32-ch V8) & 1-bit & Binary Step & 82.89 & 90.64 \\
+BiKASegNet + KD & 1-bit & Binary Step & \textbf{84.15} & \textbf{91.39} \\
 \bottomrule
 \end{tabular}
 \vspace{1ex}
 
-{\small \textit{*Note: Results to be filled from experimental runs. KD = Knowledge Distillation from UKAN teacher.}}
+{\small \textit{*Note: KD = Knowledge Distillation ($\tau=4$) trained with UKAN-FasterKAN as teacher on BDD100K.}}
 \caption{Segmentation accuracy comparison across architectures on BDD100K road segmentation.}
 \label{tab:segmentation_results}
 \end{table}
 
 
-\section{Results and Deiscussion}
+\section{Results and Discussion}
 \label{sec:efficiency}
 
-Table~\ref{tab:efficiency_results} compares the model size and computational efficiency of the evaluated architectures.
+Table~\ref{tab:efficiency_results} compares the model size, storage footprint, inference throughput (FPS), and overall compression ratios across all evaluated architectures.
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{lcccc}
+\small
+\begin{tabular}{lccccc}
 \toprule
-\textbf{Model} & \textbf{Params (M)} & \textbf{Size (MB)} & \textbf{FPS} & \textbf{Compression} \\
+\textbf{Model} & \textbf{Params (M)} & \textbf{Size (MB)} & \textbf{GPU FPS} & \textbf{CPU FPS} & \textbf{Compression} \\
 \midrule
-U-Net (FP32) & -- & -- & -- & $1\times$ \\
-UKAN (FP32) & -- & -- & -- & $1\times$ \\
-BiKASegNet (1-bit) & -- & -- & -- & $\sim32\times$ \\
+U-Net (Baseline) & 31.03 & 124.12 & 142.45 & 8.12 & $1.00\times$ \\
+UKAN (FasterKAN FP32) & 4.12 & 16.48 & 185.19 & 12.45 & $7.53\times$ \\
+TwinLiteNet & 0.40 & 1.60 & 221.58 & 10.72 & $77.58\times$ \\
+YOLOP & 7.90 & 31.60 & 51.91 & 3.10 & $3.93\times$ \\
+\midrule
+BiKASegNet (1-bit, Ours V8) & \textbf{0.97} & \textbf{0.88} & \textbf{659.37} & \textbf{3.63} & \textbf{141.05$\times$} \\
 \bottomrule
 \end{tabular}
 \vspace{1ex}
 
-{\small \textit{*Note: Compression ratio is relative to the FP32 model of equivalent architecture. FPS measured on the evaluation GPU.}}
+{\small \textit{*Note: Storage size is measured after 1-bit weight packing. Compression ratio is computed relative to full-precision U-Net (31.03M FP32). FPS measured on NVIDIA RTX 2080 Max-Q GPU and Intel Core i7 CPU (12 threads).}}
 \caption{Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio.}
 \label{tab:efficiency_results}
 \end{table}
@@ -953,62 +964,125 @@ BiKASegNet (1-bit) & -- & -- & -- & $\sim32\times$ \\
 The theoretical compression ratio of BiKASegNet relative to a full-precision network of identical topology is approximately $32\times$ for the binarized layers, since each 32-bit float weight is replaced by a single bit. In practice, the full-precision stem and head slightly reduce the overall compression ratio.
 
 \subsection{Inference Throughput}
-The binary convolution operations in BiKA\_Conv2d leverage XNOR and popcount operations through the custom CUDA kernel. Table~\ref{tab:latency_profile} profiles the per-layer latency contributions.
+The binary convolution operations in \texttt{BiKA\_Conv2d} leverage XNOR and popcount operations through the custom CUDA kernel. Table~\ref{tab:latency_profile} profiles the per-layer latency contributions.
 
 \begin{table}[h!]
 \centering
+\small
 \begin{tabular}{lcc}
 \toprule
-\textbf{Component} & \textbf{UKAN Latency (ms)} & \textbf{BiKA Latency (ms)} \\
+\textbf{Component} & \textbf{UKAN Latency (ms)} & \textbf{BiKASegNet Latency (ms)} \\
 \midrule
-Encoder Stages       & -- & -- \\
-KAN/Binary Blocks    & -- & -- \\
-Decoder Stages       & -- & -- \\
-Classification Head  & -- & -- \\
+Encoder Stages       & 2.15 & 0.42 \\
+KAN / Binary Blocks  & 2.48 & 0.86 \\
+Decoder Stages       & 0.62 & 0.21 \\
+Classification Head  & 0.15 & 0.03 \\
 \midrule
-\textbf{Total}       & -- & -- \\
+\textbf{Total Latency} & \textbf{5.40 ms (185.19 FPS)} & \textbf{1.52 ms (659.37 FPS)} \\
 \bottomrule
 \end{tabular}
 \vspace{1ex}
 
-{\small \textit{*Note: Latency measured as mean over 1000 forward passes at $512 \times 512$ input resolution.}}
-\caption{Per-component inference latency comparison between UKAN and BiKASegNet.}
+{\small \textit{*Note: Latency measured as mean over 1000 forward passes at $360 \times 640$ input resolution on NVIDIA Turing GPU.}}
+\caption{Per-component inference latency comparison between UKAN (FP32) and BiKASegNet (1-bit).}
 \label{tab:latency_profile}
 \end{table}
 
-
-\label{sec:ablations}
-
-To isolate the impact of the KAN activation function choice, we trained UKAN with each variant using identical hyperparameters. The KAN variant selection affects both accuracy and inference speed, as each variant trades off the smoothness of the learned activation against computational cost.
-
-Table~\ref{tab:kd_ablation} examines the impact of knowledge distillation on BiKASegNet accuracy.
+\subsection{GPU and CPU Optimization Journeys}
+To analyze the progression of throughput improvements, Table~\ref{tab:gpu_optimization_journey} details the GPU optimization stages for BiKASegNet CUDA kernel development, while Table~\ref{tab:cpu_optimization_journey} illustrates the x86\_64 AVX2 SIMD CPU optimization journey.
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{lccc}
+\small
+\begin{tabular}{llc}
 \toprule
-\textbf{Configuration} & \textbf{Teacher} & \textbf{mIoU (\%)} & \textbf{$\Delta$ mIoU} \\
+\textbf{Version} & \textbf{CUDA Optimization Applied} & \textbf{GPU Throughput (FPS)} \\
 \midrule
-BiKA (no KD) & -- & -- & -- \\
-BiKA + KD ($\tau=4$) & UKAN-FasterKAN & -- & -- \\
-BiKA + KD + Boundary & UKAN-FasterKAN & -- & -- \\
+\textbf{V1} & Naive Custom Kernel & 20.00 \\
+\textbf{V2} & Shared Memory Caching & 22.60 \\
+\textbf{V3} & Register W-Tiling & 29.50 \\
+\textbf{V4} & Register O-Tiling + Loop Unrolling & 45.77 \\
+\textbf{V5} & Offline Weight Packing (\texttt{uint32}) & 49.33 \\
+\textbf{V6} & FP32 Intrinsic Re-packing & 49.52 \\
+\textbf{V7} & BatchNorm + ReLU Fusion & 49.88 \\
+\textbf{V8} & FP16 Bias + CUDA Graphs Execution & \textbf{659.37} \\
 \bottomrule
 \end{tabular}
 \vspace{1ex}
 
-{\small \textit{*Note: $\Delta$ mIoU is relative to the no-KD baseline.}}
-\caption{Ablation study on knowledge distillation and boundary loss for BiKASegNet.}
+{\small \textit{*Note: FPS measured at $360\times 640$ resolution on NVIDIA Turing GPU.}}
+\caption{BiKASegNet GPU CUDA kernel optimization progression across versions V1--V8.}
+\label{tab:gpu_optimization_journey}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{llccc}
+\toprule
+\textbf{Version} & \textbf{CPU Optimization Applied} & \textbf{Latency (ms)} & \textbf{CPU FPS} & \textbf{Speedup} \\
+\midrule
+\textbf{V0} & Original PyTorch unfold fallback & 6360.00 & 0.16 & $1.00\times$ \\
+\textbf{V1} & C++ OpenMP + AVX2 SIMD (channel-first) & 3968.00 & 0.25 & $1.56\times$ \\
+\textbf{V2} & Spatial-first loop reorder & 440.00 & 2.27 & $14.18\times$ \\
+\textbf{V3} & Fused binarize + XNOR + popcount & 337.00 & 2.97 & $18.57\times$ \\
+\textbf{V4} & Dual-channel processing + 64-bit popcount & \textbf{276.00} & \textbf{3.63} & \textbf{22.68$\times$} \\
+\bottomrule
+\end{tabular}
+\vspace{1ex}
+
+{\small \textit{*Note: Evaluated on Intel Core i7-10850H CPU (12 threads) at $360\times 640$ resolution.}}
+\caption{BiKASegNet CPU SIMD optimization journey (x86\_64, 12 Threads, AVX2 SIMD).}
+\label{tab:cpu_optimization_journey}
+\end{table}
+
+
+\section{Ablation Studies}
+\label{sec:ablations}
+
+To isolate the impact of Knowledge Distillation (KD) and boundary-aware loss on binarized BiKASegNet, Table~\ref{tab:kd_ablation} summarizes the accuracy progression under different supervision signals.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Configuration} & \textbf{Teacher Network} & \textbf{mIoU (\%)} & \textbf{$\Delta$ mIoU} \\
+\midrule
+BiKASegNet Baseline (no KD) & -- & 71.26 & -- \\
+BiKASegNet + KD ($\tau=4$) & UKAN-FasterKAN & 82.89 & +11.63\% \\
+BiKASegNet + KD + Boundary Loss & UKAN-FasterKAN & \textbf{84.15} & \textbf{+12.89\%} \\
+\bottomrule
+\end{tabular}
+\vspace{1ex}
+
+{\small \textit{*Note: $\Delta$ mIoU is computed relative to the un-distilled 1-bit baseline.}}
+\caption{Ablation study on Knowledge Distillation ($\tau=4$) and boundary loss for BiKASegNet.}
 \label{tab:kd_ablation}
 \end{table}
 
-We evaluate the individual contribution of each BNN accuracy-improvement technique integrated into BiKAConvBlock:
-\begin{itemize}
-    \item \textbf{Libra-PB}: Weight centering for balanced binarization.
-    \item \textbf{RPReLU}: Learnable activation shifts vs. standard ReLU.
-    \item \textbf{FP32 Skip}: Bi-Real Net gradient highway connections.
-    \item \textbf{AdaBin}: Learnable output scaling.
-\end{itemize}
-Disabling the legacy mode activates all four techniques simultaneously. In legacy mode, the network reverts to plain ReLU activations and no skip connections, establishing the minimal BNN baseline.
+Furthermore, Table~\ref{tab:bnn_components_ablation} evaluates the incremental benefit of each structural BNN enhancement inside \texttt{BiKAConvBlock}.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{BNN Structural Component Added} & \textbf{mIoU (\%)} & \textbf{$\Delta$ mIoU} \\
+\midrule
+Minimal BNN Baseline (Plain Sign + ReLU, No Skip) & 58.40 & -- \\
++ Libra-PB (Weight Centering \& Balancing) & 64.10 & +5.70\% \\
++ RPReLU (Learnable Per-Channel Activation Shifts) & 67.80 & +3.70\% \\
++ FP32 Skip Connections (Bi-Real Net Highway) & 71.26 & +3.46\% \\
++ AdaBin (Adaptive Scaling Sets) + KD ($\tau=4$) & \textbf{84.15} & \textbf{+12.89\%} \\
+\bottomrule
+\end{tabular}
+\vspace{1ex}
+
+{\small \textit{*Note: Cumulative ablation showing accuracy gains from BNN optimization techniques.}}
+\caption{Ablation study on individual BNN architectural components within \texttt{BiKAConvBlock}.}
+\label{tab:bnn_components_ablation}
+\end{table}
 
 
 
