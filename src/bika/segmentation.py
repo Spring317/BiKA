@@ -28,18 +28,19 @@ class BiKAConvBlock(nn.Module):
       - FP32 skip (Bi-Real Net) → gradient highway
       - Activation checkpointing → ~60% less VRAM during training
     """
-    def __init__(self, in_ch: int, out_ch: int):
+    def __init__(self, in_ch: int, out_ch: int, legacy_mode: bool = False):
         super().__init__()
+        self.legacy_mode = legacy_mode
         self.conv1 = BiKA_Conv2d(in_ch, out_ch, kernel_size=3, padding=1)
         self.bn1 = nn.BatchNorm2d(out_ch)
-        self.act1 = RPReLU(out_ch)  # ReActNet-inspired: distribution reshape
+        self.act1 = nn.ReLU(inplace=True) if legacy_mode else RPReLU(out_ch)
 
         self.conv2 = BiKA_Conv2d(out_ch, out_ch, kernel_size=3, padding=1)
         self.bn2 = nn.BatchNorm2d(out_ch)
-        self.act2 = RPReLU(out_ch)
+        self.act2 = nn.ReLU(inplace=True) if legacy_mode else RPReLU(out_ch)
 
         # FP32 Skip Connection (Bi-Real Net, ECCV 2018)
-        if in_ch != out_ch:
+        if not legacy_mode and in_ch != out_ch:
             self.skip = nn.Sequential(
                 nn.Conv2d(in_ch, out_ch, kernel_size=1, bias=False),
                 nn.BatchNorm2d(out_ch)
@@ -51,7 +52,10 @@ class BiKAConvBlock(nn.Module):
         skip = self.skip(x)
         out = self.act1(self.bn1(self.conv1(x)))
         out = self.bn2(self.conv2(out))
-        return self.act2(out + skip)
+        if self.legacy_mode:
+            return self.act2(out)
+        else:
+            return self.act2(out + skip)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         if self.training:
@@ -62,24 +66,6 @@ class BiKAConvBlock(nn.Module):
 
 
 class BiKASegNet(nn.Module):
-    """U-Net-style segmentation model built from BiKA conv blocks.
-
-    Following standard binary-network practice (BNN/XNOR-Net), the first
-    (stem) and last (classifier) layers are kept full-precision by default:
-    binarizing the RGB stem discards input intensity information, and a
-    BiKA classifier head can only emit even-integer logits in
-    [-base_channels, base_channels], which is far too coarse for dense
-    multi-class prediction.
-
-    Paper-derived enhancements:
-      - Libra-PB (IR-Net, CVPR 2020)      — in BiKA_Conv2d
-      - AdaBin (ECCV 2022)                 — in BiKA_Conv2d
-      - Error Decay Estimator (IR-Net)     — in CUDA backward kernel
-      - RPReLU (ReActNet)                  — replaces PReLU for distribution shifts
-      - FP32 Skip (Bi-Real Net, ECCV 2018) — gradient highway
-      - Activation Checkpointing           — VRAM reduction
-    """
-
     def __init__(
         self,
         num_classes: int,
@@ -89,29 +75,31 @@ class BiKASegNet(nn.Module):
         full_precision_head: bool = True,
         bika_bias_init: tuple = (-2.0, 0.5),
         bika_weight_init: tuple = None,
+        legacy_mode: bool = False,
     ):
         super().__init__()
         self.pool = nn.MaxPool2d(2, 2)
+        self.legacy_mode = legacy_mode
 
         if full_precision_stem:
             self.enc1 = nn.Sequential(
                 nn.Conv2d(in_channels, base_channels, kernel_size=3, padding=1, bias=False),
                 nn.BatchNorm2d(base_channels),
-                RPReLU(base_channels),
+                nn.ReLU(inplace=True) if legacy_mode else RPReLU(base_channels),
                 BiKA_Conv2d(base_channels, base_channels, kernel_size=3, padding=1),
                 nn.BatchNorm2d(base_channels),
-                RPReLU(base_channels),
+                nn.ReLU(inplace=True) if legacy_mode else RPReLU(base_channels),
             )
         else:
-            self.enc1 = BiKAConvBlock(in_channels, base_channels)
+            self.enc1 = BiKAConvBlock(in_channels, base_channels, legacy_mode=legacy_mode)
 
-        self.enc2 = BiKAConvBlock(base_channels, base_channels * 2)
-        self.enc3 = BiKAConvBlock(base_channels * 2, base_channels * 4)
-        self.bottleneck = BiKAConvBlock(base_channels * 4, base_channels * 8)
+        self.enc2 = BiKAConvBlock(base_channels, base_channels * 2, legacy_mode=legacy_mode)
+        self.enc3 = BiKAConvBlock(base_channels * 2, base_channels * 4, legacy_mode=legacy_mode)
+        self.bottleneck = BiKAConvBlock(base_channels * 4, base_channels * 8, legacy_mode=legacy_mode)
 
-        self.dec3 = BiKAConvBlock(base_channels * 8 + base_channels * 4, base_channels * 4)
-        self.dec2 = BiKAConvBlock(base_channels * 4 + base_channels * 2, base_channels * 2)
-        self.dec1 = BiKAConvBlock(base_channels * 2 + base_channels, base_channels)
+        self.dec3 = BiKAConvBlock(base_channels * 8 + base_channels * 4, base_channels * 4, legacy_mode=legacy_mode)
+        self.dec2 = BiKAConvBlock(base_channels * 4 + base_channels * 2, base_channels * 2, legacy_mode=legacy_mode)
+        self.dec1 = BiKAConvBlock(base_channels * 2 + base_channels, base_channels, legacy_mode=legacy_mode)
 
         if full_precision_head:
             self.final = nn.Conv2d(base_channels, num_classes, kernel_size=1)

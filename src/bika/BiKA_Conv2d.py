@@ -127,7 +127,8 @@ class BiKA_Conv2d(nn.Module):
         """Pre-packs float32 weights into int32 buffer for lightning-fast CUDA loading.
         Also pre-computes negated bias in half-precision for shared memory bandwidth savings."""
         O, C, K, _ = self.weight.shape
-        w_flat = self.weight.view(O, C * K * K) >= 0.0
+        w_centered = self.weight - self.weight.mean(dim=[1, 2, 3], keepdim=True)
+        w_flat = w_centered.view(O, C * K * K) >= 0.0
         num_words = (C * K * K + 31) // 32
         packed = torch.zeros((O, num_words), dtype=torch.int32, device=self.weight.device)
         for i in range(C * K * K):
@@ -185,7 +186,9 @@ class BiKA_Conv2d(nn.Module):
         )
 
         # AdaBin: per-channel scaling (fused into BN at inference)
-        return y * self.output_scale
+        if self.output_scale is not None:
+            return y * self.output_scale
+        return y
 
 
 __all__ = [

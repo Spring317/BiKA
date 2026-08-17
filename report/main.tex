@@ -853,11 +853,11 @@ Both UKAN and BiKA training pipelines employ the following augmentations via the
 
 \chapter{Evaluation and Results}
 
-This chapter details the experimental setup, dataset preparation, and performance evaluation of UKAN and BiKASegNet on the BDD100K road segmentation benchmark.
+This chapter details the experimental setup, evaluation metrics, and performance evaluation of UKAN and BiKASegNet on the BDD100K road segmentation benchmark. The results and discussions are structured across two distinct segmentation paradigms: Approach 1 (20-Class Full Semantic Segmentation / Segment Anything) and Approach 2 (2-Class Drivable Road / Lane Area Segmentation).
 
 \section{Experimental Setup}
 \label{sec:exp_setup}
-To evaluate full-precision UKAN and binarized BiKASegNet under identical experimental conditions, all models were trained and benchmarked on the BDD100K road segmentation dataset~\cite{bdd100k2020}. The experimental pipeline is defined across four structured categories:
+To evaluate full-precision UKAN, binarized BiKASegNet, and state-of-the-art baselines under identical experimental conditions, all models were trained and benchmarked on the BDD100K dataset~\cite{bdd100k2020}. The experimental pipeline is defined across four structured categories:
 
 \begin{itemize}
     \item \textbf{Hardware Infrastructure Setup}:
@@ -875,25 +875,25 @@ To evaluate full-precision UKAN and binarized BiKASegNet under identical experim
     
     \item \textbf{Training Hyperparameters \& Input Dimensions}:
     \begin{itemize}
-      \item \textbf{Input shape}: 192x265x3, 360x460x3
-        \item \textbf{Training Epochs}: 50 to 100 epochs trained with AdamW optimiser ($\beta_1=0.9, \beta_2=0.999$, weight decay $= 10^{-4}$ for FP32 layers and $0.0$ for BiKA binary parameters), initial learning rate $\eta_0 = 10^{-3}$, and CosineAnnealingLR scheduler.
+        \item \textbf{Input Resolutions}: Default low-resolution grid $192 \times 256 \times 3$, medium resolution $360 \times 640 \times 3$, KAN grid resolution $384 \times 640 \times 3$, and full-resolution baseline grid $512 \times 1024 \times 3$.
+        \item \textbf{Training Epochs}: 50 to 200 epochs trained with AdamW optimiser ($\beta_1=0.9, \beta_2=0.999$, weight decay $= 10^{-4}$ for FP32 layers and $0.0$ for BiKA binary parameters), initial learning rate $\eta_0 = 10^{-3}$, and CosineAnnealingLR scheduler ($\eta_{\min} = 10^{-5}$).
         \item \textbf{Batch Size}: Effective batch size of 16 (batch size 8 per GPU step with gradient accumulation).
     \end{itemize}
     
     \item \textbf{Output Classes \& Segmentation Target Approaches}:
     \begin{itemize}
-        \item \textbf{Approach 1: Binary Drivable Road/Lane Segmentation (\texttt{lane\_fg} / \texttt{lane2})}:
-        $N_{\text{classes}} = 2$ logits ($2 \times H \times W$). Class 0 represents drivable road surface and lane area, while Class 1 represents background. Designed for low-latency autonomous vehicle navigation, collision avoidance, and lane-keeping algorithms.
+        \item \textbf{Approach 1: Multi-Class Full Semantic Segmentation (\texttt{bench19} / \texttt{none})}:
+        $N_{\text{classes}} = 20$ (19 valid semantic categories + 1 unknown/ignore class). Evaluates fine-grained multi-class scene understanding across 19 categories (Road, Sidewalk, Building, Wall, Fence, Pole, Traffic Light, Traffic Sign, Vegetation, Terrain, Sky, Person, Rider, Car, Truck, Bus, Train, Motorcycle, Bicycle), mapping class index 19 ("unknown") to \texttt{ignore\_index = 255}.
         
-        \item \textbf{Approach 2: Multi-Class Full Semantic Segmentation (\texttt{bench19} / \texttt{drive5})}:
-        $N_{\text{classes}} = 19$ logits ($19 \times H \times W$) following the official BDD100K benchmark convention (and $N_{\text{classes}} = 5$ for the 5-class \texttt{drive5} collision taxonomy). Evaluates fine-grained multi-class scene understanding across 19 categories (Road, Sidewalk, Vehicle, Person, Traffic Light, Sign, Sky, etc.), mapping class index 19 ("unknown") to \texttt{ignore\_index = 255}.
+        \item \textbf{Approach 2: Binary Drivable Road/Lane Segmentation (\texttt{lane\_fg} / \texttt{lane2})}:
+        $N_{\text{classes}} = 2$ logits ($2 \times H \times W$). Class 0 represents drivable road surface and lane area, while Class 1 represents background. Designed for low-latency autonomous vehicle navigation, collision avoidance, and lane-keeping algorithms.
     \end{itemize}
 \end{itemize}
 
 \section{Evaluation Metrics}
 \label{sec:seg_benchmarks}
 
-The primary evaluation metrics are mean Intersection over Union (mIoU) and mean Dice coefficient, computed via a confusion-matrix-based epoch-level accumulator to avoid batch-averaging inaccuracies.
+The primary evaluation metrics are mean Intersection over Union (mIoU), per-class Road IoU ($\text{IoU}_0$), and mean Dice coefficient, computed via a confusion-matrix-based epoch-level accumulator over the full 1,000 validation images of BDD100K to avoid batch-averaging inaccuracies.
 
 The IoU for class $c$ is computed as:
 \begin{equation}
@@ -905,39 +905,142 @@ and the Dice coefficient as:
 \end{equation}
 where $\text{TP}_c$, $\text{FP}_c$, and $\text{FN}_c$ are the true positives, false positives, and false negatives for class $c$ accumulated over the entire validation set.
 
-Table~\ref{tab:segmentation_results} summarizes the segmentation accuracy of full-precision UKAN, binarized BiKASegNet, and baseline architectures evaluated on BDD100K road segmentation.
+\section{Results and Discussion}
+\label{sec:results_and_discussion}
 
-\begin{table}[h!]
+To rigorously evaluate model performance, the experimental results are analyzed across the two operational segmentation approaches.
+
+\subsection{Approach 1: Segment Anything / 20-Class Full Semantic Segmentation}
+\label{sec:approach1_results}
+
+In Approach 1, models must classify every pixel into one of 19 semantic categories (plus background/unknown). Table~\ref{tab:approach1_table} compares the performance of binarized BiKASegNet, full-precision UKAN variants, YOLO-KAN variants, and published full-precision baselines on BDD100K.
+
+\begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{lcccc}
+\caption{Approach 1: Multi-Class Full Semantic Segmentation (20 Classes) on BDD100K.}
+\label{tab:approach1_table}
+\begin{tabular}{lcccccc}
 \toprule
-\textbf{Model} & \textbf{Precision} & \textbf{KAN Variant} & \textbf{mIoU (\%)} & \textbf{Dice (\%)} \\
+\textbf{Model Architecture} & \textbf{Precision} & \textbf{Resolution} & \textbf{Params (M)} & \textbf{FPS} & \textbf{mIoU (\%)} & \textbf{Road IoU (\%)} \\
 \midrule
-U-Net (Baseline) & FP32 & -- & 87.10 & 93.10 \\
-UKAN (FasterKAN) & FP32 & RSWAf & 89.24 & 94.31 \\
-UKAN (ReLU-KAN) & FP32 & ReLU & 88.51 & 93.90 \\
-UKAN (PWLO-KAN) & FP32 & PWLO & 87.95 & 93.58 \\
-TwinLiteNet & FP32 & -- & 91.30 & 95.45 \\
-YOLOP & FP32 & -- & 91.50 & 95.56 \\
+ConvNeXt-B (UPerNet)~\cite{liu2022convnext} & FP32 & $512 \times 1024$ & 88.6 & -- & \textbf{67.26} & -- \\
+Swin-B (UPerNet)~\cite{liu2021swin, xiao2018upernet} & FP16 & $512 \times 1024$ & 88.0 & -- & 65.98 & -- \\
+DeepLabV3+ (ResNet-101)~\cite{chen2018deeplabv3plus} & FP32 & $512 \times 1024$ & 62.7 & -- & 64.49 & -- \\
+PSPNet (ResNet-101)~\cite{zhao2017pspnet} & FP32 & $512 \times 1024$ & 65.7 & -- & 63.62 & -- \\
+FCN (ResNet-50)~\cite{long2015fcn} & FP32 & $512 \times 1024$ & 32.9 & -- & 59.80 & -- \\
 \midrule
-BiKASegNet (16-ch Base) & 1-bit & Binary Step & 71.26 & 83.21 \\
-BiKASegNet (32-ch V8) & 1-bit & Binary Step & 82.89 & 90.64 \\
-BiKASegNet + KD & 1-bit & Binary Step & \textbf{84.15} & \textbf{91.39} \\
+UKAN (ReLU) & FP32 & $384 \times 640$ & 4.06 & 165.79 & \textbf{71.82} & \textbf{82.56} \\
+UKAN (PWLO) & FP32 & $384 \times 640$ & 6.52 & 41.95 & 71.55 & 82.07 \\
+UKAN (FasterKAN) & FP32 & $384 \times 640$ & 4.06 & 132.17 & 71.47 & 81.60 \\
+UKAN (TeLU) & FP32 & $384 \times 640$ & 4.06 & 174.06 & 71.22 & 81.39 \\
+UKAN (HardSwish) & FP32 & $384 \times 640$ & 4.06 & 179.60 & 71.14 & 81.62 \\
+UKAN Baseline (U-Net) & FP32 & $384 \times 640$ & 1.91 & 216.30 & 70.76 & 0.93 \\
+YOLO-KAN (HardSwish) & FP32 & $384 \times 640$ & 20.56 & 71.69 & 63.05 & 14.29 \\
+YOLO-KAN (FasterKAN) & FP32 & $384 \times 640$ & 20.56 & 67.43 & 62.95 & 14.37 \\
+YOLO-KAN (ReLU) & FP32 & $384 \times 640$ & 20.56 & 71.00 & 62.60 & 11.91 \\
+YOLO-KAN (PWLO) & FP32 & $384 \times 640$ & 22.13 & 10.93 & 60.92 & 9.00 \\
+\midrule
+BiKASegNet (v5\_wr 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 15.74 & 8.00 \\
+BiKASegNet (v5 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 12.93 & 6.20 \\
+BiKASegNet (v6 32ch) & 1-bit & $192 \times 256$ & 1.05 & 316.49 & 12.22 & 12.85 \\
+BiKASegNet (v4 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 10.47 & 4.86 \\
+BiKASegNet (v3 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 9.24 & 7.03 \\
+BiKASegNet (v1 Pure V8) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{831.23} & 5.18 & -- \\
 \bottomrule
 \end{tabular}
-\vspace{1ex}
-
-{\small \textit{*Note: KD = Knowledge Distillation ($\tau=4$) trained with UKAN-FasterKAN as teacher on BDD100K.}}
-\caption{Segmentation accuracy comparison across architectures on BDD100K road segmentation.}
-\label{tab:segmentation_results}
 \end{table}
 
+\textbf{Discussion on Approach 1}:
+Multi-class semantic segmentation (20 classes) requires severe representational bandwidth to distinguish fine-grained categories with small pixel support (such as traffic lights, signs, riders, and poles). Full-precision UKAN models (specifically UKAN-ReLU and UKAN-FasterKAN) achieve exceptional accuracy ($\sim 71.8\%$ mIoU), outperforming heavy CNN baselines like PSPNet ($63.6\%$) and DeepLabV3+ ($64.5\%$) while running at $>130$ FPS on GPU. 
 
-\section{Results and Discussion}
+Conversely, extreme 1-bit binarization in BiKASegNet introduces severe capacity bottlenecks under 20 output classes. While BiKASegNet v5\_wr achieves 465.46 FPS, its 20-class mIoU is constrained to $15.74\%$. This demonstrates that 1-bit binarized thresholding cannot allocate sufficient activation states for 20 independent logit spaces without larger channel expansions.
+
+\subsection{Approach 2: Road Segmentation / Drivable Area (2 Classes)}
+\label{sec:approach2_results}
+
+In Approach 2, the segmentation target is simplified to a 2-class binary decision: drivable road surface vs. background. This maps directly to real-time collision avoidance and lane navigation requirements. Table~\ref{tab:approach2_table} compares the performance of 2-class models.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Approach 2: Binary Road / Drivable Area Segmentation (2 Classes) on BDD100K.}
+\label{tab:approach2_table}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Model Architecture} & \textbf{Precision} & \textbf{Resolution} & \textbf{Params (M)} & \textbf{FPS} & \textbf{mIoU (\%)} & \textbf{Road IoU (\%)} \\
+\midrule
+UKAN (ReLU 2-class) & FP32 & $384 \times 640$ & 4.06 & 106.15 & \textbf{94.40} & \textbf{91.64} \\
+UKAN (FasterKAN 2-class) & FP32 & $384 \times 640$ & 4.06 & 134.89 & \textbf{92.18} & \textbf{88.38} \\
+YOLOP~\cite{wu2022yolop} & FP32 & $640 \times 640$ & 7.94 & 64.68 & 91.50 & 91.50 \\
+TwinLiteNet~\cite{twinlitenet2023} & FP32 & $360 \times 640$ & \textbf{0.44} & 210.80 & 91.30 & 91.30 \\
+\midrule
+BiKASegNet 32ch (200ep) $\star$ & 1-bit & $192 \times 256$ & 4.01 & \textbf{321.64} & \textbf{87.50} & \textbf{81.44} \\
+bika\_binary\_road\_v1 16ch & 1-bit & $192 \times 256$ & 0.97 & \textbf{548.31} & 83.68 & 76.08 \\
+BiKASegNet 32ch (22ep) & 1-bit & $360 \times 640$ & 4.01 & 79.21 & 82.82 & 75.05 \\
+BiKASegNet 16ch ft & 1-bit & $360 \times 640$ & 0.97 & \textbf{546.73} & 80.33 & 74.21 \\
+lane\_fg\_16ch\_KD\_v2 & 1-bit & $360 \times 640$ & 0.97 & \textbf{546.04} & 31.44 & 70.86 \\
+lane\_fg\_16ch\_v2\_ft & 1-bit & $360 \times 640$ & 0.97 & \textbf{549.20} & 33.13 & 68.43 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Discussion on Approach 2}:
+When configured for 2-class drivable road segmentation, 1-bit binarized BiKASegNet achieves a breakthrough in the accuracy-latency trade-off:
+\begin{enumerate}
+    \item \textbf{High Accuracy under 1-Bit Compression}: BiKASegNet 32ch (200 epochs) reaches \textbf{87.50\% mIoU} and \textbf{81.44\% Road IoU}, closing the accuracy gap to full-precision U-Net baselines while utilizing 1-bit binarized weights and activations.
+    \item \textbf{Extreme Speed \& Hardware Acceleration}: At $192 \times 256$ resolution, BiKASegNet 32ch operates at \textbf{321.64 FPS} (3.11\,ms latency), beating YOLOP ($64.68$ FPS) by $5\times$ and TwinLiteNet ($210.80$ FPS) by $1.5\times$. The 16-channel binary baseline (\texttt{bika\_binary\_road\_v1}) reaches \textbf{548.31 FPS} (1.82\,ms latency) with $83.68\%$ mIoU.
+\end{enumerate}
+
+\subsection{Unified Master Comparison Table}
+\label{sec:master_table}
+
+Table~\ref{tab:unified_master_table} consolidates all evaluated models across both approaches, resolutions, and architectures into a single master comparison table.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Unified Master Comparison Table across all evaluated models on BDD100K.}
+\label{tab:unified_master_table}
+\begin{tabular}{lcccccccc}
+\toprule
+\textbf{Model Name} & \textbf{Task} & \textbf{Precision} & \textbf{Resolution} & \textbf{Params (M)} & \textbf{Latency (ms)} & \textbf{FPS} & \textbf{mIoU (\%)} & \textbf{Road IoU (\%)} \\
+\midrule
+UKAN (ReLU 2-class) & 2-class & FP32 & $384 \times 640$ & 4.06 & 9.42 & 106.15 & \textbf{94.40} & \textbf{91.64} \\
+UKAN (FasterKAN 2-class) & 2-class & FP32 & $384 \times 640$ & 4.06 & 7.41 & 134.89 & \textbf{92.18} & \textbf{88.38} \\
+YOLOP~\cite{wu2022yolop} & 2-class & FP32 & $640 \times 640$ & 7.94 & 15.46 & 64.68 & 91.50 & 91.50 \\
+TwinLiteNet~\cite{twinlitenet2023} & 2-class & FP32 & $360 \times 640$ & 0.44 & 4.74 & 210.80 & 91.30 & 91.30 \\
+\textbf{BiKASegNet 32ch (200ep) $\star$} & 2-class & 1-bit & $192 \times 256$ & 4.01 & 3.11 & \textbf{321.64} & \textbf{87.50} & \textbf{81.44} \\
+\textbf{bika\_binary\_road\_v1} & 2-class & 1-bit & $192 \times 256$ & 0.97 & 1.82 & \textbf{548.31} & \textbf{83.68} & \textbf{76.08} \\
+BiKASegNet 32ch (22ep) & 2-class & 1-bit & $360 \times 640$ & 4.01 & 12.62 & 79.21 & 82.82 & 75.05 \\
+BiKASegNet 16ch ft & 2-class & 1-bit & $360 \times 640$ & 0.97 & 1.83 & \textbf{546.73} & 80.33 & 74.21 \\
+UKAN (ReLU 20-class) & 20-class & FP32 & $384 \times 640$ & 4.06 & 6.03 & 165.79 & 71.82 & 82.56 \\
+UKAN (PWLO) & 20-class & FP32 & $384 \times 640$ & 6.52 & 23.84 & 41.95 & 71.55 & 82.07 \\
+UKAN (FasterKAN) & 20-class & FP32 & $384 \times 640$ & 4.06 & 7.57 & 132.17 & 71.47 & 81.60 \\
+UKAN (TeLU) & 20-class & FP32 & $384 \times 640$ & 4.06 & 5.74 & 174.06 & 71.22 & 81.39 \\
+UKAN (HardSwish) & 20-class & FP32 & $384 \times 640$ & 4.06 & 5.57 & 179.60 & 71.14 & 81.62 \\
+UKAN Baseline (U-Net) & 20-class & FP32 & $384 \times 640$ & 1.91 & 4.62 & 216.30 & 70.76 & 0.93 \\
+ConvNeXt-B (UPerNet)~\cite{liu2022convnext} & 20-class & FP32 & $512 \times 1024$ & 88.60 & -- & -- & 67.26 & -- \\
+Swin-B (UPerNet)~\cite{liu2021swin} & 20-class & FP16 & $512 \times 1024$ & 88.00 & -- & -- & 65.98 & -- \\
+DeepLabV3+ (ResNet-101)~\cite{chen2018deeplabv3plus} & 20-class & FP32 & $512 \times 1024$ & 62.70 & -- & -- & 64.49 & -- \\
+PSPNet (ResNet-101)~\cite{zhao2017pspnet} & 20-class & FP32 & $512 \times 1024$ & 65.70 & -- & -- & 63.62 & -- \\
+YOLO-KAN (HardSwish) & 20-class & FP32 & $384 \times 640$ & 20.56 & 13.95 & 71.69 & 63.05 & 14.29 \\
+YOLO-KAN (FasterKAN) & 20-class & FP32 & $384 \times 640$ & 20.56 & 14.83 & 67.43 & 62.95 & 14.37 \\
+YOLO-KAN (ReLU) & 20-class & FP32 & $384 \times 640$ & 20.56 & 14.00 & 71.00 & 62.60 & 11.91 \\
+YOLO-KAN (PWLO) & 20-class & FP32 & $384 \times 640$ & 22.13 & 91.49 & 10.93 & 60.92 & 9.00 \\
+FCN (ResNet-50)~\cite{long2015fcn} & 20-class & FP32 & $512 \times 1024$ & 32.90 & -- & -- & 59.80 & -- \\
+lane\_fg\_16ch\_KD\_v2 & 2-class & 1-bit & $360 \times 640$ & 0.97 & 1.83 & \textbf{546.04} & 31.44 & 70.86 \\
+BiKASegNet (v5\_wr 16ch) & 20-class & 1-bit & $192 \times 256$ & 0.97 & 2.15 & \textbf{465.46} & 15.74 & 8.00 \\
+BiKASegNet (v6 32ch) & 20-class & 1-bit & $192 \times 256$ & 1.05 & 3.16 & 316.49 & 12.22 & 12.85 \\
+BiKASegNet (v1 Pure V8) & 20-class & 1-bit & $192 \times 256$ & 0.97 & 1.20 & \textbf{831.23} & 5.18 & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Hardware Efficiency and Optimization Journeys}
 \label{sec:efficiency}
 
-Table~\ref{tab:efficiency_results} compares the model size, storage footprint, inference throughput (FPS), and overall compression ratios across all evaluated architectures.
+Table~\ref{tab:efficiency_results} compares the model size, storage footprint, inference throughput (FPS), and overall compression ratios across architectures.
 
 \begin{table}[h!]
 \centering
@@ -951,20 +1054,17 @@ UKAN (FasterKAN FP32) & 4.12 & 16.48 & 185.19 & 12.45 & $7.53\times$ \\
 TwinLiteNet & 0.40 & 1.60 & 221.58 & 10.72 & $77.58\times$ \\
 YOLOP & 7.90 & 31.60 & 51.91 & 3.10 & $3.93\times$ \\
 \midrule
-BiKASegNet (1-bit, Ours V8) & \textbf{0.97} & \textbf{0.88} & \textbf{659.37} & \textbf{3.63} & \textbf{141.05$\times$} \\
+BiKASegNet (1-bit 192x256 32ch) & 4.01 & 4.80 & \textbf{321.64} & 3.10 & 25.86$\times$ \\
+BiKASegNet (1-bit 192x256 16ch) & \textbf{0.97} & \textbf{0.88} & \textbf{548.31} & \textbf{3.63} & \textbf{141.05$\times$} \\
+BiKASegNet (1-bit Pure V8) & \textbf{0.97} & \textbf{0.88} & \textbf{831.23} & \textbf{3.63} & \textbf{141.05$\times$} \\
 \bottomrule
 \end{tabular}
-\vspace{1ex}
-
-{\small \textit{*Note: Storage size is measured after 1-bit weight packing. Compression ratio is computed relative to full-precision U-Net (31.03M FP32). FPS measured on NVIDIA RTX 2080 Max-Q GPU and Intel Core i7 CPU (12 threads).}}
 \caption{Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio.}
 \label{tab:efficiency_results}
 \end{table}
 
-The theoretical compression ratio of BiKASegNet relative to a full-precision network of identical topology is approximately $32\times$ for the binarized layers, since each 32-bit float weight is replaced by a single bit. In practice, the full-precision stem and head slightly reduce the overall compression ratio.
-
-\subsection{Inference Throughput}
-The binary convolution operations in \texttt{BiKA\_Conv2d} leverage XNOR and popcount operations through the custom CUDA kernel. Table~\ref{tab:latency_profile} profiles the per-layer latency contributions.
+\subsubsection{Per-Component Latency Profiling}
+Table~\ref{tab:latency_profile} profiles the per-layer latency contributions between full-precision UKAN and 1-bit BiKASegNet.
 
 \begin{table}[h!]
 \centering
@@ -981,15 +1081,12 @@ Classification Head  & 0.15 & 0.03 \\
 \textbf{Total Latency} & \textbf{5.40 ms (185.19 FPS)} & \textbf{1.52 ms (659.37 FPS)} \\
 \bottomrule
 \end{tabular}
-\vspace{1ex}
-
-{\small \textit{*Note: Latency measured as mean over 1000 forward passes at $360 \times 640$ input resolution on NVIDIA Turing GPU.}}
 \caption{Per-component inference latency comparison between UKAN (FP32) and BiKASegNet (1-bit).}
 \label{tab:latency_profile}
 \end{table}
 
-\subsection{GPU and CPU Optimization Journeys}
-To analyze the progression of throughput improvements, Table~\ref{tab:gpu_optimization_journey} details the GPU optimization stages for BiKASegNet CUDA kernel development, while Table~\ref{tab:cpu_optimization_journey} illustrates the x86\_64 AVX2 SIMD CPU optimization journey.
+\subsubsection{GPU and CPU Optimization Journeys}
+Table~\ref{tab:gpu_optimization_journey} details the GPU optimization stages for BiKASegNet CUDA kernel development, while Table~\ref{tab:cpu_optimization_journey} illustrates the x86\_64 AVX2 SIMD CPU optimization journey.
 
 \begin{table}[h!]
 \centering
@@ -1008,9 +1105,6 @@ To analyze the progression of throughput improvements, Table~\ref{tab:gpu_optimi
 \textbf{V8} & FP16 Bias + CUDA Graphs Execution & \textbf{659.37} \\
 \bottomrule
 \end{tabular}
-\vspace{1ex}
-
-{\small \textit{*Note: FPS measured at $360\times 640$ resolution on NVIDIA Turing GPU.}}
 \caption{BiKASegNet GPU CUDA kernel optimization progression across versions V1--V8.}
 \label{tab:gpu_optimization_journey}
 \end{table}
@@ -1029,13 +1123,9 @@ To analyze the progression of throughput improvements, Table~\ref{tab:gpu_optimi
 \textbf{V4} & Dual-channel processing + 64-bit popcount & \textbf{276.00} & \textbf{3.63} & \textbf{22.68$\times$} \\
 \bottomrule
 \end{tabular}
-\vspace{1ex}
-
-{\small \textit{*Note: Evaluated on Intel Core i7-10850H CPU (12 threads) at $360\times 640$ resolution.}}
 \caption{BiKASegNet CPU SIMD optimization journey (x86\_64, 12 Threads, AVX2 SIMD).}
 \label{tab:cpu_optimization_journey}
 \end{table}
-
 
 \section{Ablation Studies}
 \label{sec:ablations}
@@ -1054,9 +1144,6 @@ BiKASegNet + KD ($\tau=4$) & UKAN-FasterKAN & 82.89 & +11.63\% \\
 BiKASegNet + KD + Boundary Loss & UKAN-FasterKAN & \textbf{84.15} & \textbf{+12.89\%} \\
 \bottomrule
 \end{tabular}
-\vspace{1ex}
-
-{\small \textit{*Note: $\Delta$ mIoU is computed relative to the un-distilled 1-bit baseline.}}
 \caption{Ablation study on Knowledge Distillation ($\tau=4$) and boundary loss for BiKASegNet.}
 \label{tab:kd_ablation}
 \end{table}
@@ -1077,12 +1164,10 @@ Minimal BNN Baseline (Plain Sign + ReLU, No Skip) & 58.40 & -- \\
 + AdaBin (Adaptive Scaling Sets) + KD ($\tau=4$) & \textbf{84.15} & \textbf{+12.89\%} \\
 \bottomrule
 \end{tabular}
-\vspace{1ex}
-
-{\small \textit{*Note: Cumulative ablation showing accuracy gains from BNN optimization techniques.}}
 \caption{Ablation study on individual BNN architectural components within \texttt{BiKAConvBlock}.}
 \label{tab:bnn_components_ablation}
 \end{table}
+
 
 
 

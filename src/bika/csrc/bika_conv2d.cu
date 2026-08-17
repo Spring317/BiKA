@@ -103,14 +103,17 @@ __global__ void bika_conv2d_forward_kernel(
 
             #pragma unroll
             for (int kw = 0; kw < K_TMPL; ++kw) {
-                
                 float x_arr[TILE_W];
                 #pragma unroll
                 for (int tw = 0; tw < TILE_W; ++tw) {
                     const int w_out = w_out_base + tw;
                     const int w_in = w_out * stride_w - pad_w + kw;
                     const bool valid = row_valid && (w_out < Wo) && (w_in >= 0 && w_in < W);
-                    x_arr[tw] = valid ? __ldg(&input[row_offset + w_in]) : 0.0f;
+                    float x_val = 0.0f;
+                    if (valid) {
+                        x_val = __ldg(&input[row_offset + w_in]);
+                    }
+                    x_arr[tw] = x_val;
                 }
 
                 #pragma unroll
@@ -240,7 +243,10 @@ __global__ void bika_conv2d_backward_wb_kernel(
             const int w_in = w_out * stride_w - pad_w + kw;
 
             const bool inb = (h_in >= 0 && h_in < H && w_in >= 0 && w_in < W);
-            const float x = inb ? input[(((b * C + c) * H + h_in) * W) + w_in] : 0.0f;
+            float x = 0.0f;
+            if (inb) {
+                x = input[(((b * C + c) * H + h_in) * W) + w_in];
+            }
 
             const float z = (x + bb_reg[kidx]) * w_reg[kidx];
             const float sgrad = fmaxf(1.0f - fabsf(z), 0.0f);  // EDE (IR-Net): smooth triangle STE
