@@ -598,60 +598,60 @@ The UKAN architecture follows a three-stage CNN encoder, a KAN encoder-bottlenec
         \node[label, above=0.1cm of input] {Input Image};
         
         % E1 (Conv)
-        \node[conv, minimum height=2cm, minimum width=0.4cm] (e1) at (2.5,-1.8) {};
+        \node[conv, minimum height=2.4cm, minimum width=0.4cm] (e1) at (1.5,-2.5) {};
         \node[label, below=0.1cm of e1] {$\frac{H}{2} \times \frac{W}{2}$\\$\frac{C_0}{8}$};
         \node[label, above=0.1cm of e1] {CNN 1};
         
         % E2 (Conv)
-        \node[conv, minimum height=1cm, minimum width=0.8cm] (e2) at (4.5,-3.4) {};
+        \node[conv, minimum height=1.2cm, minimum width=0.8cm] (e2) at (3,-5) {};
         \node[label, below=0.1cm of e2] {$\frac{H}{4} \times \frac{W}{4}$\\$\frac{C_0}{4}$};
         \node[label, above=0.1cm of e2] {CNN 2};
         
         % E3 (Conv)
-        \node[conv, minimum height=0.5cm, minimum width=1.6cm] (e3) at (7,-4.8) {};
+        \node[conv, minimum height=0.6cm, minimum width=1.6cm] (e3) at (5,-7.5) {};
         \node[label, below=0.1cm of e3] {$\frac{H}{8} \times \frac{W}{8}$\\$C_0$};
         \node[label, above=0.1cm of e3] {CNN 3};
         
         % E4 (KAN)
-        \node[kan, minimum height=0.25cm, minimum width=3.2cm] (e4) at (10,-5.8) {};
+        \node[kan, minimum height=0.3cm, minimum width=3.2cm] (e4) at (7.5,-10) {};
         \node[label, below=0.1cm of e4] {$\frac{H}{16} \times \frac{W}{16}$\\$C_1$};
         \node[label, above=0.1cm of e4] {KAN 1};
         
         % Bottleneck (KAN)
-        \node[bottleneck, minimum height=0.25cm, minimum width=5cm] (b) at (14,-7) {};
+        \node[bottleneck, minimum height=0.3cm, minimum width=5cm] (b) at (10.5,-12.5) {};
         \node[label, below=0.1cm of b] {$\frac{H}{32} \times \frac{W}{32}$\\$C_2$};
         \node[label, above=0.1cm of b] {Bottleneck};
         
         % D4 (KAN)
-        \node[concat, minimum height=0.25cm, minimum width=3.2cm] (d4_concat) at (18,-5.8) {};
-        \node[kan, minimum height=0.25cm, minimum width=3.2cm, right=0cm of d4_concat] (d4) {};
+        \node[concat, minimum height=0.3cm, minimum width=3.2cm] (d4_concat) at (13.5,-10) {};
+        \node[kan, minimum height=0.3cm, minimum width=3.2cm, right=0cm of d4_concat] (d4) {};
         \node[label, below=0.1cm of d4] {$\frac{H}{16} \times \frac{W}{16}$\\$C_1$};
         \node[label, above=0.1cm of d4_concat.north east] {Dec KAN 1};
         
         % D3 (KAN)
-        \node[concat, minimum height=0.5cm, minimum width=1.6cm] (d3_concat) at (21,-4.8) {};
-        \node[kan, minimum height=0.5cm, minimum width=1.6cm, right=0cm of d3_concat] (d3) {};
+        \node[concat, minimum height=0.6cm, minimum width=1.6cm] (d3_concat) at (16,-7.5) {};
+        \node[kan, minimum height=0.6cm, minimum width=1.6cm, right=0cm of d3_concat] (d3) {};
         \node[label, below=0.1cm of d3] {$\frac{H}{8} \times \frac{W}{8}$\\$C_0$};
         \node[label, above=0.1cm of d3_concat.north east] {Dec KAN 2};
         
         % D2 (Conv)
-        \node[concat, minimum height=1cm, minimum width=0.8cm] (d2_concat) at (23.5,-3.4) {};
-        \node[conv, minimum height=1cm, minimum width=0.8cm, right=0cm of d2_concat] (d2) {};
+        \node[concat, minimum height=1.2cm, minimum width=0.8cm] (d2_concat) at (18,-5) {};
+        \node[conv, minimum height=1.2cm, minimum width=0.8cm, right=0cm of d2_concat] (d2) {};
         \node[label, below=0.1cm of d2] {$\frac{H}{4} \times \frac{W}{4}$\\$\frac{C_0}{4}$};
         \node[label, above=0.1cm of d2_concat.north east] {Dec CNN 3};
         
         % D1 (Conv)
-        \node[concat, minimum height=2cm, minimum width=0.4cm] (d1_concat) at (26,-1.8) {};
-        \node[conv, minimum height=2cm, minimum width=0.4cm, right=0cm of d1_concat] (d1) {};
+        \node[concat, minimum height=2.4cm, minimum width=0.4cm] (d1_concat) at (19.5,-2.5) {};
+        \node[conv, minimum height=2.4cm, minimum width=0.4cm, right=0cm of d1_concat] (d1) {};
         \node[label, below=0.1cm of d1] {$\frac{H}{2} \times \frac{W}{2}$\\$\frac{C_0}{8}$};
         \node[label, above=0.1cm of d1_concat.north east] {Dec CNN 4};
         
         % Final Conv (head)
-        \node[conv, minimum height=4cm, minimum width=0.2cm] (head) at (28,0) {};
+        \node[conv, minimum height=4cm, minimum width=0.2cm] (head) at (21,0) {};
         \node[label, below=0.1cm of head] {Head};
         
         % Output
-        \node[inner sep=0pt] (output) at (30.5,0) {\includegraphics[width=1.5cm,height=1.5cm]{images/bdd100k_samples/mask1.png}};
+        \node[inner sep=0pt] (output) at (23,0) {\includegraphics[width=1.5cm,height=1.5cm]{images/bdd100k_samples/mask1.png}};
         \node[label, below=0.1cm of output] {$H \times W \times N_{\text{classes}}$};
         \node[label, above=0.1cm of output] {Output Mask};
         
@@ -683,7 +683,7 @@ The UKAN architecture follows a three-stage CNN encoder, a KAN encoder-bottlenec
     \vspace{1ex}
     
     {\small \textit{*Note: Green blocks indicate KAN-based stages. Blue blocks indicate standard CNN stages. Red block indicates the KAN bottleneck. Dashed boxes and lines indicate skip connections and concatenation.}}
-    \caption{UKAN Architecture: Symmetric U-Net style dataflow transitioning from CNN stages to KAN blocks at lower resolutions.}
+    \caption{UKAN architecture}
     \label{fig:ukan_arch}
 \end{figure}
 
@@ -755,6 +755,7 @@ The full BiKA Segmentation Network (we will call it BikaSegNet from now) follows
             bin/.style={box, fill=red!20, font=\scriptsize},
             bottleneck/.style={box, fill=purple!20, font=\scriptsize},
             concat/.style={box, fill=white, dashed},
+            img/.style={box, fill=gray!20, font=\scriptsize},
             pool/.style={draw, ->, red!80!black, thick},
             up/.style={draw, ->, green!60!black, thick},
             conv/.style={draw, ->, blue!70!black, thick},
@@ -769,49 +770,49 @@ The full BiKA Segmentation Network (we will call it BikaSegNet from now) follows
         \node[label, above=0.1cm of input] {Input Image};
         
         % Stem
-        \node[fp, minimum height=4cm, minimum width=0.4cm] (stem) at (2.5,0) {};
+        \node[fp, minimum height=4cm, minimum width=0.4cm] (stem) at (1.5,0) {};
         \node[label, below=0.1cm of stem] {$H \times W$\\$C$};
         \node[label, above=0.1cm of stem] {FP32 Stem};
         
         % Block 1
-        \node[bin, minimum height=2cm, minimum width=0.8cm] (e1) at (5,-1.8) {};
+        \node[bin, minimum height=2cm, minimum width=0.8cm] (e1) at (3.5,-3) {};
         \node[label, below=0.1cm of e1] {$\frac{H}{2} \times \frac{W}{2}$\\$2C$};
         \node[label, above=0.1cm of e1] {BiKA 1};
         
         % Block 2
-        \node[bin, minimum height=1cm, minimum width=1.6cm] (e2) at (7.5,-3.4) {};
+        \node[bin, minimum height=1cm, minimum width=1.6cm] (e2) at (6,-6) {};
         \node[label, below=0.1cm of e2] {$\frac{H}{4} \times \frac{W}{4}$\\$4C$};
         \node[label, above=0.1cm of e2] {BiKA 2};
         
         % Bottleneck
-        \node[bottleneck, minimum height=0.5cm, minimum width=3.2cm] (b) at (11,-4.8) {};
+        \node[bottleneck, minimum height=0.5cm, minimum width=3.2cm] (b) at (9,-9) {};
         \node[label, below=0.1cm of b] {$\frac{H}{8} \times \frac{W}{8}$\\$8C$};
         \node[label, above=0.1cm of b] {Bottleneck};
         
         % Decoder 2
-        \node[concat, minimum height=1cm, minimum width=1.6cm] (d2_concat) at (14.5,-3.4) {};
+        \node[concat, minimum height=1cm, minimum width=1.6cm] (d2_concat) at (12,-6) {};
         \node[bin, minimum height=1cm, minimum width=1.6cm, right=0cm of d2_concat] (d2) {};
         \node[label, below=0.1cm of d2] {$\frac{H}{4} \times \frac{W}{4}$\\$4C$};
         \node[label, above=0.1cm of d2_concat.north east] {Dec 2};
         
         % Decoder 1
-        \node[concat, minimum height=2cm, minimum width=0.8cm] (d1_concat) at (17,-1.8) {};
+        \node[concat, minimum height=2cm, minimum width=0.8cm] (d1_concat) at (14.5,-3) {};
         \node[bin, minimum height=2cm, minimum width=0.8cm, right=0cm of d1_concat] (d1) {};
         \node[label, below=0.1cm of d1] {$\frac{H}{2} \times \frac{W}{2}$\\$2C$};
         \node[label, above=0.1cm of d1_concat.north east] {Dec 1};
         
         % Decoder 0
-        \node[concat, minimum height=4cm, minimum width=0.4cm] (d0_concat) at (19.5,0) {};
+        \node[concat, minimum height=4cm, minimum width=0.4cm] (d0_concat) at (16.5,0) {};
         \node[bin, minimum height=4cm, minimum width=0.4cm, right=0cm of d0_concat] (d0) {};
         \node[label, below=0.1cm of d0] {$H \times W$\\$C$};
         \node[label, above=0.1cm of d0_concat.north east] {Dec 0};
         
         % Head
-        \node[fp, minimum height=4cm, minimum width=0.2cm] (head) at (22,0) {};
+        \node[fp, minimum height=4cm, minimum width=0.2cm] (head) at (18.5,0) {};
         \node[label, below=0.1cm of head] {FP32 Head};
         
         % Output
-        \node[inner sep=0pt] (output) at (24.5,0) {\includegraphics[width=1.5cm,height=1.5cm]{images/bdd100k_samples/mask1.png}};
+        \node[inner sep=0pt] (output) at (20.5,0) {\includegraphics[width=1.5cm,height=1.5cm]{images/bdd100k_samples/mask1.png}};
         \node[label, below=0.1cm of output] {$H \times W \times N_{\text{classes}}$};
         \node[label, above=0.1cm of output] {Output Mask};
         
@@ -838,7 +839,7 @@ The full BiKA Segmentation Network (we will call it BikaSegNet from now) follows
     }
     \vspace{1ex}
     {\small \textit{*Note: Red blocks indicate binarized BiKA\_Conv2d layers. Blue blocks indicate full-precision FP32 stem and head. Purple block indicates the binary bottleneck. Dashed boxes and lines indicate feature concatenation skip connections.}}
-    \caption{BiKASegNet Architecture: U-Net style dataflow showing input to output transformation.}
+    \caption{BiKASegNet Architecture}
     \label{fig:bika_arch}
 \end{figure}
 
