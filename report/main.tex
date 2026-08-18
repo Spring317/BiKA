@@ -585,7 +585,6 @@ The UKAN architecture follows a three-stage CNN encoder, a KAN encoder-bottlenec
             kan/.style={box, fill=green!20, font=\scriptsize},
             bottleneck/.style={box, fill=red!20, font=\scriptsize},
             concat/.style={box, fill=white, dashed},
-            img/.style={box, fill=gray!20, font=\scriptsize},
             pool/.style={draw, ->, red!80!black, thick},
             up/.style={draw, ->, green!60!black, thick},
             line/.style={draw, ->, blue!70!black, thick},
@@ -594,79 +593,82 @@ The UKAN architecture follows a three-stage CNN encoder, a KAN encoder-bottlenec
         }
         
         % Input
-        \node[img, minimum height=4cm, minimum width=0.2cm] (input) at (0,0) {};
+        \node[inner sep=0pt] (input) at (0,0) {\includegraphics[width=1.5cm,height=1.5cm]{images/bdd100k_samples/img1.jpg}};
         \node[label, below=0.1cm of input] {$H \times W \times 3$};
-        \node[label, above=0.1cm of input] {Input\\Image};
+        \node[label, above=0.1cm of input] {Input Image};
         
         % E1 (Conv)
-        \node[conv, minimum height=2cm, minimum width=0.4cm] (e1) at (1.5,-1.8) {};
+        \node[conv, minimum height=2cm, minimum width=0.4cm] (e1) at (2.5,-1.8) {};
         \node[label, below=0.1cm of e1] {$\frac{H}{2} \times \frac{W}{2}$\\$\frac{C_0}{8}$};
         \node[label, above=0.1cm of e1] {CNN 1};
         
         % E2 (Conv)
-        \node[conv, minimum height=1cm, minimum width=0.8cm] (e2) at (3.5,-3.4) {};
+        \node[conv, minimum height=1cm, minimum width=0.8cm] (e2) at (4.5,-3.4) {};
         \node[label, below=0.1cm of e2] {$\frac{H}{4} \times \frac{W}{4}$\\$\frac{C_0}{4}$};
         \node[label, above=0.1cm of e2] {CNN 2};
         
         % E3 (Conv)
-        \node[conv, minimum height=0.5cm, minimum width=1.6cm] (e3) at (5.5,-4.8) {};
+        \node[conv, minimum height=0.5cm, minimum width=1.6cm] (e3) at (7,-4.8) {};
         \node[label, below=0.1cm of e3] {$\frac{H}{8} \times \frac{W}{8}$\\$C_0$};
         \node[label, above=0.1cm of e3] {CNN 3};
         
         % E4 (KAN)
-        \node[kan, minimum height=0.25cm, minimum width=3.2cm] (e4) at (8.5,-5.8) {};
+        \node[kan, minimum height=0.25cm, minimum width=3.2cm] (e4) at (10,-5.8) {};
         \node[label, below=0.1cm of e4] {$\frac{H}{16} \times \frac{W}{16}$\\$C_1$};
         \node[label, above=0.1cm of e4] {KAN 1};
         
         % Bottleneck (KAN)
-        \node[bottleneck, minimum height=0.25cm, minimum width=5cm] (b) at (11.5,-6.8) {};
+        \node[bottleneck, minimum height=0.25cm, minimum width=5cm] (b) at (14,-7) {};
         \node[label, below=0.1cm of b] {$\frac{H}{32} \times \frac{W}{32}$\\$C_2$};
         \node[label, above=0.1cm of b] {Bottleneck};
         
         % D4 (KAN)
-        \node[concat, minimum height=0.25cm, minimum width=3.2cm] (d4_concat) at (14.5,-5.8) {};
+        \node[concat, minimum height=0.25cm, minimum width=3.2cm] (d4_concat) at (18,-5.8) {};
         \node[kan, minimum height=0.25cm, minimum width=3.2cm, right=0cm of d4_concat] (d4) {};
         \node[label, below=0.1cm of d4] {$\frac{H}{16} \times \frac{W}{16}$\\$C_1$};
         \node[label, above=0.1cm of d4_concat.north east] {Dec KAN 1};
         
         % D3 (KAN)
-        \node[concat, minimum height=0.5cm, minimum width=1.6cm] (d3_concat) at (18,-4.8) {};
+        \node[concat, minimum height=0.5cm, minimum width=1.6cm] (d3_concat) at (21,-4.8) {};
         \node[kan, minimum height=0.5cm, minimum width=1.6cm, right=0cm of d3_concat] (d3) {};
         \node[label, below=0.1cm of d3] {$\frac{H}{8} \times \frac{W}{8}$\\$C_0$};
         \node[label, above=0.1cm of d3_concat.north east] {Dec KAN 2};
         
         % D2 (Conv)
-        \node[concat, minimum height=1cm, minimum width=0.8cm] (d2_concat) at (21,-3.4) {};
+        \node[concat, minimum height=1cm, minimum width=0.8cm] (d2_concat) at (23.5,-3.4) {};
         \node[conv, minimum height=1cm, minimum width=0.8cm, right=0cm of d2_concat] (d2) {};
         \node[label, below=0.1cm of d2] {$\frac{H}{4} \times \frac{W}{4}$\\$\frac{C_0}{4}$};
         \node[label, above=0.1cm of d2_concat.north east] {Dec CNN 3};
         
         % D1 (Conv)
-        \node[concat, minimum height=2cm, minimum width=0.4cm] (d1_concat) at (23.5,-1.8) {};
+        \node[concat, minimum height=2cm, minimum width=0.4cm] (d1_concat) at (26,-1.8) {};
         \node[conv, minimum height=2cm, minimum width=0.4cm, right=0cm of d1_concat] (d1) {};
         \node[label, below=0.1cm of d1] {$\frac{H}{2} \times \frac{W}{2}$\\$\frac{C_0}{8}$};
         \node[label, above=0.1cm of d1_concat.north east] {Dec CNN 4};
         
-        % Final Conv (head) & Output
-        \node[conv, minimum height=4cm, minimum width=0.2cm] (head) at (25.5,0) {};
+        % Final Conv (head)
+        \node[conv, minimum height=4cm, minimum width=0.2cm] (head) at (28,0) {};
         \node[label, below=0.1cm of head] {Head};
         
-        \node[img, minimum height=4cm, minimum width=0.2cm] (output) at (27,0) {};
+        % Output
+        \node[inner sep=0pt] (output) at (30.5,0) {\includegraphics[width=1.5cm,height=1.5cm]{images/bdd100k_samples/mask1.png}};
         \node[label, below=0.1cm of output] {$H \times W \times N_{\text{classes}}$};
-        \node[label, above=0.1cm of output] {Output\\Mask};
+        \node[label, above=0.1cm of output] {Output Mask};
         
-        % Connections
-        \draw[pool] (input.south east) -- (e1.north west) node[midway, right, label, red!80!black] {Pool};
-        \draw[pool] (e1.south east) -- (e2.north west) node[midway, right, label, red!80!black] {Pool};
-        \draw[pool] (e2.south east) -- (e3.north west) node[midway, right, label, red!80!black] {Pool};
-        \draw[pool] (e3.south east) -- (e4.north west) node[midway, right, label, red!80!black] {Embed};
-        \draw[pool] (e4.south east) -- (b.north west) node[midway, right, label, red!80!black] {Embed};
+        % Connections using orthogonal routing
+        \draw[line] (input.east) -- (e1.west|-input.east) |- (e1.west);
         
-        \draw[up] (b.north east) -- (d4_concat.south west) node[midway, right, label, green!60!black] {Up};
-        \draw[up] (d4.north east) -- (d3_concat.south west) node[midway, right, label, green!60!black] {Up};
-        \draw[up] (d3.north east) -- (d2_concat.south west) node[midway, right, label, green!60!black] {Up};
-        \draw[up] (d2.north east) -- (d1_concat.south west) node[midway, right, label, green!60!black] {Up};
-        \draw[up] (d1.north east) -- (head.south west) node[midway, right, label, green!60!black] {Up};
+        \draw[pool] (e1.east) -| (e2.north) node[pos=0.25, above, label, red!80!black] {Pool};
+        \draw[pool] (e2.east) -| (e3.north) node[pos=0.25, above, label, red!80!black] {Pool};
+        \draw[pool] (e3.east) -| (e4.north) node[pos=0.25, above, label, red!80!black] {Embed};
+        \draw[pool] (e4.east) -| (b.north) node[pos=0.25, above, label, red!80!black] {Embed};
+        
+        \draw[up] (b.east) -| (d4_concat.south) node[pos=0.25, below, label, green!60!black] {Up};
+        \draw[up] (d4.east) -| (d3_concat.south) node[pos=0.25, below, label, green!60!black] {Up};
+        \draw[up] (d3.east) -| (d2_concat.south) node[pos=0.25, below, label, green!60!black] {Up};
+        \draw[up] (d2.east) -| (d1_concat.south) node[pos=0.25, below, label, green!60!black] {Up};
+        
+        \draw[up] (d1.east) -| (head.south) node[pos=0.25, below, label, green!60!black] {Up};
         
         \draw[line] (head.east) -- (output.west);
         
@@ -753,7 +755,6 @@ The full BiKA Segmentation Network (we will call it BikaSegNet from now) follows
             bin/.style={box, fill=red!20, font=\scriptsize},
             bottleneck/.style={box, fill=purple!20, font=\scriptsize},
             concat/.style={box, fill=white, dashed},
-            img/.style={box, fill=gray!20, font=\scriptsize},
             pool/.style={draw, ->, red!80!black, thick},
             up/.style={draw, ->, green!60!black, thick},
             conv/.style={draw, ->, blue!70!black, thick},
@@ -763,66 +764,67 @@ The full BiKA Segmentation Network (we will call it BikaSegNet from now) follows
         
         % Nodes
         % Input
-        \node[img, minimum height=4cm, minimum width=0.2cm] (input) at (0,0) {};
+        \node[inner sep=0pt] (input) at (0,0) {\includegraphics[width=1.5cm,height=1.5cm]{images/bdd100k_samples/img1.jpg}};
         \node[label, below=0.1cm of input] {$H \times W \times 3$};
-        \node[label, above=0.1cm of input] {Input\\Image};
+        \node[label, above=0.1cm of input] {Input Image};
         
         % Stem
-        \node[fp, minimum height=4cm, minimum width=0.4cm] (stem) at (2,0) {};
+        \node[fp, minimum height=4cm, minimum width=0.4cm] (stem) at (2.5,0) {};
         \node[label, below=0.1cm of stem] {$H \times W$\\$C$};
         \node[label, above=0.1cm of stem] {FP32 Stem};
         
         % Block 1
-        \node[bin, minimum height=2cm, minimum width=0.8cm] (e1) at (4,-1.8) {};
+        \node[bin, minimum height=2cm, minimum width=0.8cm] (e1) at (5,-1.8) {};
         \node[label, below=0.1cm of e1] {$\frac{H}{2} \times \frac{W}{2}$\\$2C$};
         \node[label, above=0.1cm of e1] {BiKA 1};
         
         % Block 2
-        \node[bin, minimum height=1cm, minimum width=1.6cm] (e2) at (6,-3.4) {};
+        \node[bin, minimum height=1cm, minimum width=1.6cm] (e2) at (7.5,-3.4) {};
         \node[label, below=0.1cm of e2] {$\frac{H}{4} \times \frac{W}{4}$\\$4C$};
         \node[label, above=0.1cm of e2] {BiKA 2};
         
         % Bottleneck
-        \node[bottleneck, minimum height=0.5cm, minimum width=3.2cm] (b) at (9,-4.8) {};
+        \node[bottleneck, minimum height=0.5cm, minimum width=3.2cm] (b) at (11,-4.8) {};
         \node[label, below=0.1cm of b] {$\frac{H}{8} \times \frac{W}{8}$\\$8C$};
         \node[label, above=0.1cm of b] {Bottleneck};
         
         % Decoder 2
-        \node[concat, minimum height=1cm, minimum width=1.6cm] (d2_concat) at (12,-3.4) {};
+        \node[concat, minimum height=1cm, minimum width=1.6cm] (d2_concat) at (14.5,-3.4) {};
         \node[bin, minimum height=1cm, minimum width=1.6cm, right=0cm of d2_concat] (d2) {};
         \node[label, below=0.1cm of d2] {$\frac{H}{4} \times \frac{W}{4}$\\$4C$};
         \node[label, above=0.1cm of d2_concat.north east] {Dec 2};
         
         % Decoder 1
-        \node[concat, minimum height=2cm, minimum width=0.8cm] (d1_concat) at (15,-1.8) {};
+        \node[concat, minimum height=2cm, minimum width=0.8cm] (d1_concat) at (17,-1.8) {};
         \node[bin, minimum height=2cm, minimum width=0.8cm, right=0cm of d1_concat] (d1) {};
         \node[label, below=0.1cm of d1] {$\frac{H}{2} \times \frac{W}{2}$\\$2C$};
         \node[label, above=0.1cm of d1_concat.north east] {Dec 1};
         
         % Decoder 0
-        \node[concat, minimum height=4cm, minimum width=0.4cm] (d0_concat) at (18,0) {};
+        \node[concat, minimum height=4cm, minimum width=0.4cm] (d0_concat) at (19.5,0) {};
         \node[bin, minimum height=4cm, minimum width=0.4cm, right=0cm of d0_concat] (d0) {};
         \node[label, below=0.1cm of d0] {$H \times W$\\$C$};
         \node[label, above=0.1cm of d0_concat.north east] {Dec 0};
         
         % Head
-        \node[fp, minimum height=4cm, minimum width=0.2cm] (head) at (20.5,0) {};
+        \node[fp, minimum height=4cm, minimum width=0.2cm] (head) at (22,0) {};
         \node[label, below=0.1cm of head] {FP32 Head};
         
         % Output
-        \node[img, minimum height=4cm, minimum width=0.2cm] (output) at (22.5,0) {};
+        \node[inner sep=0pt] (output) at (24.5,0) {\includegraphics[width=1.5cm,height=1.5cm]{images/bdd100k_samples/mask1.png}};
         \node[label, below=0.1cm of output] {$H \times W \times N_{\text{classes}}$};
-        \node[label, above=0.1cm of output] {Output\\Mask};
+        \node[label, above=0.1cm of output] {Output Mask};
         
-        % Connections
-        \draw[conv] (input.east) -- (stem.west);
-        \draw[pool] (stem.south east) -- (e1.north west) node[midway, right, label, red!80!black] {Pool $2\times2$};
-        \draw[pool] (e1.south east) -- (e2.north west) node[midway, right, label, red!80!black] {Pool $2\times2$};
-        \draw[pool] (e2.south east) -- (b.north west) node[midway, right, label, red!80!black] {Pool $2\times2$};
+        % Connections using orthogonal routing
+        \draw[conv] (input.east) -- (stem.west|-input.east) |- (stem.west);
         
-        \draw[up] (b.north east) -- (d2_concat.south west) node[midway, right, label, green!60!black] {Up $2\times2$};
-        \draw[up] (d2.north east) -- (d1_concat.south west) node[midway, right, label, green!60!black] {Up $2\times2$};
-        \draw[up] (d1.north east) -- (d0_concat.south west) node[midway, right, label, green!60!black] {Up $2\times2$};
+        \draw[pool] (stem.east) -| (e1.north) node[pos=0.25, above, label, red!80!black] {Pool $2\times2$};
+        \draw[pool] (e1.east) -| (e2.north) node[pos=0.25, above, label, red!80!black] {Pool $2\times2$};
+        \draw[pool] (e2.east) -| (b.north) node[pos=0.25, above, label, red!80!black] {Pool $2\times2$};
+        
+        \draw[up] (b.east) -| (d2_concat.south) node[pos=0.25, below, label, green!60!black] {Up $2\times2$};
+        \draw[up] (d2.east) -| (d1_concat.south) node[pos=0.25, below, label, green!60!black] {Up $2\times2$};
+        \draw[up] (d1.east) -| (d0_concat.south) node[pos=0.25, below, label, green!60!black] {Up $2\times2$};
         
         \draw[conv] (d0.east) -- (head.west);
         \draw[conv] (head.east) -- (output.west);
