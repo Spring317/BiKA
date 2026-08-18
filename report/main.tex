@@ -598,50 +598,50 @@ The UKAN architecture follows a three-stage CNN encoder, a KAN encoder-bottlenec
         \node[label, above=0.1cm of input] {Input Image};
         
         % E1 (Conv)
-        \node[conv, minimum height=2.4cm, minimum width=0.4cm] (e1) at (1.5,-2.5) {};
+        \node[conv, minimum height=2.4cm, minimum width=0.4cm] (e1) at (1.5,-2) {};
         \node[label, below=0.1cm of e1] {$\frac{H}{2} \times \frac{W}{2}$\\$\frac{C_0}{8}$};
         \node[label, above=0.1cm of e1] {CNN 1};
         
         % E2 (Conv)
-        \node[conv, minimum height=1.2cm, minimum width=0.8cm] (e2) at (3,-5) {};
+        \node[conv, minimum height=1.2cm, minimum width=0.8cm] (e2) at (3,-4) {};
         \node[label, below=0.1cm of e2] {$\frac{H}{4} \times \frac{W}{4}$\\$\frac{C_0}{4}$};
         \node[label, above=0.1cm of e2] {CNN 2};
         
         % E3 (Conv)
-        \node[conv, minimum height=0.6cm, minimum width=1.6cm] (e3) at (5,-7.5) {};
+        \node[conv, minimum height=0.6cm, minimum width=1.6cm] (e3) at (5,-6) {};
         \node[label, below=0.1cm of e3] {$\frac{H}{8} \times \frac{W}{8}$\\$C_0$};
         \node[label, above=0.1cm of e3] {CNN 3};
         
         % E4 (KAN)
-        \node[kan, minimum height=0.3cm, minimum width=3.2cm] (e4) at (7.5,-10) {};
+        \node[kan, minimum height=0.3cm, minimum width=3.2cm] (e4) at (7.5,-8) {};
         \node[label, below=0.1cm of e4] {$\frac{H}{16} \times \frac{W}{16}$\\$C_1$};
         \node[label, above=0.1cm of e4] {KAN 1};
         
         % Bottleneck (KAN)
-        \node[bottleneck, minimum height=0.3cm, minimum width=5cm] (b) at (10.5,-12.5) {};
+        \node[bottleneck, minimum height=0.3cm, minimum width=5cm] (b) at (10.5,-10) {};
         \node[label, below=0.1cm of b] {$\frac{H}{32} \times \frac{W}{32}$\\$C_2$};
         \node[label, above=0.1cm of b] {Bottleneck};
         
         % D4 (KAN)
-        \node[concat, minimum height=0.3cm, minimum width=3.2cm] (d4_concat) at (13.5,-10) {};
+        \node[concat, minimum height=0.3cm, minimum width=3.2cm] (d4_concat) at (13.5,-8) {};
         \node[kan, minimum height=0.3cm, minimum width=3.2cm, right=0cm of d4_concat] (d4) {};
         \node[label, below=0.1cm of d4] {$\frac{H}{16} \times \frac{W}{16}$\\$C_1$};
         \node[label, above=0.1cm of d4_concat.north east] {Dec KAN 1};
         
         % D3 (KAN)
-        \node[concat, minimum height=0.6cm, minimum width=1.6cm] (d3_concat) at (16,-7.5) {};
+        \node[concat, minimum height=0.6cm, minimum width=1.6cm] (d3_concat) at (16,-6) {};
         \node[kan, minimum height=0.6cm, minimum width=1.6cm, right=0cm of d3_concat] (d3) {};
         \node[label, below=0.1cm of d3] {$\frac{H}{8} \times \frac{W}{8}$\\$C_0$};
         \node[label, above=0.1cm of d3_concat.north east] {Dec KAN 2};
         
         % D2 (Conv)
-        \node[concat, minimum height=1.2cm, minimum width=0.8cm] (d2_concat) at (18,-5) {};
+        \node[concat, minimum height=1.2cm, minimum width=0.8cm] (d2_concat) at (18,-4) {};
         \node[conv, minimum height=1.2cm, minimum width=0.8cm, right=0cm of d2_concat] (d2) {};
         \node[label, below=0.1cm of d2] {$\frac{H}{4} \times \frac{W}{4}$\\$\frac{C_0}{4}$};
         \node[label, above=0.1cm of d2_concat.north east] {Dec CNN 3};
         
         % D1 (Conv)
-        \node[concat, minimum height=2.4cm, minimum width=0.4cm] (d1_concat) at (19.5,-2.5) {};
+        \node[concat, minimum height=2.4cm, minimum width=0.4cm] (d1_concat) at (19.5,-2) {};
         \node[conv, minimum height=2.4cm, minimum width=0.4cm, right=0cm of d1_concat] (d1) {};
         \node[label, below=0.1cm of d1] {$\frac{H}{2} \times \frac{W}{2}$\\$\frac{C_0}{8}$};
         \node[label, above=0.1cm of d1_concat.north east] {Dec CNN 4};
