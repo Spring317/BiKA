@@ -950,7 +950,7 @@ BiKASegNet (v5 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46
 BiKASegNet (v6 32ch) & 1-bit & $192 \times 256$ & 1.05 & 316.49 & 12.22 & 12.85 \\
 BiKASegNet (v4 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 10.47 & 4.86 \\
 BiKASegNet (v3 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 9.24 & 7.03 \\
-BiKASegNet (v1 Pure V8) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{831.23} & 5.18 & -- \\
+BiKASegNet (v1 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{831.23} & 5.18 & -- \\
 \bottomrule
 \end{tabular}
 }
@@ -984,8 +984,7 @@ BiKASegNet 32ch (200ep) $\star$ & 1-bit & $192 \times 256$ & 4.01 & \textbf{321.
 bika\_binary\_road\_v1 16ch & 1-bit & $192 \times 256$ & 0.97 & \textbf{548.31} & 83.68 & 76.08 \\
 BiKASegNet 32ch (22ep) & 1-bit & $360 \times 640$ & 4.01 & 79.21 & 82.82 & 75.05 \\
 BiKASegNet 16ch ft & 1-bit & $360 \times 640$ & 0.97 & \textbf{546.73} & 80.33 & 74.21 \\
-lane\_fg\_16ch\_KD\_v2 & 1-bit & $360 \times 640$ & 0.97 & \textbf{546.04} & 31.44 & 70.86 \\
-lane\_fg\_16ch\_v2\_ft & 1-bit & $360 \times 640$ & 0.97 & \textbf{549.20} & 33.13 & 68.43 \\
+
 \bottomrule
 \end{tabular}
 }
@@ -1035,10 +1034,10 @@ YOLO-KAN (FasterKAN) & 20-class & FP32 & $384 \times 640$ & 20.56 & 14.83 & 67.4
 YOLO-KAN (ReLU) & 20-class & FP32 & $384 \times 640$ & 20.56 & 14.00 & 71.00 & 62.60 & 11.91 \\
 YOLO-KAN (PWLO) & 20-class & FP32 & $384 \times 640$ & 22.13 & 91.49 & 10.93 & 60.92 & 9.00 \\
 FCN (ResNet-50)~\cite{long2015fcn} & 20-class & FP32 & $512 \times 1024$ & 32.90 & -- & -- & 59.80 & -- \\
-lane\_fg\_16ch\_KD\_v2 & 2-class & 1-bit & $360 \times 640$ & 0.97 & 1.83 & \textbf{546.04} & 31.44 & 70.86 \\
+
 BiKASegNet (v5\_wr 16ch) & 20-class & 1-bit & $192 \times 256$ & 0.97 & 2.15 & \textbf{465.46} & 15.74 & 8.00 \\
 BiKASegNet (v6 32ch) & 20-class & 1-bit & $192 \times 256$ & 1.05 & 3.16 & 316.49 & 12.22 & 12.85 \\
-BiKASegNet (v1 Pure V8) & 20-class & 1-bit & $192 \times 256$ & 0.97 & 1.20 & \textbf{831.23} & 5.18 & -- \\
+BiKASegNet (v1 16ch) & 20-class & 1-bit & $192 \times 256$ & 0.97 & 1.20 & \textbf{831.23} & 5.18 & -- \\
 \bottomrule
 \end{tabular}
 }
@@ -1065,7 +1064,7 @@ YOLOP & 7.90 & 31.60 & 51.91 & 3.10 & $3.93\times$ \\
 \midrule
 BiKASegNet (1-bit 192x256 32ch) & 4.01 & 4.80 & \textbf{321.64} & 3.10 & 25.86$\times$ \\
 BiKASegNet (1-bit 192x256 16ch) & \textbf{0.97} & \textbf{0.88} & \textbf{548.31} & \textbf{3.63} & \textbf{141.05$\times$} \\
-BiKASegNet (1-bit Pure V8) & \textbf{0.97} & \textbf{0.88} & \textbf{831.23} & \textbf{3.63} & \textbf{141.05$\times$} \\
+BiKASegNet (1-bit 192x256 16ch v1) & \textbf{0.97} & \textbf{0.88} & \textbf{831.23} & \textbf{3.63} & \textbf{141.05$\times$} \\
 \bottomrule
 \end{tabular}
 }
