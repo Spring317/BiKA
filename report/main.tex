@@ -908,11 +908,11 @@ and the Dice coefficient as:
     \text{Dice}_c = \frac{2 \cdot \text{TP}_c}{2 \cdot \text{TP}_c + \text{FP}_c + \text{FN}_c}
 \end{equation}
 where $\text{TP}_c$, $\text{FP}_c$, and $\text{FN}_c$ are the true positives, false positives, and false negatives for class $c$ accumulated over the entire validation set.
-
+\newpage
 \section{Results and Discussion}
 \label{sec:results_and_discussion}
 
-To rigorously evaluate model performance, the experimental results are analyzed across the two operational segmentation approaches.
+To evaluate model performance, the experimental results are analyzed across the two operational segmentation approaches.
 
 \subsection{Approach 1: Segment Anything / 20-Class Full Semantic Segmentation}
 \label{sec:approach1_results}
@@ -960,7 +960,7 @@ BiKASegNet (v1 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{831.23
 Multi-class semantic segmentation (20 classes) requires severe representational bandwidth to distinguish fine-grained categories with small pixel support (such as traffic lights, signs, riders, and poles). Full-precision UKAN models (specifically UKAN-ReLU and UKAN-FasterKAN) achieve exceptional accuracy ($\sim 71.8\%$ mIoU), outperforming heavy CNN baselines like PSPNet ($63.6\%$) and DeepLabV3+ ($64.5\%$) while running at $>130$ FPS on GPU. 
 
 Conversely, extreme 1-bit binarization in BiKASegNet introduces severe capacity bottlenecks under 20 output classes. While BiKASegNet v5\_wr achieves 465.46 FPS, its 20-class mIoU is constrained to $15.74\%$. This demonstrates that 1-bit binarized thresholding cannot allocate sufficient activation states for 20 independent logit spaces without larger channel expansions.
-
+\newpage
 \subsection{Approach 2: Road Segmentation / Drivable Area (2 Classes)}
 \label{sec:approach2_results}
 
