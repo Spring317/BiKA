@@ -851,7 +851,7 @@ Both UKAN and BiKA training pipelines employ the following augmentations via the
     \item Random horizontal flip (probability 0.5).
     \item Random 90-degree rotation.
     \item CutMix augmentation for regularisation.
-    \item Resize to the target input resolution (default: $256 \times 256$ or $512 \times 512$).
+    \item Resize to the target input resolution (default: $192 \times 256$ and $360 \times 640$).
     \item ImageNet-standard normalisation ($\mu = [0.485, 0.456, 0.406]$, $\sigma = [0.229, 0.224, 0.225]$).
 \end{itemize}
 
@@ -879,7 +879,7 @@ To evaluate full-precision UKAN, binarized BiKASegNet, and state-of-the-art base
     
     \item \textbf{Training Hyperparameters \& Input Dimensions}:
     \begin{itemize}
-        \item \textbf{Input Resolutions}: Default low-resolution grid $192 \times 256 \times 3$, medium resolution $360 \times 640 \times 3$, KAN grid resolution $384 \times 640 \times 3$, and full-resolution baseline grid $512 \times 1024 \times 3$.
+        \item \textbf{Input Resolutions}: Default low-resolution $192 \times 256 \times 3$, medium $360 \times 640 \times 3$, KAN grid $384 \times 640 \times 3$, and full-resolution baseline $512 \times 1024 \times 3$.
         \item \textbf{Training Epochs}: 50 to 200 epochs trained with AdamW optimiser ($\beta_1=0.9, \beta_2=0.999$, weight decay $= 10^{-4}$ for FP32 layers and $0.0$ for BiKA binary parameters), initial learning rate $\eta_0 = 10^{-3}$, and CosineAnnealingLR scheduler ($\eta_{\min} = 10^{-5}$).
         \item \textbf{Batch Size}: Effective batch size of 16 (batch size 8 per GPU step with gradient accumulation).
     \end{itemize}
@@ -897,7 +897,7 @@ To evaluate full-precision UKAN, binarized BiKASegNet, and state-of-the-art base
 \section{Evaluation Metrics}
 \label{sec:seg_benchmarks}
 
-The primary evaluation metrics are mean Intersection over Union (mIoU), per-class Road IoU ($\text{IoU}_0$), and mean Dice coefficient, computed via a confusion-matrix-based epoch-level accumulator over the full 1,000 validation images of BDD100K to avoid batch-averaging inaccuracies.
+The primary evaluation metrics are mean Intersection over Union (mIoU), and mean Dice coefficient, computed via a confusion-matrix-based epoch-level accumulator over the full 1,000 validation images of BDD100K to avoid batch-averaging inaccuracies.
 
 The IoU for class $c$ is computed as:
 \begin{equation}
@@ -921,9 +921,9 @@ In Approach 1, models must classify every pixel into one of 19 semantic categori
 
 \begin{table}[htbp]
 \centering
-\small
 \caption{Approach 1: Multi-Class Full Semantic Segmentation (20 Classes) on BDD100K.}
 \label{tab:approach1_table}
+\resizebox{\textwidth}{!}{
 \begin{tabular}{lcccccc}
 \toprule
 \textbf{Model Architecture} & \textbf{Precision} & \textbf{Resolution} & \textbf{Params (M)} & \textbf{FPS} & \textbf{mIoU (\%)} & \textbf{Road IoU (\%)} \\
@@ -953,6 +953,7 @@ BiKASegNet (v3 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46
 BiKASegNet (v1 Pure V8) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{831.23} & 5.18 & -- \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \textbf{Discussion on Approach 1}:
@@ -967,9 +968,9 @@ In Approach 2, the segmentation target is simplified to a 2-class binary decisio
 
 \begin{table}[htbp]
 \centering
-\small
 \caption{Approach 2: Binary Road / Drivable Area Segmentation (2 Classes) on BDD100K.}
 \label{tab:approach2_table}
+\resizebox{\textwidth}{!}{
 \begin{tabular}{lcccccc}
 \toprule
 \textbf{Model Architecture} & \textbf{Precision} & \textbf{Resolution} & \textbf{Params (M)} & \textbf{FPS} & \textbf{mIoU (\%)} & \textbf{Road IoU (\%)} \\
@@ -987,6 +988,7 @@ lane\_fg\_16ch\_KD\_v2 & 1-bit & $360 \times 640$ & 0.97 & \textbf{546.04} & 31.
 lane\_fg\_16ch\_v2\_ft & 1-bit & $360 \times 640$ & 0.97 & \textbf{549.20} & 33.13 & 68.43 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \textbf{Discussion on Approach 2}:
@@ -1003,9 +1005,9 @@ Table~\ref{tab:unified_master_table} consolidates all evaluated models across bo
 
 \begin{table}[htbp]
 \centering
-\scriptsize
 \caption{Unified Master Comparison Table across all evaluated models on BDD100K.}
 \label{tab:unified_master_table}
+\resizebox{\textwidth}{!}{
 \begin{tabular}{lcccccccc}
 \toprule
 \textbf{Model Name} & \textbf{Task} & \textbf{Precision} & \textbf{Resolution} & \textbf{Params (M)} & \textbf{Latency (ms)} & \textbf{FPS} & \textbf{mIoU (\%)} & \textbf{Road IoU (\%)} \\
@@ -1039,6 +1041,7 @@ BiKASegNet (v6 32ch) & 20-class & 1-bit & $192 \times 256$ & 1.05 & 3.16 & 316.4
 BiKASegNet (v1 Pure V8) & 20-class & 1-bit & $192 \times 256$ & 0.97 & 1.20 & \textbf{831.23} & 5.18 & -- \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
 \subsection{Hardware Efficiency and Optimization Journeys}
@@ -1048,7 +1051,9 @@ Table~\ref{tab:efficiency_results} compares the model size, storage footprint, i
 
 \begin{table}[h!]
 \centering
-\small
+\caption{Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio.}
+\label{tab:efficiency_results}
+\resizebox{\textwidth}{!}{
 \begin{tabular}{lccccc}
 \toprule
 \textbf{Model} & \textbf{Params (M)} & \textbf{Size (MB)} & \textbf{GPU FPS} & \textbf{CPU FPS} & \textbf{Compression} \\
@@ -1063,8 +1068,7 @@ BiKASegNet (1-bit 192x256 16ch) & \textbf{0.97} & \textbf{0.88} & \textbf{548.31
 BiKASegNet (1-bit Pure V8) & \textbf{0.97} & \textbf{0.88} & \textbf{831.23} & \textbf{3.63} & \textbf{141.05$\times$} \\
 \bottomrule
 \end{tabular}
-\caption{Model efficiency comparison: parameter count, storage size, inference throughput, and compression ratio.}
-\label{tab:efficiency_results}
+}
 \end{table}
 
 \subsubsection{Per-Component Latency Profiling}
@@ -1094,7 +1098,9 @@ Table~\ref{tab:gpu_optimization_journey} details the GPU optimization stages for
 
 \begin{table}[h!]
 \centering
-\small
+\caption{BiKASegNet GPU CUDA kernel optimization progression across versions V1--V8.}
+\label{tab:gpu_optimization_journey}
+\resizebox{\textwidth}{!}{
 \begin{tabular}{llc}
 \toprule
 \textbf{Version} & \textbf{CUDA Optimization Applied} & \textbf{GPU Throughput (FPS)} \\
@@ -1109,13 +1115,14 @@ Table~\ref{tab:gpu_optimization_journey} details the GPU optimization stages for
 \textbf{V8} & FP16 Bias + CUDA Graphs Execution & \textbf{659.37} \\
 \bottomrule
 \end{tabular}
-\caption{BiKASegNet GPU CUDA kernel optimization progression across versions V1--V8.}
-\label{tab:gpu_optimization_journey}
+}
 \end{table}
 
 \begin{table}[h!]
 \centering
-\small
+\caption{BiKASegNet CPU SIMD optimization journey (x86\_64, 12 Threads, AVX2 SIMD).}
+\label{tab:cpu_optimization_journey}
+\resizebox{\textwidth}{!}{
 \begin{tabular}{llccc}
 \toprule
 \textbf{Version} & \textbf{CPU Optimization Applied} & \textbf{Latency (ms)} & \textbf{CPU FPS} & \textbf{Speedup} \\
@@ -1127,8 +1134,7 @@ Table~\ref{tab:gpu_optimization_journey} details the GPU optimization stages for
 \textbf{V4} & Dual-channel processing + 64-bit popcount & \textbf{276.00} & \textbf{3.63} & \textbf{22.68$\times$} \\
 \bottomrule
 \end{tabular}
-\caption{BiKASegNet CPU SIMD optimization journey (x86\_64, 12 Threads, AVX2 SIMD).}
-\label{tab:cpu_optimization_journey}
+}
 \end{table}
 
 \section{Ablation Studies}
