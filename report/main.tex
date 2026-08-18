@@ -924,33 +924,33 @@ In Approach 1, models must classify every pixel into one of 19 semantic categori
 \caption{Approach 1: Multi-Class Full Semantic Segmentation (20 Classes) on BDD100K.}
 \label{tab:approach1_table}
 \resizebox{\textwidth}{!}{
-\begin{tabular}{lcccccc}
+\begin{tabular}{lccccc}
 \toprule
-\textbf{Model Architecture} & \textbf{Precision} & \textbf{Resolution} & \textbf{Params (M)} & \textbf{FPS} & \textbf{mIoU (\%)} & \textbf{Road IoU (\%)} \\
+\textbf{Model Architecture} & \textbf{Precision} & \textbf{Resolution} & \textbf{Params (M)} & \textbf{FPS} & \textbf{mIoU (\%)} \\
 \midrule
-ConvNeXt-B (UPerNet)~\cite{liu2022convnext} & FP32 & $512 \times 1024$ & 88.6 & -- & \textbf{67.26} & -- \\
-Swin-B (UPerNet)~\cite{liu2021swin, xiao2018upernet} & FP16 & $512 \times 1024$ & 88.0 & -- & 65.98 & -- \\
-DeepLabV3+ (ResNet-101)~\cite{chen2018deeplabv3plus} & FP32 & $512 \times 1024$ & 62.7 & -- & 64.49 & -- \\
-PSPNet (ResNet-101)~\cite{zhao2017pspnet} & FP32 & $512 \times 1024$ & 65.7 & -- & 63.62 & -- \\
-FCN (ResNet-50)~\cite{long2015fcn} & FP32 & $512 \times 1024$ & 32.9 & -- & 59.80 & -- \\
+ConvNeXt-B (UPerNet)~\cite{liu2022convnext} & FP32 & $512 \times 1024$ & 88.6 & -- & \textbf{67.26} \\
+Swin-B (UPerNet)~\cite{liu2021swin, xiao2018upernet} & FP16 & $512 \times 1024$ & 88.0 & -- & 65.98 \\
+DeepLabV3+ (ResNet-101)~\cite{chen2018deeplabv3plus} & FP32 & $512 \times 1024$ & 62.7 & -- & 64.49 \\
+PSPNet (ResNet-101)~\cite{zhao2017pspnet} & FP32 & $512 \times 1024$ & 65.7 & -- & 63.62 \\
+FCN (ResNet-50)~\cite{long2015fcn} & FP32 & $512 \times 1024$ & 32.9 & -- & 59.80 \\
 \midrule
-UKAN (ReLU) & FP32 & $384 \times 640$ & 4.06 & 165.79 & \textbf{71.82} & \textbf{82.56} \\
-UKAN (PWLO) & FP32 & $384 \times 640$ & 6.52 & 41.95 & 71.55 & 82.07 \\
-UKAN (FasterKAN) & FP32 & $384 \times 640$ & 4.06 & 132.17 & 71.47 & 81.60 \\
-UKAN (TeLU) & FP32 & $384 \times 640$ & 4.06 & 174.06 & 71.22 & 81.39 \\
-UKAN (HardSwish) & FP32 & $384 \times 640$ & 4.06 & 179.60 & 71.14 & 81.62 \\
-UKAN Baseline (U-Net) & FP32 & $384 \times 640$ & 1.91 & 216.30 & 70.76 & 0.93 \\
-YOLO-KAN (HardSwish) & FP32 & $384 \times 640$ & 20.56 & 71.69 & 63.05 & 14.29 \\
-YOLO-KAN (FasterKAN) & FP32 & $384 \times 640$ & 20.56 & 67.43 & 62.95 & 14.37 \\
-YOLO-KAN (ReLU) & FP32 & $384 \times 640$ & 20.56 & 71.00 & 62.60 & 11.91 \\
-YOLO-KAN (PWLO) & FP32 & $384 \times 640$ & 22.13 & 10.93 & 60.92 & 9.00 \\
+UKAN (ReLU) & FP32 & $384 \times 640$ & 4.06 & 165.79 & \textbf{71.82} \\
+UKAN (PWLO) & FP32 & $384 \times 640$ & 6.52 & 41.95 & 71.55 \\
+UKAN (FasterKAN) & FP32 & $384 \times 640$ & 4.06 & 132.17 & 71.47 \\
+UKAN (TeLU) & FP32 & $384 \times 640$ & 4.06 & 174.06 & 71.22 \\
+UKAN (HardSwish) & FP32 & $384 \times 640$ & 4.06 & 179.60 & 71.14 \\
+UKAN Baseline (U-Net) & FP32 & $384 \times 640$ & 1.91 & 216.30 & 70.76 \\
+YOLO-KAN (HardSwish) & FP32 & $384 \times 640$ & 20.56 & 71.69 & 63.05 \\
+YOLO-KAN (FasterKAN) & FP32 & $384 \times 640$ & 20.56 & 67.43 & 62.95 \\
+YOLO-KAN (ReLU) & FP32 & $384 \times 640$ & 20.56 & 71.00 & 62.60 \\
+YOLO-KAN (PWLO) & FP32 & $384 \times 640$ & 22.13 & 10.93 & 60.92 \\
 \midrule
-BiKASegNet (v5\_wr 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 15.74 & 8.00 \\
-BiKASegNet (v5 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 12.93 & 6.20 \\
-BiKASegNet (v6 32ch) & 1-bit & $192 \times 256$ & 1.05 & 316.49 & 12.22 & 12.85 \\
-BiKASegNet (v4 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 10.47 & 4.86 \\
-BiKASegNet (v3 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 9.24 & 7.03 \\
-BiKASegNet (v1 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{831.23} & 5.18 & -- \\
+BiKASegNet (v5\_wr 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 15.74 \\
+BiKASegNet (v5 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 12.93 \\
+BiKASegNet (v6 32ch) & 1-bit & $192 \times 256$ & 1.05 & 316.49 & 12.22 \\
+BiKASegNet (v4 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 10.47 \\
+BiKASegNet (v3 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{465.46} & 9.24 \\
+BiKASegNet (v1 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{831.23} & 5.18 \\
 \bottomrule
 \end{tabular}
 }
@@ -971,19 +971,19 @@ In Approach 2, the segmentation target is simplified to a 2-class binary decisio
 \caption{Approach 2: Binary Road / Drivable Area Segmentation (2 Classes) on BDD100K.}
 \label{tab:approach2_table}
 \resizebox{\textwidth}{!}{
-\begin{tabular}{lcccccc}
+\begin{tabular}{lccccc}
 \toprule
-\textbf{Model Architecture} & \textbf{Precision} & \textbf{Resolution} & \textbf{Params (M)} & \textbf{FPS} & \textbf{mIoU (\%)} & \textbf{Road IoU (\%)} \\
+\textbf{Model Architecture} & \textbf{Precision} & \textbf{Resolution} & \textbf{Params (M)} & \textbf{FPS} & \textbf{mIoU (\%)} \\
 \midrule
-UKAN (ReLU 2-class) & FP32 & $384 \times 640$ & 4.06 & 106.15 & \textbf{94.40} & \textbf{91.64} \\
-UKAN (FasterKAN 2-class) & FP32 & $384 \times 640$ & 4.06 & 134.89 & \textbf{92.18} & \textbf{88.38} \\
-YOLOP~\cite{wu2022yolop} & FP32 & $640 \times 640$ & 7.94 & 64.68 & 91.50 & 91.50 \\
-TwinLiteNet~\cite{twinlitenet2023} & FP32 & $360 \times 640$ & \textbf{0.44} & 210.80 & 91.30 & 91.30 \\
+UKAN (ReLU 2-class) & FP32 & $384 \times 640$ & 4.06 & 106.15 & \textbf{94.40} \\
+UKAN (FasterKAN 2-class) & FP32 & $384 \times 640$ & 4.06 & 134.89 & \textbf{92.18} \\
+YOLOP~\cite{wu2022yolop} & FP32 & $640 \times 640$ & 7.94 & 64.68 & 91.50 \\
+TwinLiteNet~\cite{twinlitenet2023} & FP32 & $360 \times 640$ & \textbf{0.44} & 210.80 & 91.30 \\
 \midrule
-BiKASegNet 32ch (200ep) $\star$ & 1-bit & $192 \times 256$ & 4.01 & \textbf{321.64} & \textbf{87.50} & \textbf{81.44} \\
-bika\_binary\_road\_v1 16ch & 1-bit & $192 \times 256$ & 0.97 & \textbf{548.31} & 83.68 & 76.08 \\
-BiKASegNet 32ch (22ep) & 1-bit & $360 \times 640$ & 4.01 & 79.21 & 82.82 & 75.05 \\
-BiKASegNet 16ch ft & 1-bit & $360 \times 640$ & 0.97 & \textbf{546.73} & 80.33 & 74.21 \\
+BiKASegNet 32ch (200ep) $\star$ & 1-bit & $192 \times 256$ & 4.01 & \textbf{321.64} & \textbf{87.50} \\
+bika\_binary\_road\_v1 16ch & 1-bit & $192 \times 256$ & 0.97 & \textbf{548.31} & 83.68 \\
+BiKASegNet 32ch (22ep) & 1-bit & $360 \times 640$ & 4.01 & 79.21 & 82.82 \\
+BiKASegNet 16ch ft & 1-bit & $360 \times 640$ & 0.97 & \textbf{546.73} & 80.33 \\
 
 \bottomrule
 \end{tabular}
@@ -993,55 +993,11 @@ BiKASegNet 16ch ft & 1-bit & $360 \times 640$ & 0.97 & \textbf{546.73} & 80.33 &
 \textbf{Discussion on Approach 2}:
 When configured for 2-class drivable road segmentation, 1-bit binarized BiKASegNet achieves a breakthrough in the accuracy-latency trade-off:
 \begin{enumerate}
-    \item \textbf{High Accuracy under 1-Bit Compression}: BiKASegNet 32ch (200 epochs) reaches \textbf{87.50\% mIoU} and \textbf{81.44\% Road IoU}, closing the accuracy gap to full-precision U-Net baselines while utilizing 1-bit binarized weights and activations.
+    \item \textbf{High Accuracy under 1-Bit Compression}: BiKASegNet 32ch (200 epochs) reaches \textbf{87.50\% mIoU}, closing the accuracy gap to full-precision U-Net baselines while utilizing 1-bit binarized weights and activations.
     \item \textbf{Extreme Speed \& Hardware Acceleration}: At $192 \times 256$ resolution, BiKASegNet 32ch operates at \textbf{321.64 FPS} (3.11\,ms latency), beating YOLOP ($64.68$ FPS) by $5\times$ and TwinLiteNet ($210.80$ FPS) by $1.5\times$. The 16-channel binary baseline (\texttt{bika\_binary\_road\_v1}) reaches \textbf{548.31 FPS} (1.82\,ms latency) with $83.68\%$ mIoU.
 \end{enumerate}
 
-\subsection{Unified Master Comparison Table}
-\label{sec:master_table}
 
-Table~\ref{tab:unified_master_table} consolidates all evaluated models across both approaches, resolutions, and architectures into a single master comparison table.
-
-\begin{table}[htbp]
-\centering
-\caption{Unified Master Comparison Table across all evaluated models on BDD100K.}
-\label{tab:unified_master_table}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{lcccccccc}
-\toprule
-\textbf{Model Name} & \textbf{Task} & \textbf{Precision} & \textbf{Resolution} & \textbf{Params (M)} & \textbf{Latency (ms)} & \textbf{FPS} & \textbf{mIoU (\%)} & \textbf{Road IoU (\%)} \\
-\midrule
-UKAN (ReLU 2-class) & 2-class & FP32 & $384 \times 640$ & 4.06 & 9.42 & 106.15 & \textbf{94.40} & \textbf{91.64} \\
-UKAN (FasterKAN 2-class) & 2-class & FP32 & $384 \times 640$ & 4.06 & 7.41 & 134.89 & \textbf{92.18} & \textbf{88.38} \\
-YOLOP~\cite{wu2022yolop} & 2-class & FP32 & $640 \times 640$ & 7.94 & 15.46 & 64.68 & 91.50 & 91.50 \\
-TwinLiteNet~\cite{twinlitenet2023} & 2-class & FP32 & $360 \times 640$ & 0.44 & 4.74 & 210.80 & 91.30 & 91.30 \\
-\textbf{BiKASegNet 32ch (200ep) $\star$} & 2-class & 1-bit & $192 \times 256$ & 4.01 & 3.11 & \textbf{321.64} & \textbf{87.50} & \textbf{81.44} \\
-\textbf{bika\_binary\_road\_v1} & 2-class & 1-bit & $192 \times 256$ & 0.97 & 1.82 & \textbf{548.31} & \textbf{83.68} & \textbf{76.08} \\
-BiKASegNet 32ch (22ep) & 2-class & 1-bit & $360 \times 640$ & 4.01 & 12.62 & 79.21 & 82.82 & 75.05 \\
-BiKASegNet 16ch ft & 2-class & 1-bit & $360 \times 640$ & 0.97 & 1.83 & \textbf{546.73} & 80.33 & 74.21 \\
-UKAN (ReLU 20-class) & 20-class & FP32 & $384 \times 640$ & 4.06 & 6.03 & 165.79 & 71.82 & 82.56 \\
-UKAN (PWLO) & 20-class & FP32 & $384 \times 640$ & 6.52 & 23.84 & 41.95 & 71.55 & 82.07 \\
-UKAN (FasterKAN) & 20-class & FP32 & $384 \times 640$ & 4.06 & 7.57 & 132.17 & 71.47 & 81.60 \\
-UKAN (TeLU) & 20-class & FP32 & $384 \times 640$ & 4.06 & 5.74 & 174.06 & 71.22 & 81.39 \\
-UKAN (HardSwish) & 20-class & FP32 & $384 \times 640$ & 4.06 & 5.57 & 179.60 & 71.14 & 81.62 \\
-UKAN Baseline (U-Net) & 20-class & FP32 & $384 \times 640$ & 1.91 & 4.62 & 216.30 & 70.76 & 0.93 \\
-ConvNeXt-B (UPerNet)~\cite{liu2022convnext} & 20-class & FP32 & $512 \times 1024$ & 88.60 & -- & -- & 67.26 & -- \\
-Swin-B (UPerNet)~\cite{liu2021swin} & 20-class & FP16 & $512 \times 1024$ & 88.00 & -- & -- & 65.98 & -- \\
-DeepLabV3+ (ResNet-101)~\cite{chen2018deeplabv3plus} & 20-class & FP32 & $512 \times 1024$ & 62.70 & -- & -- & 64.49 & -- \\
-PSPNet (ResNet-101)~\cite{zhao2017pspnet} & 20-class & FP32 & $512 \times 1024$ & 65.70 & -- & -- & 63.62 & -- \\
-YOLO-KAN (HardSwish) & 20-class & FP32 & $384 \times 640$ & 20.56 & 13.95 & 71.69 & 63.05 & 14.29 \\
-YOLO-KAN (FasterKAN) & 20-class & FP32 & $384 \times 640$ & 20.56 & 14.83 & 67.43 & 62.95 & 14.37 \\
-YOLO-KAN (ReLU) & 20-class & FP32 & $384 \times 640$ & 20.56 & 14.00 & 71.00 & 62.60 & 11.91 \\
-YOLO-KAN (PWLO) & 20-class & FP32 & $384 \times 640$ & 22.13 & 91.49 & 10.93 & 60.92 & 9.00 \\
-FCN (ResNet-50)~\cite{long2015fcn} & 20-class & FP32 & $512 \times 1024$ & 32.90 & -- & -- & 59.80 & -- \\
-
-BiKASegNet (v5\_wr 16ch) & 20-class & 1-bit & $192 \times 256$ & 0.97 & 2.15 & \textbf{465.46} & 15.74 & 8.00 \\
-BiKASegNet (v6 32ch) & 20-class & 1-bit & $192 \times 256$ & 1.05 & 3.16 & 316.49 & 12.22 & 12.85 \\
-BiKASegNet (v1 16ch) & 20-class & 1-bit & $192 \times 256$ & 0.97 & 1.20 & \textbf{831.23} & 5.18 & -- \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
 
 \subsection{Hardware Efficiency and Optimization Journeys}
 \label{sec:efficiency}
