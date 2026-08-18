@@ -572,6 +572,7 @@ This chapter details the two KAN-based segmentation architectures: the full-prec
 \label{sec:ukan_arch}
 UKAN adapts the U-Net architecture by replacing the standard MLP/Transformer blocks in the bottleneck and lower-resolution stages with KAN-based blocks, while retaining efficient CNN stages at higher resolutions where spatial dimensions are large.
 
+\newpage
 \subsection{Overall Architecture}
 The UKAN architecture follows a three-stage CNN encoder, a KAN encoder-bottleneck, and a mixed KAN-CNN decoder, as illustrated in Figure~\ref{fig:ukan_arch}.
 
