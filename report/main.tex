@@ -455,45 +455,45 @@ achieving up to $\sim$58$\times$ theoretical speedup and $\sim$32$\times$ memory
 In a BNN, both the network weights and the intermediate feature activations are constrained to 1-bit representations, typically $\{-1, +1\}$, utilizing the sign function. This mehod completely eliminates the need for expensive floating-point multiply-accumulate (MAC) operations. Instead, convolutions and dense layers can be executed using highly efficient bitwise XNOR and popcount operations, drastically reducing memory bandwidth and latency on edge devices. Despite these immense computational advantages, the extreme information loss induced by binarizing continuous variables natively limits the expressiveness of BNNs. They often suffer from accuracy compared to full-precision networks and require specialized training methodologies, such as the Straight-Through Estimator (STE) and dense skip connections, to maintain stable gradient flow during backpropagation.
 
 
-\subsection{Straight-Through Estimator (STE)}
+\textbf{Straight-Through Estimator (STE)}
 The sign function has zero gradient almost everywhere, making direct backpropagation impossible. Bengio et al.~\cite{bengio2013ste} proposed the Straight-Through Estimator (STE), which approximates the gradient of the sign function as:
 \begin{equation}
     \frac{\partial \mathcal{L}}{\partial w} \approx \frac{\partial \mathcal{L}}{\partial w_b} \cdot \mathbf{1}_{|w| \leq 1}
 \end{equation}
 where the gradient is passed through unchanged within the clipping window $[-1, 1]$ and zeroed outside. This enables training of binary networks with standard gradient-based optimisers.
 
-\subsection{Key BNN Techniques}
+\textbf{Key BNN Techniques}
 Several techniques have been developed to improve the accuracy of BNNs:
 
-\subsubsection{Bi-Real Net Skip Connections}
+\textbf{Bi-Real Net Skip Connections}
 Bi-Real Net~\cite{qin2020bireal} introduces full-precision (FP32) identity shortcut connections that bypass the binary convolution blocks:
 \begin{equation}
     y = \text{BinaryConv}(x) + \text{Shortcut}(x)
 \end{equation}
 These skip connections serve as gradient highways, providing a direct path for gradient flow during backpropagation and significantly stabilizing training.
 
-\subsubsection{RPReLU (ReActNet)}
+\textbf{RPReLU (ReActNet)}
 ReActNet~\cite{liu2020reactnet} replaces standard ReLU with RPReLU, a learnable activation with per-channel pre-shift and post-shift parameters:
 \begin{equation}
     \text{RPReLU}(x) = \text{PReLU}(x + \gamma) + \beta
 \end{equation}
 where $\gamma \in \mathbb{R}^C$ and $\beta \in \mathbb{R}^C$ are learnable channel-wise shift parameters. This enables the binary network to learn asymmetric activation distributions, compensating for the information loss caused by binarization.
 
-\subsubsection{Libra-PB (Balanced Binarization)}
+\textbf{Libra-PB (Balanced Binarization)}
 IR-Net~\cite{qin2020irnet} proposed Libra Parameter Binarization (Libra-PB), which centres the weight distribution before applying the sign function:
 \begin{equation}
     w_b = \text{sign}(w - \bar{w}), \quad \bar{w} = \frac{1}{|\mathcal{F}|}\sum_{i \in \mathcal{F}} w_i
 \end{equation}
 where $\bar{w}$ is the mean over the filter dimensions. This ensures approximately 50\% of the binary weights are $+1$ and 50\% are $-1$, maximizing the information entropy of the binary representation.
 
-\subsubsection{AdaBin (Adaptive Binary Scaling)}
+\textbf{AdaBin (Adaptive Binary Scaling)}
 AdaBin~\cite{tu2022adabin} introduces a learnable per-channel output scaling factor $\alpha_c$ that modulates the binary convolution output:
 \begin{equation}
     y_c = \alpha_c \cdot \text{BinaryConv}_c(x)
 \end{equation}
 At inference, $\alpha_c$ is fused into the subsequent BatchNorm layer's affine parameters, incurring zero additional computational cost.
 
-\subsection{Binarized Kolmogorov-Arnold Networks Convolutional layer (BiKA\_Conv2d)}
+\textbf{Binarized Kolmogorov-Arnold Networks Convolutional layer}
 \label{sec:bika_conv2d}
 The foundational building block of the Binarized Kolmogorov-Arnold Network is the \texttt{BiKA\_Conv2d} layer. In a conventional 2D convolution, the learnable weight tensor has shape $(C_{\text{out}}, C_{\text{in}}, K_H, K_W)$ while the bias is a 1D vector of shape $(C_{\text{out}},)$—assigning a single scalar offset per output channel. 
 
@@ -577,60 +577,111 @@ The UKAN architecture follows a three-stage CNN encoder, a KAN encoder-bottlenec
 
 \begin{figure}[htbp]
     \centering
-    \resizebox{0.95\textwidth}{!}{%
+    \resizebox{\textwidth}{!}{%
     \begin{tikzpicture}[>=stealth, thick]
         \tikzset{
-            conv/.style={draw=blue!80!black, fill=blue!8, rectangle, minimum height=2.8em, minimum width=10.5em, rounded corners, align=center, font=\small, line width=1pt},
-            kan/.style={draw=green!60!black, fill=green!8, rectangle, minimum height=2.8em, minimum width=10.5em, rounded corners, align=center, font=\small, line width=1.2pt},
-            bottleneck/.style={draw=red!70!black, fill=red!8, rectangle, minimum height=3.2em, minimum width=14em, rounded corners, align=center, font=\small, line width=1.5pt},
-            io/.style={font=\scriptsize, align=center, fill=white, inner sep=2pt},
-            line/.style={draw, ->, >=stealth, thick, rounded corners=3pt},
-            skipline/.style={draw, ->, >=stealth, dashed, blue!70!black, line width=1.2pt}
+            box/.style={draw=black, rectangle, align=center, inner sep=0pt},
+            conv/.style={box, fill=blue!15, font=\scriptsize},
+            kan/.style={box, fill=green!20, font=\scriptsize},
+            bottleneck/.style={box, fill=red!20, font=\scriptsize},
+            concat/.style={box, fill=white, dashed},
+            img/.style={box, fill=gray!20, font=\scriptsize},
+            pool/.style={draw, ->, red!80!black, thick},
+            up/.style={draw, ->, green!60!black, thick},
+            line/.style={draw, ->, blue!70!black, thick},
+            skip/.style={draw, ->, black, dashed, thick},
+            label/.style={font=\scriptsize, align=center}
         }
         
-        % Left Side (Encoder - Downsampling Path)
-        \node[conv] (input) at (0, 0) {Input Image\\$H \times W \times 3$};
-        \node[conv] (e1) at (0, -2.2) {ConvLayer 1 ($t_1$)\\$\frac{H}{2} \times \frac{W}{2} \times \frac{C_0}{8}$};
-        \node[conv] (e2) at (0, -4.4) {ConvLayer 2 ($t_2$)\\$\frac{H}{4} \times \frac{W}{4} \times \frac{C_0}{4}$};
-        \node[conv] (e3) at (0, -6.6) {ConvLayer 3 ($t_3$)\\$\frac{H}{8} \times \frac{W}{8} \times C_0$};
-        \node[kan] (e4) at (0, -8.8) {PatchEmbed 3 $+$ KANBlock 1 ($t_4$)\\$\frac{H}{16} \times \frac{W}{16} \times C_1$};
+        % Input
+        \node[img, minimum height=4cm, minimum width=0.2cm] (input) at (0,0) {};
+        \node[label, below=0.1cm of input] {$H \times W \times 3$};
+        \node[label, above=0.1cm of input] {Input\\Image};
         
-        % Bottom Center (Bottleneck)
-        \node[bottleneck] (b) at (5.5, -11.2) {PatchEmbed 4 $+$ KANBlock 2 (Bottleneck)\\$\frac{H}{32} \times \frac{W}{32} \times C_2$};
+        % E1 (Conv)
+        \node[conv, minimum height=2cm, minimum width=0.4cm] (e1) at (1.5,-1.8) {};
+        \node[label, below=0.1cm of e1] {$\frac{H}{2} \times \frac{W}{2}$\\$\frac{C_0}{8}$};
+        \node[label, above=0.1cm of e1] {CNN 1};
         
-        % Right Side (Decoder - Upsampling Path)
-        \node[kan] (d4) at (11, -8.8) {Decoder KANBlock 1\\$\frac{H}{16} \times \frac{W}{16} \times C_1$};
-        \node[kan] (d3) at (11, -6.6) {Decoder KANBlock 2\\$\frac{H}{8} \times \frac{W}{8} \times C_0$};
-        \node[conv] (d2) at (11, -4.4) {D\_ConvLayer 3\\$\frac{H}{4} \times \frac{W}{4} \times \frac{C_0}{4}$};
-        \node[conv] (d1) at (11, -2.2) {D\_ConvLayer 4\\$\frac{H}{2} \times \frac{W}{2} \times \frac{C_0}{8}$};
-        \node[conv] (final) at (11, 0) {$1\times1$ Conv Head\\$H \times W \times N_{\text{classes}}$};
+        % E2 (Conv)
+        \node[conv, minimum height=1cm, minimum width=0.8cm] (e2) at (3.5,-3.4) {};
+        \node[label, below=0.1cm of e2] {$\frac{H}{4} \times \frac{W}{4}$\\$\frac{C_0}{4}$};
+        \node[label, above=0.1cm of e2] {CNN 2};
         
-        % Downsampling Connections (Encoder)
-        \path[line] (input) -- node[right, io] {Pool $2\times2$} (e1);
-        \path[line] (e1) -- node[right, io] {Pool $2\times2$} (e2);
-        \path[line] (e2) -- node[right, io] {Pool $2\times2$} (e3);
-        \path[line] (e3) -- node[right, io] {PatchEmbed (Stride 2)} (e4);
-        \path[line] (e4) |- node[below left, io] {PatchEmbed (Stride 2)} (b.west);
+        % E3 (Conv)
+        \node[conv, minimum height=0.5cm, minimum width=1.6cm] (e3) at (5.5,-4.8) {};
+        \node[label, below=0.1cm of e3] {$\frac{H}{8} \times \frac{W}{8}$\\$C_0$};
+        \node[label, above=0.1cm of e3] {CNN 3};
         
-        % Upsampling Connections (Decoder)
-        \path[line] (b.east) -| node[below right, io] {D\_Conv 1 (Upsample $\times2$)} (d4);
-        \path[line] (d4) -- node[left, io] {D\_Conv 2 (Upsample $\times2$)} (d3);
-        \path[line] (d3) -- node[left, io] {D\_Conv 3 (Upsample $\times2$)} (d2);
-        \path[line] (d2) -- node[left, io] {D\_Conv 4 (Upsample $\times2$)} (d1);
-        \path[line] (d1) -- node[left, io] {D\_Conv 5 (Upsample $\times2$)} (final);
+        % E4 (KAN)
+        \node[kan, minimum height=0.25cm, minimum width=3.2cm] (e4) at (8.5,-5.8) {};
+        \node[label, below=0.1cm of e4] {$\frac{H}{16} \times \frac{W}{16}$\\$C_1$};
+        \node[label, above=0.1cm of e4] {KAN 1};
         
-        % Horizontal Skip Connections across the U-Shape
-        \path[skipline] (e1) -- node[above, io] {Skip ($+$)} (d1);
-        \path[skipline] (e2) -- node[above, io] {Skip ($+$)} (d2);
-        \path[skipline] (e3) -- node[above, io] {Skip ($+$)} (d3);
-        \path[skipline] (e4) -- node[above, io] {Skip ($+$)} (d4);
+        % Bottleneck (KAN)
+        \node[bottleneck, minimum height=0.25cm, minimum width=5cm] (b) at (11.5,-6.8) {};
+        \node[label, below=0.1cm of b] {$\frac{H}{32} \times \frac{W}{32}$\\$C_2$};
+        \node[label, above=0.1cm of b] {Bottleneck};
+        
+        % D4 (KAN)
+        \node[concat, minimum height=0.25cm, minimum width=3.2cm] (d4_concat) at (14.5,-5.8) {};
+        \node[kan, minimum height=0.25cm, minimum width=3.2cm, right=0cm of d4_concat] (d4) {};
+        \node[label, below=0.1cm of d4] {$\frac{H}{16} \times \frac{W}{16}$\\$C_1$};
+        \node[label, above=0.1cm of d4_concat.north east] {Dec KAN 1};
+        
+        % D3 (KAN)
+        \node[concat, minimum height=0.5cm, minimum width=1.6cm] (d3_concat) at (18,-4.8) {};
+        \node[kan, minimum height=0.5cm, minimum width=1.6cm, right=0cm of d3_concat] (d3) {};
+        \node[label, below=0.1cm of d3] {$\frac{H}{8} \times \frac{W}{8}$\\$C_0$};
+        \node[label, above=0.1cm of d3_concat.north east] {Dec KAN 2};
+        
+        % D2 (Conv)
+        \node[concat, minimum height=1cm, minimum width=0.8cm] (d2_concat) at (21,-3.4) {};
+        \node[conv, minimum height=1cm, minimum width=0.8cm, right=0cm of d2_concat] (d2) {};
+        \node[label, below=0.1cm of d2] {$\frac{H}{4} \times \frac{W}{4}$\\$\frac{C_0}{4}$};
+        \node[label, above=0.1cm of d2_concat.north east] {Dec CNN 3};
+        
+        % D1 (Conv)
+        \node[concat, minimum height=2cm, minimum width=0.4cm] (d1_concat) at (23.5,-1.8) {};
+        \node[conv, minimum height=2cm, minimum width=0.4cm, right=0cm of d1_concat] (d1) {};
+        \node[label, below=0.1cm of d1] {$\frac{H}{2} \times \frac{W}{2}$\\$\frac{C_0}{8}$};
+        \node[label, above=0.1cm of d1_concat.north east] {Dec CNN 4};
+        
+        % Final Conv (head) & Output
+        \node[conv, minimum height=4cm, minimum width=0.2cm] (head) at (25.5,0) {};
+        \node[label, below=0.1cm of head] {Head};
+        
+        \node[img, minimum height=4cm, minimum width=0.2cm] (output) at (27,0) {};
+        \node[label, below=0.1cm of output] {$H \times W \times N_{\text{classes}}$};
+        \node[label, above=0.1cm of output] {Output\\Mask};
+        
+        % Connections
+        \draw[pool] (input.south east) -- (e1.north west) node[midway, right, label, red!80!black] {Pool};
+        \draw[pool] (e1.south east) -- (e2.north west) node[midway, right, label, red!80!black] {Pool};
+        \draw[pool] (e2.south east) -- (e3.north west) node[midway, right, label, red!80!black] {Pool};
+        \draw[pool] (e3.south east) -- (e4.north west) node[midway, right, label, red!80!black] {Embed};
+        \draw[pool] (e4.south east) -- (b.north west) node[midway, right, label, red!80!black] {Embed};
+        
+        \draw[up] (b.north east) -- (d4_concat.south west) node[midway, right, label, green!60!black] {Up};
+        \draw[up] (d4.north east) -- (d3_concat.south west) node[midway, right, label, green!60!black] {Up};
+        \draw[up] (d3.north east) -- (d2_concat.south west) node[midway, right, label, green!60!black] {Up};
+        \draw[up] (d2.north east) -- (d1_concat.south west) node[midway, right, label, green!60!black] {Up};
+        \draw[up] (d1.north east) -- (head.south west) node[midway, right, label, green!60!black] {Up};
+        
+        \draw[line] (head.east) -- (output.west);
+        
+        % Skips
+        \draw[skip] (e4.east) -- (d4_concat.west) node[midway, above, label] {Concat};
+        \draw[skip] (e3.east) -- (d3_concat.west);
+        \draw[skip] (e2.east) -- (d2_concat.west);
+        \draw[skip] (e1.east) -- (d1_concat.west);
         
     \end{tikzpicture}
     }
     \vspace{1ex}
     
-    {\small \textit{*Note: Green blocks indicate KAN-based stages. Blue blocks indicate standard CNN stages. Red block indicates the KAN bottleneck. Dashed lines indicate horizontal skip connections across the U-shape.}}
-    \caption{UKAN Architecture: Symmetric U-shaped encoder-decoder network transitioning from CNN stages to KAN blocks at lower resolutions, connected by horizontal skip connections.}
+    {\small \textit{*Note: Green blocks indicate KAN-based stages. Blue blocks indicate standard CNN stages. Red block indicates the KAN bottleneck. Dashed boxes and lines indicate skip connections and concatenation.}}
+    \caption{UKAN Architecture: Symmetric U-Net style dataflow transitioning from CNN stages to KAN blocks at lower resolutions.}
     \label{fig:ukan_arch}
 \end{figure}
 
@@ -693,54 +744,100 @@ The decoder combines KAN blocks with standard convolutional upsampling (D\_ConvL
 The full BiKA Segmentation Network (we will call it BikaSegNet from now) follows a standard U-Net topology with BiKAConvBlocks replacing standard convolution blocks, as shown in Figure~\ref{fig:bika_arch}.
 
 \begin{figure}[htbp]
-\centering
-\resizebox{0.95\textwidth}{!}{%
-\begin{tikzpicture}[>=stealth, thick]
-    \tikzset{
-        fp/.style={draw=blue!80!black, fill=blue!8, rectangle, minimum height=2.8em, minimum width=10.5em, rounded corners, align=center, font=\small, line width=1pt},
-        bin/.style={draw=red!70!black, fill=red!8, rectangle, minimum height=2.8em, minimum width=10.5em, rounded corners, align=center, font=\small, line width=1.2pt},
-        bottleneck/.style={draw=purple!80!black, fill=purple!8, rectangle, minimum height=3.2em, minimum width=13.5em, rounded corners, align=center, font=\small, line width=1.5pt},
-        io/.style={font=\scriptsize, align=center, fill=white, inner sep=2pt},
-        line/.style={draw, ->, >=stealth, thick, rounded corners=3pt},
-        skipline/.style={draw, ->, >=stealth, dashed, blue!70!black, line width=1.2pt}
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[>=stealth, thick]
+        \tikzset{
+            box/.style={draw=black, rectangle, align=center, inner sep=0pt},
+            fp/.style={box, fill=blue!10, font=\scriptsize},
+            bin/.style={box, fill=red!20, font=\scriptsize},
+            bottleneck/.style={box, fill=purple!20, font=\scriptsize},
+            concat/.style={box, fill=white, dashed},
+            img/.style={box, fill=gray!20, font=\scriptsize},
+            pool/.style={draw, ->, red!80!black, thick},
+            up/.style={draw, ->, green!60!black, thick},
+            conv/.style={draw, ->, blue!70!black, thick},
+            skip/.style={draw, ->, black, dashed, thick},
+            label/.style={font=\scriptsize, align=center}
+        }
+        
+        % Nodes
+        % Input
+        \node[img, minimum height=4cm, minimum width=0.2cm] (input) at (0,0) {};
+        \node[label, below=0.1cm of input] {$H \times W \times 3$};
+        \node[label, above=0.1cm of input] {Input\\Image};
+        
+        % Stem
+        \node[fp, minimum height=4cm, minimum width=0.4cm] (stem) at (2,0) {};
+        \node[label, below=0.1cm of stem] {$H \times W$\\$C$};
+        \node[label, above=0.1cm of stem] {FP32 Stem};
+        
+        % Block 1
+        \node[bin, minimum height=2cm, minimum width=0.8cm] (e1) at (4,-1.8) {};
+        \node[label, below=0.1cm of e1] {$\frac{H}{2} \times \frac{W}{2}$\\$2C$};
+        \node[label, above=0.1cm of e1] {BiKA 1};
+        
+        % Block 2
+        \node[bin, minimum height=1cm, minimum width=1.6cm] (e2) at (6,-3.4) {};
+        \node[label, below=0.1cm of e2] {$\frac{H}{4} \times \frac{W}{4}$\\$4C$};
+        \node[label, above=0.1cm of e2] {BiKA 2};
+        
+        % Bottleneck
+        \node[bottleneck, minimum height=0.5cm, minimum width=3.2cm] (b) at (9,-4.8) {};
+        \node[label, below=0.1cm of b] {$\frac{H}{8} \times \frac{W}{8}$\\$8C$};
+        \node[label, above=0.1cm of b] {Bottleneck};
+        
+        % Decoder 2
+        \node[concat, minimum height=1cm, minimum width=1.6cm] (d2_concat) at (12,-3.4) {};
+        \node[bin, minimum height=1cm, minimum width=1.6cm, right=0cm of d2_concat] (d2) {};
+        \node[label, below=0.1cm of d2] {$\frac{H}{4} \times \frac{W}{4}$\\$4C$};
+        \node[label, above=0.1cm of d2_concat.north east] {Dec 2};
+        
+        % Decoder 1
+        \node[concat, minimum height=2cm, minimum width=0.8cm] (d1_concat) at (15,-1.8) {};
+        \node[bin, minimum height=2cm, minimum width=0.8cm, right=0cm of d1_concat] (d1) {};
+        \node[label, below=0.1cm of d1] {$\frac{H}{2} \times \frac{W}{2}$\\$2C$};
+        \node[label, above=0.1cm of d1_concat.north east] {Dec 1};
+        
+        % Decoder 0
+        \node[concat, minimum height=4cm, minimum width=0.4cm] (d0_concat) at (18,0) {};
+        \node[bin, minimum height=4cm, minimum width=0.4cm, right=0cm of d0_concat] (d0) {};
+        \node[label, below=0.1cm of d0] {$H \times W$\\$C$};
+        \node[label, above=0.1cm of d0_concat.north east] {Dec 0};
+        
+        % Head
+        \node[fp, minimum height=4cm, minimum width=0.2cm] (head) at (20.5,0) {};
+        \node[label, below=0.1cm of head] {FP32 Head};
+        
+        % Output
+        \node[img, minimum height=4cm, minimum width=0.2cm] (output) at (22.5,0) {};
+        \node[label, below=0.1cm of output] {$H \times W \times N_{\text{classes}}$};
+        \node[label, above=0.1cm of output] {Output\\Mask};
+        
+        % Connections
+        \draw[conv] (input.east) -- (stem.west);
+        \draw[pool] (stem.south east) -- (e1.north west) node[midway, right, label, red!80!black] {Pool $2\times2$};
+        \draw[pool] (e1.south east) -- (e2.north west) node[midway, right, label, red!80!black] {Pool $2\times2$};
+        \draw[pool] (e2.south east) -- (b.north west) node[midway, right, label, red!80!black] {Pool $2\times2$};
+        
+        \draw[up] (b.north east) -- (d2_concat.south west) node[midway, right, label, green!60!black] {Up $2\times2$};
+        \draw[up] (d2.north east) -- (d1_concat.south west) node[midway, right, label, green!60!black] {Up $2\times2$};
+        \draw[up] (d1.north east) -- (d0_concat.south west) node[midway, right, label, green!60!black] {Up $2\times2$};
+        
+        \draw[conv] (d0.east) -- (head.west);
+        \draw[conv] (head.east) -- (output.west);
+        
+        % Skips
+        \draw[skip] (stem.east) -- (d0_concat.west) node[midway, above, label] {Concat};
+        \draw[skip] (e1.east) -- (d1_concat.west);
+        \draw[skip] (e2.east) -- (d2_concat.west);
+        
+    \end{tikzpicture}
     }
-    
-    % Left Side (Encoder - Downsampling Path)
-    \node[fp] (stem) at (0, 0) {FP32 Stem\\Conv $+$ BiKA\_Conv2d ($C$)};
-    \node[bin] (e2) at (0, -2.2) {BiKAConvBlock 1\\$2C \quad (\frac{H}{2} \times \frac{W}{2})$};
-    \node[bin] (e3) at (0, -4.4) {BiKAConvBlock 2\\$4C \quad (\frac{H}{4} \times \frac{W}{4})$};
-    
-    % Bottom Center (Bottleneck)
-    \node[bottleneck] (b) at (5.5, -6.6) {BiKAConvBlock (Bottleneck)\\$8C \quad (\frac{H}{8} \times \frac{W}{8})$};
-    
-    % Right Side (Decoder - Upsampling Path)
-    \node[bin] (d3) at (11, -4.4) {Decoder BiKAConvBlock 2\\$4C \quad (\frac{H}{4} \times \frac{W}{4})$};
-    \node[bin] (d2) at (11, -2.2) {Decoder BiKAConvBlock 1\\$2C \quad (\frac{H}{2} \times \frac{W}{2})$};
-    \node[bin] (d1) at (11, 0) {Decoder BiKAConvBlock 0\\$C \quad (H \times W)$};
-    \node[fp] (head) at (11, 2.2) {FP32 Head\\$1\times1$ Conv ($N_{\text{classes}}$)};
-    
-    % Downsampling Connections (Encoder)
-    \path[line] (stem) -- node[right, io] {Pool $2\times2$} (e2);
-    \path[line] (e2) -- node[right, io] {Pool $2\times2$} (e3);
-    \path[line] (e3) |- node[below left, io] {Pool $2\times2$} (b.west);
-    
-    % Upsampling Connections (Decoder)
-    \path[line] (b.east) -| node[below right, io] {Upsample $\times 2$} (d3);
-    \path[line] (d3) -- node[left, io] {Upsample $\times 2$} (d2);
-    \path[line] (d2) -- node[left, io] {Upsample $\times 2$} (d1);
-    \path[line] (d1) -- node[left, io] {Final Projection} (head);
-    
-    % Horizontal Concatenation Skip Connections across the U-Shape
-    \path[skipline] (stem) -- node[above, io] {Skip (Concat)} (d1);
-    \path[skipline] (e2) -- node[above, io] {Skip (Concat)} (d2);
-    \path[skipline] (e3) -- node[above, io] {Skip (Concat)} (d3);
-    
-\end{tikzpicture}
-}
-\vspace{1ex}
-{\small \textit{*Note: Red blocks indicate binarized BiKA\_Conv2d layers. Blue blocks indicate full-precision FP32 stem and head. Purple block indicates the binary bottleneck. Dashed lines indicate horizontal feature concatenation skip connections across the U-shape.}}
-\caption{BiKASegNet Architecture}
-\label{fig:bika_arch}
+    \vspace{1ex}
+    {\small \textit{*Note: Red blocks indicate binarized BiKA\_Conv2d layers. Blue blocks indicate full-precision FP32 stem and head. Purple block indicates the binary bottleneck. Dashed boxes and lines indicate feature concatenation skip connections.}}
+    \caption{BiKASegNet Architecture: U-Net style dataflow showing input to output transformation.}
+    \label{fig:bika_arch}
 \end{figure}
 
 BiKASegNet implements the KAN philosophy of learnable per-connection activations in a radically different way: instead of smooth spline functions, it uses binarized step functions with learnable per-connection thresholds. This produces a network where both weights and activations are binary ($\{+1, -1\}$), enabling extreme computational efficiency.
@@ -879,8 +976,9 @@ To evaluate full-precision UKAN, binarized BiKASegNet, and state-of-the-art base
     
     \item \textbf{Training Hyperparameters \& Input Dimensions}:
     \begin{itemize}
-        \item \textbf{Input Resolutions}: Default low-resolution $192 \times 256 \times 3$, medium $360 \times 640 \times 3$, KAN grid $384 \times 640 \times 3$, and full-resolution baseline $512 \times 1024 \times 3$.
-        \item \textbf{Training Epochs}: 50 to 200 epochs trained with AdamW optimiser ($\beta_1=0.9, \beta_2=0.999$, weight decay $= 10^{-4}$ for FP32 layers and $0.0$ for BiKA binary parameters), initial learning rate $\eta_0 = 10^{-3}$, and CosineAnnealingLR scheduler ($\eta_{\min} = 10^{-5}$).
+        \item \textbf{Input Resolutions}: $192 \times 256 \times 3$,  $360 \times 640 \times 3$, $384 \times 640 \times 3$ (UKAN models), and $512 \times 1024 \times 3$.
+        \item \textbf{Training Epochs}: 50 to 200 epochs 
+        \item \textbf{Optimizer}: ADamW with $\beta_1 = 0.9$, $\beta_2 = 0.999$, weight decay $= 0.01$ (except for BiKA layers, which have weight decay disabled).
         \item \textbf{Batch Size}: Effective batch size of 16 (batch size 8 per GPU step with gradient accumulation).
     \end{itemize}
     
@@ -912,16 +1010,16 @@ where $\text{TP}_c$, $\text{FP}_c$, and $\text{FN}_c$ are the true positives, fa
 \section{Results and Discussion}
 \label{sec:results_and_discussion}
 
-To evaluate model performance, the experimental results are analyzed across the two operational segmentation approaches.
+To evaluate model performance, two approaches is made.
 
 \subsection{Approach 1: Segment Anything / 20-Class Full Semantic Segmentation}
 \label{sec:approach1_results}
 
-In Approach 1, models must classify every pixel into one of 19 semantic categories (plus background/unknown). Table~\ref{tab:approach1_table} compares the performance of binarized BiKASegNet, full-precision UKAN variants, YOLO-KAN variants, and published full-precision baselines on BDD100K.
+In Approach 1, models must be able to fully segmented 19 semantic categories (plus background/unknown). Table~\ref{tab:approach1_table} compares the performance of binarized BiKASegNet, full-precision UKAN variants, YOLO-KAN variants, and published full-precision baselines on BDD100K.
 
 \begin{table}[htbp]
 \centering
-\caption{Approach 1: Multi-Class Full Semantic Segmentation (20 Classes) on BDD100K.}
+\caption{Approach 1 Results}
 \label{tab:approach1_table}
 \resizebox{\textwidth}{!}{
 \begin{tabular}{lccccc}
@@ -956,15 +1054,14 @@ BiKASegNet (v1 16ch) & 1-bit & $192 \times 256$ & \textbf{0.97} & \textbf{831.23
 }
 \end{table}
 
-\textbf{Discussion on Approach 1}:
-Multi-class semantic segmentation (20 classes) requires severe representational bandwidth to distinguish fine-grained categories with small pixel support (such as traffic lights, signs, riders, and poles). Full-precision UKAN models (specifically UKAN-ReLU and UKAN-FasterKAN) achieve exceptional accuracy ($\sim 71.8\%$ mIoU), outperforming heavy CNN baselines like PSPNet ($63.6\%$) and DeepLabV3+ ($64.5\%$) while running at $>130$ FPS on GPU. 
+All variants of UKANs successfully achieve 71\% of the mIoU, out-performing much larger CNN baselines, while maintain a maximum 174.06 FPS (UKAN + TeLU) and 179 FPS (UKAN-HardSwish), a bit lower than the U-Net based UKAN baseline (216.30 FPS). YOLO-KAN variants, while larger in parameter count ($\sim 20$M), achieve lower mIoU ($\sim 62-63\%$) and slower FPS ($\sim 67-71$ FPS) than UKANs.
 
-Conversely, extreme 1-bit binarization in BiKASegNet introduces severe capacity bottlenecks under 20 output classes. While BiKASegNet v5\_wr achieves 465.46 FPS, its 20-class mIoU is constrained to $15.74\%$. This demonstrates that 1-bit binarized thresholding cannot allocate sufficient activation states for 20 independent logit spaces without larger channel expansions.
-\newpage
+In constrast, extreme 1-bit binarization in BiKASegNet introduces severe capacity bottlenecks under 20 output classes. While BiKASegNet v5\_wr achieves 465.46 FPS, its 20-class mIoU is constrained to $15.74\%$. This demonstrates that 1-bit binarized thresholding cannot providing enough contexts  for 20 independent classes spaces without larger channel expansions. One of a plus point with BiKASegNet is that it achieve the highest throughput with 465.46 frames per second (FPS). Denoted that when handle images with low resolution of 192 x 256, small classes like human from far away are hard to be detected. This is a limitation of the current BiKASegNet architecture, which is designed for extreme efficiency rather than multi-class accuracy. 
+
 \subsection{Approach 2: Road Segmentation / Drivable Area (2 Classes)}
 \label{sec:approach2_results}
 
-In Approach 2, the segmentation target is simplified to a 2-class binary decision: drivable road surface vs. background. This maps directly to real-time collision avoidance and lane navigation requirements. Table~\ref{tab:approach2_table} compares the performance of 2-class models.
+In Approach 2, the segmentation target is simplified to a 2-class binary decision: drivable road surface vs. background. Table~\ref{tab:approach2_table} compares the performance of 2-class models.
 
 \begin{table}[htbp]
 \centering
