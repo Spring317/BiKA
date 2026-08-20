@@ -177,6 +177,18 @@ def fuse_bika_model(model: nn.Module):
                     module[i+1] = nn.Identity()
                     module[i+2] = nn.Identity()
 
+                elif isinstance(m_conv, nn.Conv2d) and isinstance(m_bn, nn.BatchNorm2d):
+                    # FP32 Conv2d + BatchNorm2d fusion
+                    std = torch.sqrt(m_bn.running_var + m_bn.eps)
+                    w = m_conv.weight * (m_bn.weight / std).view(-1, 1, 1, 1)
+                    if m_conv.bias is not None:
+                        b = (m_conv.bias - m_bn.running_mean) * (m_bn.weight / std) + m_bn.bias
+                    else:
+                        b = -m_bn.running_mean * (m_bn.weight / std) + m_bn.bias
+                    m_conv.weight = nn.Parameter(w)
+                    m_conv.bias = nn.Parameter(b)
+                    module[i+1] = nn.Identity()
+
         # Handle the new BiKAConvBlock
         elif module.__class__.__name__ == "BiKAConvBlock":
             # Fuse conv1 -> bn1 -> act1

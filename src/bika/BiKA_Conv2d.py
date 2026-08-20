@@ -168,9 +168,11 @@ class BiKA_Conv2d(nn.Module):
         ph, pw = self.padding
         sh, sw = self.stride
 
-        # Libra-PB (IR-Net, CVPR 2020): center weights per output filter
-        # so sign(w) produces ~50% +1 / 50% -1 (balanced binarization).
-        w = self.weight - self.weight.mean(dim=[1, 2, 3], keepdim=True)
+        # If packed_weight is available, skip redundant centering calculation
+        if self.packed_weight is None:
+            w = self.weight - self.weight.mean(dim=[1, 2, 3], keepdim=True)
+        else:
+            w = self.weight
 
         y = bika_conv2d(
             x,

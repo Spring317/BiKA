@@ -57,11 +57,39 @@ torch::Tensor bika_conv2d_forward_cpu_v2_dispatch(
     int stride_h, int stride_w
 );
 
+// V3 optimized CPU kernel (im2col + quad-channel fused XNOR)
+torch::Tensor bika_conv2d_forward_cpu_v3_dispatch(
+    torch::Tensor input,
+    torch::Tensor weight,
+    torch::Tensor bias,
+    torch::Tensor out_scale,
+    torch::Tensor out_shift,
+    torch::Tensor packed_weight,
+    bool do_relu,
+    int pad_h, int pad_w,
+    int stride_h, int stride_w
+);
+
+// V4 optimized CPU kernel (8-channel straight-line AVX2)
+torch::Tensor bika_conv2d_forward_cpu_v4(
+    torch::Tensor input,
+    torch::Tensor weight,
+    torch::Tensor bias,
+    torch::Tensor out_scale,
+    torch::Tensor out_shift,
+    torch::Tensor packed_weight,
+    bool do_relu,
+    int pad_h, int pad_w,
+    int stride_h, int stride_w
+);
+
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("bika_linear_forward", &bika_linear_forward, "BiKA Linear Forward (CUDA)");
     m.def("bika_linear_backward", &bika_linear_backward, "BiKA Linear Backward (CUDA)");
     m.def("bika_conv2d_forward", &bika_conv2d_forward, "BiKA Conv2d Forward (CUDA)");
     m.def("bika_conv2d_backward", &bika_conv2d_backward, "BiKA Conv2d Backward (CUDA)");
     m.def("bika_conv2d_forward_cpu", &bika_conv2d_forward_cpu, "BiKA Conv2d Forward (CPU V1)");
-    m.def("bika_conv2d_forward_cpu_v2", &bika_conv2d_forward_cpu_v2_dispatch, "BiKA Conv2d Forward (CPU V2 - Optimized)");
+    m.def("bika_conv2d_forward_cpu_v2", &bika_conv2d_forward_cpu_v2_dispatch, "BiKA Conv2d Forward (CPU V2)");
+    m.def("bika_conv2d_forward_cpu_v3", &bika_conv2d_forward_cpu_v3_dispatch, "BiKA Conv2d Forward (CPU V3 - im2col + quad)");
+    m.def("bika_conv2d_forward_cpu_v4", &bika_conv2d_forward_cpu_v4, "BiKA Conv2d Forward (CPU V4 - 8ch straight-line AVX2)");
 }

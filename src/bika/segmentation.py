@@ -49,12 +49,16 @@ class BiKAConvBlock(nn.Module):
             self.skip = nn.Identity()
 
     def _forward_impl(self, x: torch.Tensor) -> torch.Tensor:
-        skip = self.skip(x)
-        out = self.act1(self.bn1(self.conv1(x)))
-        out = self.bn2(self.conv2(out))
         if self.legacy_mode:
-            return self.act2(out)
+            if isinstance(self.bn1, nn.Identity) and isinstance(self.act1, nn.Identity) and \
+               isinstance(self.bn2, nn.Identity) and isinstance(self.act2, nn.Identity):
+                return self.conv2(self.conv1(x))
+            out = self.act1(self.bn1(self.conv1(x)))
+            return self.act2(self.bn2(self.conv2(out)))
         else:
+            skip = self.skip(x)
+            out = self.act1(self.bn1(self.conv1(x)))
+            out = self.bn2(self.conv2(out))
             return self.act2(out + skip)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
