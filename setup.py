@@ -23,6 +23,9 @@ setup(
                 "src/bika/csrc/bika_conv2d_cpu_v4.cpp",
                 "src/bika/csrc/bika_conv2d_cpu_v5.cpp",
                 "src/bika/csrc/bika_conv2d_cpu_int8.cpp",
+                "src/bika/csrc/bika_conv2d_cpu_int8_v2.cpp",
+                "src/bika/csrc/bika_conv2d_cpu_int8_v3.cpp",
+                "src/bika/csrc/bika_conv2d_cpu_nhwc.cpp",
             ],
             extra_compile_args={
                 "cxx": ["-O3", "-fopenmp", "-mavx2", "-msse4.2", "-mpopcnt", "-mbmi2", "-ffast-math"],

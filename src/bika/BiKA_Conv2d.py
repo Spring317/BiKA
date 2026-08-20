@@ -122,10 +122,11 @@ class BiKA_Conv2d(nn.Module):
         self.reset_parameters()
         self.register_buffer("packed_weight", None)
         self.register_buffer("neg_bias_half", None)
+        self.register_buffer("packed_bias_i8", None)
         
     def pack_weights(self):
         """Pre-packs float32 weights into int32 buffer for lightning-fast CUDA loading.
-        Also pre-computes negated bias in half-precision for shared memory bandwidth savings."""
+        Also pre-computes negated bias in half-precision (CUDA) and int8 (CPU AVX2)."""
         O, C, K, _ = self.weight.shape
         w_centered = self.weight - self.weight.mean(dim=[1, 2, 3], keepdim=True)
         w_flat = w_centered.view(O, C * K * K) >= 0.0
@@ -137,9 +138,11 @@ class BiKA_Conv2d(nn.Module):
             bit_val = w_flat[:, i].to(torch.int32)
             packed[:, word_idx] |= (bit_val << bit_idx)
         self.packed_weight = packed
-        # Pre-negate bias and convert to half precision
-        # In the kernel: (x + bias) >= 0 becomes x >= -bias
+        # Pre-negate bias and convert to half precision for CUDA
         self.neg_bias_half = (-self.bias.detach()).half()
+        # Pre-quantize negated bias to int8 (scale = 64.0) for CPU AVX2 SIMD kernel
+        nb_i8 = torch.clamp(torch.round((-self.bias.detach()) * 64.0), -128, 127).to(torch.int8)
+        self.packed_bias_i8 = nb_i8.contiguous()
 
     def reset_parameters(self):
         fan_in = (
@@ -182,6 +185,7 @@ class BiKA_Conv2d(nn.Module):
             out_shift=self.out_shift,
             packed_weight=self.packed_weight,
             neg_bias_half=self.neg_bias_half,
+            packed_bias_i8=self.packed_bias_i8,
             do_relu=self.do_relu,
             padding=(ph, pw),
             stride=(sh, sw),

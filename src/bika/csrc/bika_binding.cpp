@@ -109,6 +109,48 @@ torch::Tensor bika_conv2d_forward_cpu_int8(
     int stride_h, int stride_w
 );
 
+// Strategy 3+4 (V2): 2D-Tiled Int8 AVX2 SIMD CPU kernel with pre-quantized bias
+torch::Tensor bika_conv2d_forward_cpu_int8_v2(
+    torch::Tensor input,
+    torch::Tensor weight,
+    torch::Tensor bias,
+    torch::Tensor out_scale,
+    torch::Tensor out_shift,
+    torch::Tensor packed_weight,
+    torch::Tensor packed_bias_i8,
+    bool do_relu,
+    int pad_h, int pad_w,
+    int stride_h, int stride_w
+);
+
+// Strategy 3+4 (V3): 4-Pixel x 8-Channel Int8 AVX2 SIMD CPU kernel
+torch::Tensor bika_conv2d_forward_cpu_int8_v3(
+    torch::Tensor input,
+    torch::Tensor weight,
+    torch::Tensor bias,
+    torch::Tensor out_scale,
+    torch::Tensor out_shift,
+    torch::Tensor packed_weight,
+    torch::Tensor packed_bias_i8,
+    bool do_relu,
+    int pad_h, int pad_w,
+    int stride_h, int stride_w
+);
+
+// Strategy 4 (Advanced): Channels-Last (NHWC) Contiguous Streaming Int8 AVX2 CPU kernel
+torch::Tensor bika_conv2d_forward_cpu_nhwc(
+    torch::Tensor input,
+    torch::Tensor weight,
+    torch::Tensor bias,
+    torch::Tensor out_scale,
+    torch::Tensor out_shift,
+    torch::Tensor packed_weight,
+    torch::Tensor packed_bias_i8,
+    bool do_relu,
+    int pad_h, int pad_w,
+    int stride_h, int stride_w
+);
+
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("bika_linear_forward", &bika_linear_forward, "BiKA Linear Forward (CUDA)");
     m.def("bika_linear_backward", &bika_linear_backward, "BiKA Linear Backward (CUDA)");
@@ -120,4 +162,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("bika_conv2d_forward_cpu_v4", &bika_conv2d_forward_cpu_v4, "BiKA Conv2d Forward (CPU V4 - 8ch straight-line AVX2)");
     m.def("bika_conv2d_forward_cpu_v5", &bika_conv2d_forward_cpu_v5, "BiKA Conv2d Forward (CPU V5 - Channel-Stationary AVX2)");
     m.def("bika_conv2d_forward_cpu_int8", &bika_conv2d_forward_cpu_int8, "BiKA Conv2d Forward (CPU Int8 AVX2 SIMD)");
+    m.def("bika_conv2d_forward_cpu_int8_v2", &bika_conv2d_forward_cpu_int8_v2, "BiKA Conv2d Forward (CPU Int8 V2 2D-Tiled AVX2 SIMD)");
+    m.def("bika_conv2d_forward_cpu_int8_v3", &bika_conv2d_forward_cpu_int8_v3, "BiKA Conv2d Forward (CPU Int8 V3 4P8CH AVX2 SIMD)");
+    m.def("bika_conv2d_forward_cpu_nhwc", &bika_conv2d_forward_cpu_nhwc, "BiKA Conv2d Forward (CPU Int8 NHWC Streaming AVX2 SIMD)");
 }
