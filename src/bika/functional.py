@@ -123,12 +123,12 @@ def bika_conv2d(
         sh, sw = stride
 
     if not input.is_cuda:
-        # Fast C++ CPU fallback with OpenMP and bit-packing
+        # Optimized V2 CPU kernel: pre-binarize + 4-channel tiled XNOR-popcount
         out_scale_t = out_scale if out_scale is not None else torch.empty(0, device=input.device, dtype=torch.float32)
         out_shift_t = out_shift if out_shift is not None else torch.empty(0, device=input.device, dtype=torch.float32)
         packed_weight_t = packed_weight if packed_weight is not None else torch.empty(0, device=input.device, dtype=torch.int32)
         
-        return _C.bika_conv2d_forward_cpu(
+        return _C.bika_conv2d_forward_cpu_v2(
             input.contiguous(),
             weight.contiguous(),
             bias if bias is not None else torch.zeros(weight.shape[0], device=input.device),

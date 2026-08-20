@@ -44,10 +44,24 @@ torch::Tensor bika_conv2d_forward_cpu(
     int stride_h, int stride_w
 );
 
+// V2 optimized CPU kernel (pre-binarize + 4-channel tiling)
+torch::Tensor bika_conv2d_forward_cpu_v2_dispatch(
+    torch::Tensor input,
+    torch::Tensor weight,
+    torch::Tensor bias,
+    torch::Tensor out_scale,
+    torch::Tensor out_shift,
+    torch::Tensor packed_weight,
+    bool do_relu,
+    int pad_h, int pad_w,
+    int stride_h, int stride_w
+);
+
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("bika_linear_forward", &bika_linear_forward, "BiKA Linear Forward (CUDA)");
     m.def("bika_linear_backward", &bika_linear_backward, "BiKA Linear Backward (CUDA)");
     m.def("bika_conv2d_forward", &bika_conv2d_forward, "BiKA Conv2d Forward (CUDA)");
     m.def("bika_conv2d_backward", &bika_conv2d_backward, "BiKA Conv2d Backward (CUDA)");
-    m.def("bika_conv2d_forward_cpu", &bika_conv2d_forward_cpu, "BiKA Conv2d Forward (CPU)");
+    m.def("bika_conv2d_forward_cpu", &bika_conv2d_forward_cpu, "BiKA Conv2d Forward (CPU V1)");
+    m.def("bika_conv2d_forward_cpu_v2", &bika_conv2d_forward_cpu_v2_dispatch, "BiKA Conv2d Forward (CPU V2 - Optimized)");
 }
