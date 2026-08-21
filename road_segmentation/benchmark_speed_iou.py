@@ -132,6 +132,9 @@ def load_model(args):
         fuse_bika_model(model)
     else:
         print("  Skipping fusion: RPReLU (legacy_mode=False) cannot be fused into current CUDA kernel.")
+        for m in model.modules():
+            if m.__class__.__name__ == "BiKA_Conv2d":
+                m.pack_weights()
         
     return model, num_classes
 

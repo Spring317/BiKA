@@ -111,6 +111,8 @@ def bika_conv2d(
     packed_weight: Optional[torch.Tensor] = None,
     neg_bias_half: Optional[torch.Tensor] = None,
     packed_bias_i8: Optional[torch.Tensor] = None,
+    packed_w_bits: Optional[torch.Tensor] = None,
+    neg_bias_flat: Optional[torch.Tensor] = None,
     do_relu: bool = False,
 ) -> torch.Tensor:
     if isinstance(padding, int):
@@ -124,7 +126,25 @@ def bika_conv2d(
         sh, sw = stride
 
     if not input.is_cuda:
-        # Strategy 3+4: 2D-Tiled Int8 AVX2 SIMD CPU kernel (V2 - Optimal 16-YMM Register Budget)
+        # ── True Bitpacked XNOR+POPCNT kernel (preferred on CPU) ──
+        if packed_w_bits is not None and neg_bias_flat is not None:
+            out_scale_t = out_scale if out_scale is not None else torch.empty(0, device=input.device, dtype=torch.float32)
+            out_shift_t = out_shift if out_shift is not None else torch.empty(0, device=input.device, dtype=torch.float32)
+
+            return _C.bika_conv2d_forward_cpu_bitpack(
+                input.contiguous(),
+                packed_w_bits,
+                neg_bias_flat,
+                out_scale_t,
+                out_shift_t,
+                do_relu,
+                int(sh),
+                int(sw),
+                int(ph),
+                int(pw),
+            )
+
+        # ── Fallback: Int8 AVX2 SIMD CPU kernel (V2) ──
         out_scale_t = out_scale if out_scale is not None else torch.empty(0, device=input.device, dtype=torch.float32)
         out_shift_t = out_shift if out_shift is not None else torch.empty(0, device=input.device, dtype=torch.float32)
         packed_weight_t = packed_weight if packed_weight is not None else torch.empty(0, device=input.device, dtype=torch.int32)

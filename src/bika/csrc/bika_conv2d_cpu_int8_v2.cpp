@@ -254,7 +254,7 @@ torch::Tensor bika_conv2d_forward_cpu_int8_v2(
         const float* b_ptr = bias.contiguous().data_ptr<float>();
         neg_bias_local.resize(O * ckk);
         for (int i = 0; i < O * ckk; ++i) {
-            float val = -b_ptr[i] * BIKA_INT8_SCALE;
+            float val = b_ptr[i] * BIKA_INT8_SCALE;
             neg_bias_local[i] = (int8_t)std::max(-128, std::min(127, (int)std::round(val)));
         }
         nb_i8_ptr = neg_bias_local.data();
@@ -285,7 +285,7 @@ torch::Tensor bika_conv2d_forward_cpu_int8_v2(
         alignas(64) int8_t gather_buf0[ckk > 0 ? ckk : 1];
         alignas(64) int8_t gather_buf1[ckk > 0 ? ckk : 1];
 
-        #pragma omp for collapse(2) schedule(dynamic, 4)
+        #pragma omp for collapse(2) schedule(static)
         for (int b = 0; b < B; ++b) {
             for (int ho = 0; ho < Ho; ++ho) {
                 const bool ho_safe = (ho >= ho_start_safe && ho < ho_end_safe);

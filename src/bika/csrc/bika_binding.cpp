@@ -151,6 +151,18 @@ torch::Tensor bika_conv2d_forward_cpu_nhwc(
     int stride_h, int stride_w
 );
 
+// True Bitpacked XNOR + Hardware POPCNT CPU kernel
+torch::Tensor bika_conv2d_forward_cpu_bitpack(
+    torch::Tensor input,
+    torch::Tensor packed_w_bits,
+    torch::Tensor neg_bias_flat,
+    torch::Tensor out_scale,
+    torch::Tensor out_shift,
+    bool do_relu,
+    int stride_h, int stride_w,
+    int pad_h, int pad_w
+);
+
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("bika_linear_forward", &bika_linear_forward, "BiKA Linear Forward (CUDA)");
     m.def("bika_linear_backward", &bika_linear_backward, "BiKA Linear Backward (CUDA)");
@@ -165,4 +177,5 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("bika_conv2d_forward_cpu_int8_v2", &bika_conv2d_forward_cpu_int8_v2, "BiKA Conv2d Forward (CPU Int8 V2 2D-Tiled AVX2 SIMD)");
     m.def("bika_conv2d_forward_cpu_int8_v3", &bika_conv2d_forward_cpu_int8_v3, "BiKA Conv2d Forward (CPU Int8 V3 4P8CH AVX2 SIMD)");
     m.def("bika_conv2d_forward_cpu_nhwc", &bika_conv2d_forward_cpu_nhwc, "BiKA Conv2d Forward (CPU Int8 NHWC Streaming AVX2 SIMD)");
+    m.def("bika_conv2d_forward_cpu_bitpack", &bika_conv2d_forward_cpu_bitpack, "BiKA Conv2d Forward (CPU Bitpack XNOR+POPCNT)");
 }
