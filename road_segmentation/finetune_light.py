@@ -137,21 +137,51 @@ def main():
     ])
 
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=1e-6)
-    scaler = GradScaler()
+    use_cuda = torch.cuda.is_available()
+    scaler = torch.cuda.amp.GradScaler(enabled=use_cuda)
     criterion = losses.CrossEntropyDiceLoss(ignore_index=255)
 
     # 4. Data Loaders
+    from glob import glob
+    bdd = args.bdd100k_base
+    label_map = LABEL_GROUPINGS[args.label_grouping]["label_map"] if args.label_grouping != "none" else None
+
+    train_img_ids = [
+        os.path.splitext(os.path.basename(p))[0].replace("_train_id", "")
+        for p in sorted(glob(os.path.join(bdd, "labels", "train", "*.png")))
+    ]
+    val_img_ids = [
+        os.path.splitext(os.path.basename(p))[0].replace("_train_id", "")
+        for p in sorted(glob(os.path.join(bdd, "labels", "val", "*.png")))
+    ]
+
+    print(f"[Dataset] Loaded {len(train_img_ids)} training images, {len(val_img_ids)} validation images.")
+
     train_dataset = BDD100KDataset(
-        root_dir=args.bdd100k_base,
-        split="train",
-        label_grouping=args.label_grouping,
-        img_size=(args.input_h, args.input_w),
+        img_ids=train_img_ids,
+        img_dir=os.path.join(bdd, "images", "train"),
+        mask_dir=os.path.join(bdd, "labels", "train"),
+        img_ext=".jpg",
+        mask_ext=".png",
+        num_classes=num_classes,
+        input_h=args.input_h,
+        input_w=args.input_w,
+        is_training=True,
+        mask_suffix="_train_id",
+        label_map=label_map,
     )
     val_dataset = BDD100KDataset(
-        root_dir=args.bdd100k_base,
-        split="val",
-        label_grouping=args.label_grouping,
-        img_size=(args.input_h, args.input_w),
+        img_ids=val_img_ids,
+        img_dir=os.path.join(bdd, "images", "val"),
+        mask_dir=os.path.join(bdd, "labels", "val"),
+        img_ext=".jpg",
+        mask_ext=".png",
+        num_classes=num_classes,
+        input_h=args.input_h,
+        input_w=args.input_w,
+        is_training=False,
+        mask_suffix="_train_id",
+        label_map=label_map,
     )
 
     train_loader = torch.utils.data.DataLoader(
@@ -171,12 +201,11 @@ def main():
         total_loss = 0.0
         pbar = tqdm(train_loader, desc=f"Epoch {epoch}/{args.epochs}")
 
-        for images, targets in pbar:
-            images = images.to(device)
-            targets = targets.to(device)
+        for batch in pbar:
+            images, targets = batch[0].to(device), batch[1].to(device)
 
             optimizer.zero_grad()
-            with autocast():
+            with torch.cuda.amp.autocast(enabled=use_cuda):
                 preds = model(images)
                 loss = criterion(preds, targets)
 
@@ -193,14 +222,12 @@ def main():
         model.eval()
         metric = SegmentationMetric(num_classes=num_classes)
         with torch.no_grad():
-            for images, targets in val_loader:
-                images = images.to(device)
-                targets = targets.to(device)
+            for batch in val_loader:
+                images, targets = batch[0].to(device), batch[1].to(device)
                 preds = model(images)
-                pred_labels = preds.argmax(dim=1)
-                metric.update(pred_labels, targets)
+                metric.update(preds, targets)
 
-        miou, iou_per_class = metric.get_miou()
+        miou, mdice, iou_per_class = metric.compute()
         print(f"Epoch {epoch:02d} | Val mIoU: {miou*100:.2f}% | Loss: {total_loss/len(train_loader):.4f}")
 
         # Save Best Model
