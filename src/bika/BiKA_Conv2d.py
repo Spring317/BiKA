@@ -127,9 +127,10 @@ class BiKA_Conv2d(nn.Module):
         self.register_buffer("packed_w_bits", None)
         self.register_buffer("neg_bias_flat", None)
         
-    def pack_weights(self):
+    def pack_weights(self, legacy_mode: bool = False):
         """Pre-packs float32 weights into int32 buffer for lightning-fast CUDA loading.
-        Also pre-computes negated bias in half-precision (CUDA) and int8 (CPU AVX2)."""
+        Also pre-computes bias in half-precision (CUDA) and int8 (CPU AVX2).
+        legacy_mode=True uses -bias (legacy model convention), legacy_mode=False uses +bias."""
         O, C, K, _ = self.weight.shape
         w_centered = self.weight - self.weight.mean(dim=[1, 2, 3], keepdim=True)
         w_flat = w_centered.view(O, C * K * K) >= 0.0
@@ -141,10 +142,14 @@ class BiKA_Conv2d(nn.Module):
             bit_val = w_flat[:, i].to(torch.int32)
             packed[:, word_idx] |= (bit_val << bit_idx)
         self.packed_weight = packed
+
+        # Handle bias sign according to model version
+        b_val = -self.bias.detach() if legacy_mode else self.bias.detach()
+
         # Pre-convert bias to half precision for CUDA
-        self.neg_bias_half = self.bias.detach().half()
+        self.neg_bias_half = b_val.half()
         # Pre-quantize bias to int8 (scale = 64.0) for CPU AVX2 SIMD kernel
-        nb_i8 = torch.clamp(torch.round(self.bias.detach() * 64.0), -128, 127).to(torch.int8)
+        nb_i8 = torch.clamp(torch.round(b_val * 64.0), -128, 127).to(torch.int8)
         self.packed_bias_i8 = nb_i8.contiguous()
 
         # ── True Bitpacked XNOR+POPCNT buffers (CPU) ──
@@ -154,7 +159,6 @@ class BiKA_Conv2d(nn.Module):
         num_u64 = (CKK_padded + 63) // 64
 
         # Weight bits: 1 where centered weight >= 0, 0 otherwise
-        # Use vectorized packing (much faster than per-bit loop)
         w_bits = w_flat.to(torch.int64)  # (O, CKK) with values {0, 1}
         packed_bits = torch.zeros((O, num_u64), dtype=torch.int64, device=self.weight.device)
         for i in range(CKK):
@@ -164,8 +168,7 @@ class BiKA_Conv2d(nn.Module):
         self.packed_w_bits = packed_bits
 
         # Flatten and pad bias to (O, CKK_padded) for aligned AVX2 loads
-        # Padding values = +inf so comparison (0 >= inf) always fails → bit = 0
-        nb_flat = self.bias.detach().view(O, CKK)
+        nb_flat = b_val.view(O, CKK)
         if CKK_padded > CKK:
             padding = torch.full((O, CKK_padded - CKK), float('inf'),
                                  device=self.weight.device)

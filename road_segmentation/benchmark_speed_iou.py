@@ -150,6 +150,7 @@ def fuse_bika_model(model: nn.Module):
     """
     Operator Fusion: Fuses BatchNorm and RPReLU into BiKA_Conv2d.
     """
+    legacy_mode = getattr(model, 'legacy_mode', True)
     for name, module in model.named_modules():
         # Handle original Sequential blocks if any
         if isinstance(module, nn.Sequential):
@@ -175,7 +176,7 @@ def fuse_bika_model(model: nn.Module):
                     m_conv.register_buffer("out_scale", scale.detach().clone())
                     m_conv.register_buffer("out_shift", shift.detach().clone())
                     m_conv.do_relu = True
-                    m_conv.pack_weights()
+                    m_conv.pack_weights(legacy_mode=legacy_mode)
                     
                     module[i+1] = nn.Identity()
                     module[i+2] = nn.Identity()
@@ -216,7 +217,7 @@ def fuse_bika_model(model: nn.Module):
                     m_conv.register_buffer("out_scale", scale.detach().clone())
                     m_conv.register_buffer("out_shift", shift.detach().clone())
                     m_conv.do_relu = True
-                    m_conv.pack_weights()
+                    m_conv.pack_weights(legacy_mode=legacy_mode)
                     
                     module.bn1 = nn.Identity()
                     module.act1 = nn.Identity()
@@ -243,7 +244,7 @@ def fuse_bika_model(model: nn.Module):
                     m_conv.register_buffer("out_scale", scale.detach().clone())
                     m_conv.register_buffer("out_shift", shift.detach().clone())
                     m_conv.do_relu = True
-                    m_conv.pack_weights()
+                    m_conv.pack_weights(legacy_mode=legacy_mode)
                     
                     module.bn2 = nn.Identity()
                     module.act2 = nn.Identity()

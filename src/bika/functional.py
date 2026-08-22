@@ -126,25 +126,13 @@ def bika_conv2d(
         sh, sw = stride
 
     if not input.is_cuda:
-        # ── True Bitpacked XNOR+POPCNT kernel (preferred on CPU) ──
-        if packed_w_bits is not None and neg_bias_flat is not None:
-            out_scale_t = out_scale if out_scale is not None else torch.empty(0, device=input.device, dtype=torch.float32)
-            out_shift_t = out_shift if out_shift is not None else torch.empty(0, device=input.device, dtype=torch.float32)
-
-            return _C.bika_conv2d_forward_cpu_bitpack(
-                input.contiguous(),
-                packed_w_bits,
-                neg_bias_flat,
-                out_scale_t,
-                out_shift_t,
-                do_relu,
-                int(sh),
-                int(sw),
-                int(ph),
-                int(pw),
-            )
-
-        # ── Fallback: Int8 AVX2 SIMD CPU kernel (V2) ──
+        # ── Primary: Int8 AVX2 SIMD CPU kernel (V2) ──
+        # Implements all CUDA-style parallel computing optimizations:
+        #   1. Tensor-level SIMD int8 quantization (L1-resident buffer, 4× bandwidth reduction)
+        #   2. 2-pixel × 8-channel register tiling (TILE_W=2, TILE_O=8)
+        #   3. AVX2 _mm256_cmpgt_epi8 + movemask + POPCOUNT32 (CUDA __popc equivalent)
+        #   4. OpenMP collapse(2) spatial parallelization across all CPU cores
+        #   5. Int8 gather from pre-quantized tensor (1 byte vs 4 bytes per element)
         out_scale_t = out_scale if out_scale is not None else torch.empty(0, device=input.device, dtype=torch.float32)
         out_shift_t = out_shift if out_shift is not None else torch.empty(0, device=input.device, dtype=torch.float32)
         packed_weight_t = packed_weight if packed_weight is not None else torch.empty(0, device=input.device, dtype=torch.int32)
