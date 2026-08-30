@@ -43,6 +43,10 @@ def parse_args():
     p.add_argument("--lr_decoder", type=float, default=5e-4, help="Learning rate for newly initialized decoder")
     p.add_argument("--output_dir", type=str, default="road_segmentation/outputs/BiKASegNet_Light_finetuned")
     p.add_argument("--num_workers", type=int, default=8)
+    p.add_argument("--legacy_mode", action="store_true", default=True,
+                   help="Use ReLU (fusable at inference for 2x CPU speedup). Use --no_legacy_mode for RPReLU.")
+    p.add_argument("--no_legacy_mode", dest="legacy_mode", action="store_false",
+                   help="Use RPReLU (non-fusable, slower inference but potentially better training)")
     return p.parse_args()
 
 
@@ -108,13 +112,14 @@ def main():
     print(f"  Task / Classes       : {args.label_grouping} ({num_classes} classes)")
     print(f"  Resolution           : {args.input_h} × {args.input_w}")
     print(f"  Output Dir           : {args.output_dir}")
+    print(f"  legacy_mode          : {args.legacy_mode} ({'ReLU, fusable' if args.legacy_mode else 'RPReLU, non-fusable'})")
     print("=" * 80)
 
     # 1. Instantiate BiKASegNet_Light
     model = BiKASegNet_Light(
         num_classes=num_classes,
         base_channels=args.base_channels,
-        legacy_mode=False  # modern RPReLU
+        legacy_mode=args.legacy_mode,
     ).to(device)
 
     # 2. Transfer pretrained backbone weights
@@ -241,8 +246,24 @@ def main():
                 "best_miou": best_miou,
                 "label_grouping": args.label_grouping,
                 "base_channels": args.base_channels,
+                "legacy_mode": args.legacy_mode,
             }, save_path)
             print(f"  >>> Saved new best model to '{save_path}' (mIoU: {best_miou*100:.2f}%)")
+
+        # Save last checkpoint every epoch (crash recovery)
+        last_path = os.path.join(args.output_dir, "checkpoint_last.pth")
+        torch.save({
+            "epoch": epoch,
+            "model_state_dict": model.state_dict(),
+            "optimizer_state_dict": optimizer.state_dict(),
+            "scheduler_state_dict": scheduler.state_dict(),
+            "best_miou": best_miou,
+            "label_grouping": args.label_grouping,
+            "base_channels": args.base_channels,
+            "legacy_mode": args.legacy_mode,
+        }, last_path)
+
+    print(f"\nTraining complete. Best mIoU: {best_miou*100:.2f}%")
 
 
 if __name__ == "__main__":
